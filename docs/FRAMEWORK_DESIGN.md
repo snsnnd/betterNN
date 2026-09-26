@@ -247,7 +247,7 @@ W初始化谱范数为0.9，但完整转移还包含状态依赖Route。求状�
 
 **第九轮已完成该实验（N=256、5 种子）：固定预算 replay 的最终平均 69.46%、遗忘 16.84 个百分点，均为最好；冻结控制器崩溃到 34.99%；只保护读出不足；freeze_W 与只更新控制器略优于 all，但不稳定。** 结果见 [flow_mvp_v9/REPORT.md](../flow_mvp_v9/REPORT.md)。
 
-**第十轮已建立干净基线**：新任务集 A'B'C'D' 单独学习约 99.8%，验证选择 65 轮/阶段；顺序 CL 基线 acquisition 97.37%、最终平均 80.80%、遗忘 22.10 个百分点。**第十一轮在该基线上给出结论：每步 12.5% 的 replay 已把遗忘压到约 1 个百分点；冻结 W 没有再增加稳定性，反而损失约 4 个百分点最终成绩（配对 1/15 为正）。** **第十二轮证明这不等同于“任何架构加 replay 都行”：容量匹配的 GRU（67k）在 25% replay 时遗忘仍有 5.72 个百分点，Flow 只需约 6.7% 就达到 ≤3pp，vanilla RNN 在该预算下根本未学会。同等历史预算下 Flow 的 memory efficiency 明显更高。** 见 [flow_mvp_v11/REPORT.md](../flow_mvp_v11/REPORT.md) 与 [flow_mvp_v12/REPORT.md](../flow_mvp_v12/REPORT.md)。**第十三轮进一步定位机制：旧任务策略主要存放在 Controller＋W（换回 ctrl 恢复 A 到 91.4%、ctrl+W 到 99.8%，readout 无影响）；replay 显著改变任务梯度关系，在 Hold 上稳定把冲突转为兼容（−0.63→+0.30 等），部分 W/Route/Readout 阶段减弱冲突（并非所有组件都由负转正）；所需 α* 中位数 ≤2.83%；缓冲约需 8～32 样本/任务。** 并且发现：**Write 门在 5 步截断下梯度恒为零，自第七轮起从未被训练**（输入在 t=0/1 写入，梯度窗口只有最后 5 步；全 BPTT 下梯度非零）。**第十四轮把 Write 作为唯一变量做因果归因：随机固定、常数写入（p=1/0.5）与真正训练/局部监督的 Write 之间没有可测差异，因此 Write 可从架构删除，输入注入用常数即可；精简后的动态调制核心是 Route＋Hold，策略载体是 Controller＋W。** 见 [flow_mvp_v13/REPORT.md](../flow_mvp_v13/REPORT.md) 与 [flow_mvp_v14/REPORT.md](../flow_mvp_v14/REPORT.md)。
+**第十轮已建立干净基线**：新任务集 A'B'C'D' 单独学习约 99.8%，验证选择 65 轮/阶段；顺序 CL 基线 acquisition 97.37%、最终平均 80.80%、遗忘 22.10 个百分点。**第十一轮在该基线上给出结论：每步 12.5% 的 replay 已把遗忘压到约 1 个百分点；冻结 W 没有再增加稳定性，反而损失约 4 个百分点最终成绩（配对 1/15 为正）。** **第十二轮证明这不等同于“任何架构加 replay 都行”：容量匹配的 GRU（67k）在 25% replay 时遗忘仍有 5.72 个百分点，Flow 只需约 6.7% 就达到 ≤3pp，vanilla RNN 在该预算下根本未学会。同等历史预算下 Flow 的 memory efficiency 明显更高。** 见 [flow_mvp_v11/REPORT.md](../flow_mvp_v11/REPORT.md) 与 [flow_mvp_v12/REPORT.md](../flow_mvp_v12/REPORT.md)。**第十三轮进一步定位机制：旧任务策略主要存放在 Controller＋W（换回 ctrl 恢复 A 到 91.4%、ctrl+W 到 99.8%，readout 无影响）；replay 显著改变任务梯度关系，在 Hold 上稳定把冲突转为兼容（−0.63→+0.30 等），部分 W/Route/Readout 阶段减弱冲突（并非所有组件都由负转正）；所需 α* 中位数 ≤2.83%；缓冲约需 8～32 样本/任务。** 并且发现：**Write 门在 5 步截断下梯度恒为零，自第七轮起从未被训练**（输入在 t=0/1 写入，梯度窗口只有最后 5 步；全 BPTT 下梯度非零）。**第十四轮把 Write 作为唯一变量做因果归因：随机固定、常数写入（p=1/0.5）与真正训练/局部监督的 Write 之间没有可测差异，因此 Write 可从架构删除；第十五轮已从代码删除并重跑关键条件，r=0/6.25%/12.5% 最终平均 77.48%/97.03%/99.44%，与旧 Flow 一致，正式冻结 Flow-v2 = W + Route + Hold + Readout。** 结合移植结果，旧任务策略分布在 **Route＋Hold＋W**：W 提供长期动力结构，Route＋Hold 决定如何使用它，Readout 不承载任务策略。见 [flow_mvp_v14/REPORT.md](../flow_mvp_v14/REPORT.md) 与 [flow_mvp_v15/REPORT.md](../flow_mvp_v15/REPORT.md)。
 
 固定小回放缓冲可作为实用基线，但必须记录总存储量和总更新次数；替换当前任务batch的一部分与额外追加训练不是同一预算。后者不能直接用于声称算法更高效。
 
@@ -345,5 +345,6 @@ W_bar = W ⊙ topology_mask
 - [第十二轮架构对比](../flow_mvp_v12/experiment.py)：Flow/GRU/RNN 等预算 replay 曲线与所需比例。
 - [第十三轮机制定位](../flow_mvp_v13/): 梯度冲突（`gradient_conflict.py`）、组件移植（`transplant.py`）、缓冲扫描（`buffer_scan.py`）。
 - [第十四轮 Write 归因](../flow_mvp_v14/experiment.py)：五种写入模式的因果对照。
+- [第十五轮 Flow-v2](../flow_mvp_v15/experiment.py)：删除 Write 的正式基线（W＋Route＋Hold＋Readout）。
 
 简要结论：**当前调制器通过可微的乘法门和状态插值控制底层。第八轮归因表明 Top-K 收益主要来自稀疏隔离而非学习选择；下一步最值得做的是定位持续学习遗忘并验证实际效率，架构创新应建立在这些可重复的收益之上。**
