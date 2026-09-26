@@ -1,0 +1,1 @@
+PASS 36 checkpoints, 72 metric sets, numerical forward equivalence; gradient-boundary and frozen-parameter assertions in run.py.

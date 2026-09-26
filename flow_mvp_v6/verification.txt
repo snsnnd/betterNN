@@ -1,0 +1,1 @@
+PASS: 45 checkpoints, 180 task scores, zero-extension equivalence, no early task identity, training frozen-tensor assertions.

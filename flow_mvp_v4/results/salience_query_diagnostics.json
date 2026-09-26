@@ -1,0 +1,98 @@
+[
+  {
+    "seed": 11,
+    "kind": "learned",
+    "per_query_raw_auc": [
+      0.6666666666666666,
+      0.0,
+      1.0,
+      0.3333333333333333
+    ],
+    "per_query_orientation_free_auc": [
+      0.6666666666666666,
+      1.0,
+      1.0,
+      0.6666666666666667
+    ]
+  },
+  {
+    "seed": 11,
+    "kind": "supervised",
+    "per_query_raw_auc": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "per_query_orientation_free_auc": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "seed": 22,
+    "kind": "learned",
+    "per_query_raw_auc": [
+      0.6666666666666666,
+      1.0,
+      0.0,
+      0.3333333333333333
+    ],
+    "per_query_orientation_free_auc": [
+      0.6666666666666666,
+      1.0,
+      1.0,
+      0.6666666666666667
+    ]
+  },
+  {
+    "seed": 22,
+    "kind": "supervised",
+    "per_query_raw_auc": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "per_query_orientation_free_auc": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "seed": 33,
+    "kind": "learned",
+    "per_query_raw_auc": [
+      0.3333333333333333,
+      0.3333333333333333,
+      1.0,
+      0.6666666666666666
+    ],
+    "per_query_orientation_free_auc": [
+      0.6666666666666667,
+      0.6666666666666667,
+      1.0,
+      0.6666666666666666
+    ]
+  },
+  {
+    "seed": 33,
+    "kind": "supervised",
+    "per_query_raw_auc": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "per_query_orientation_free_auc": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  }
+]

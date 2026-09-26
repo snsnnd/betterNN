@@ -1,0 +1,170 @@
+[
+  {
+    "kind": "frozen",
+    "seed": 11,
+    "epochs_to_90pct": {
+      "1": 23,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.48291015625,
+      0.26318359375,
+      0.21044921875
+    ]
+  },
+  {
+    "kind": "slow",
+    "seed": 11,
+    "epochs_to_90pct": {
+      "1": 23,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.48291015625,
+      0.265625,
+      0.21875
+    ]
+  },
+  {
+    "kind": "joint",
+    "seed": 11,
+    "epochs_to_90pct": {
+      "1": 36,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.48193359375,
+      0.2587890625,
+      0.03466796875
+    ]
+  },
+  {
+    "kind": "gru",
+    "seed": 11,
+    "epochs_to_90pct": {
+      "1": 14,
+      "2": 22,
+      "3": 33
+    },
+    "signed_forgetting": [
+      0.455078125,
+      0.490234375,
+      0.50244140625
+    ]
+  },
+  {
+    "kind": "frozen",
+    "seed": 22,
+    "epochs_to_90pct": {
+      "1": 22,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.5224609375,
+      0.38037109375,
+      0.27734375
+    ]
+  },
+  {
+    "kind": "slow",
+    "seed": 22,
+    "epochs_to_90pct": {
+      "1": 22,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.5244140625,
+      0.38525390625,
+      0.28759765625
+    ]
+  },
+  {
+    "kind": "joint",
+    "seed": 22,
+    "epochs_to_90pct": {
+      "1": 31,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.52001953125,
+      0.35205078125,
+      0.13818359375
+    ]
+  },
+  {
+    "kind": "gru",
+    "seed": 22,
+    "epochs_to_90pct": {
+      "1": 14,
+      "2": 23,
+      "3": 35
+    },
+    "signed_forgetting": [
+      0.16455078125,
+      0.47802734375,
+      0.48291015625
+    ]
+  },
+  {
+    "kind": "frozen",
+    "seed": 33,
+    "epochs_to_90pct": {
+      "1": 20,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.4677734375,
+      0.25830078125,
+      0.205078125
+    ]
+  },
+  {
+    "kind": "slow",
+    "seed": 33,
+    "epochs_to_90pct": {
+      "1": 20,
+      "2": null,
+      "3": null
+    },
+    "signed_forgetting": [
+      0.46875,
+      0.2607421875,
+      0.20068359375
+    ]
+  },
+  {
+    "kind": "joint",
+    "seed": 33,
+    "epochs_to_90pct": {
+      "1": 26,
+      "2": null,
+      "3": 59
+    },
+    "signed_forgetting": [
+      0.466796875,
+      0.4541015625,
+      0.197265625
+    ]
+  },
+  {
+    "kind": "gru",
+    "seed": 33,
+    "epochs_to_90pct": {
+      "1": 9,
+      "2": 11,
+      "3": 7
+    },
+    "signed_forgetting": [
+      0.46484375,
+      0.490234375,
+      0.47607421875
+    ]
+  }
+]

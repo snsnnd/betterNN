@@ -1,0 +1,62 @@
+{
+  "n": 256,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "arms": [
+    "all",
+    "freeze_W",
+    "freeze_ctrl",
+    "freeze_readout",
+    "ctrl_only",
+    "readout_only",
+    "replay"
+  ],
+  "trainable": {
+    "all": [
+      "W",
+      "ctrl",
+      "readout"
+    ],
+    "freeze_W": [
+      "ctrl",
+      "readout"
+    ],
+    "freeze_ctrl": [
+      "W",
+      "readout"
+    ],
+    "freeze_readout": [
+      "W",
+      "ctrl"
+    ],
+    "ctrl_only": [
+      "ctrl"
+    ],
+    "readout_only": [
+      "readout"
+    ],
+    "replay": [
+      "W",
+      "ctrl",
+      "readout"
+    ]
+  },
+  "epochs_per_stage": 30,
+  "train": 512,
+  "val": 256,
+  "test": 1024,
+  "batch": 128,
+  "replay": "96 current + 32 old, same 128 budget",
+  "replay_per_old": 32,
+  "bptt_window": 5,
+  "lr": 0.003,
+  "pretrain": "A with all params",
+  "selection": "final epoch",
+  "torch": "2.14.0+cu130",
+  "device": "cuda"
+}

@@ -1,0 +1,46 @@
+{
+  "epochs": 100,
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "out": "results/routing",
+  "variants": [
+    "dynamic",
+    "static",
+    "none",
+    "rule_blind",
+    "dynamic_slow",
+    "gru"
+  ],
+  "train_n": 3072,
+  "val_n": 768,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "slow_W_lr": 0.00015,
+  "conditions": {
+    "id": [
+      10,
+      4,
+      false
+    ],
+    "late_rule": [
+      10,
+      6,
+      false
+    ],
+    "long": [
+      16,
+      4,
+      false
+    ],
+    "reverse_input": [
+      10,
+      4,
+      true
+    ]
+  },
+  "torch": "2.14.0+cpu"
+}

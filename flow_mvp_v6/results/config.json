@@ -1,0 +1,32 @@
+{
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "kinds": [
+    "frozen",
+    "slow",
+    "joint",
+    "gru"
+  ],
+  "epochs_per_stage": 60,
+  "train": 1024,
+  "validation": 512,
+  "test_per_task": 2048,
+  "steps": 20,
+  "rule_arrival": 4,
+  "lr": 0.003,
+  "slow_W_lr": 0.00015,
+  "order": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "initial": "v5 full-BPTT joint Flow or GRU",
+  "replay": false,
+  "checkpoint": "fixed final epoch",
+  "optimizer": "reset each new task for all groups",
+  "torch": "2.14.0+cpu"
+}

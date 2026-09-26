@@ -1,0 +1,20 @@
+{
+  "1": {
+    "score_mean": 0.800390625,
+    "score_std": 0.07192036399604926,
+    "reached": 0,
+    "epochs_mean": null
+  },
+  "2": {
+    "score_mean": 0.8482421875,
+    "score_std": 0.11357258133761622,
+    "reached": 2,
+    "epochs_mean": 21.5
+  },
+  "3": {
+    "score_mean": 0.586328125,
+    "score_std": 0.08666847765081918,
+    "reached": 0,
+    "epochs_mean": null
+  }
+}

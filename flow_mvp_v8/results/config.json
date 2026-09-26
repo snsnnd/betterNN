@@ -1,0 +1,31 @@
+{
+  "n": 256,
+  "k_per_role": 16,
+  "active_budget": 64,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "modes": [
+    "dense",
+    "fixed_topk",
+    "learned_topk"
+  ],
+  "epochs_per_task": 30,
+  "tasks": 4,
+  "train": 512,
+  "val": 256,
+  "test": 1024,
+  "batch": 128,
+  "bptt_window": 5,
+  "lr": 0.003,
+  "selection": "final epoch",
+  "replay": false,
+  "task_identity": "visible from t0",
+  "rule": "visible from t4",
+  "torch": "2.14.0+cu130",
+  "device": "cuda"
+}

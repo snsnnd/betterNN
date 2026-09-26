@@ -1,0 +1,88 @@
+{
+  "study": "salience",
+  "jobs": [
+    {
+      "study": "salience",
+      "mode": "perfect",
+      "seed": 11
+    },
+    {
+      "study": "salience",
+      "mode": "noisy",
+      "seed": 11
+    },
+    {
+      "study": "salience",
+      "mode": "learned",
+      "seed": 11
+    },
+    {
+      "study": "salience",
+      "mode": "none",
+      "seed": 11
+    },
+    {
+      "study": "salience",
+      "mode": "gru",
+      "seed": 11
+    },
+    {
+      "study": "salience",
+      "mode": "perfect",
+      "seed": 22
+    },
+    {
+      "study": "salience",
+      "mode": "noisy",
+      "seed": 22
+    },
+    {
+      "study": "salience",
+      "mode": "learned",
+      "seed": 22
+    },
+    {
+      "study": "salience",
+      "mode": "none",
+      "seed": 22
+    },
+    {
+      "study": "salience",
+      "mode": "gru",
+      "seed": 22
+    },
+    {
+      "study": "salience",
+      "mode": "perfect",
+      "seed": 33
+    },
+    {
+      "study": "salience",
+      "mode": "noisy",
+      "seed": 33
+    },
+    {
+      "study": "salience",
+      "mode": "learned",
+      "seed": 33
+    },
+    {
+      "study": "salience",
+      "mode": "none",
+      "seed": 33
+    },
+    {
+      "study": "salience",
+      "mode": "gru",
+      "seed": 33
+    }
+  ],
+  "epochs": 100,
+  "train_n": 3072,
+  "val_n": 768,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "slow_lr": 0.00015,
+  "torch": "2.14.0+cpu"
+}

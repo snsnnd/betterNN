@@ -1,0 +1,2 @@
+PASS: label rules, marker removal, non-identifiability example, V2 equivalence, all gate gradients and freeze flags.
+PASS: 75 checkpoints and 600 saved accuracy entries exactly reproduced; frozen tensors unchanged.

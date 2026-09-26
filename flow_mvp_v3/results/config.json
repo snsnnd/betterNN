@@ -1,0 +1,65 @@
+{
+  "epochs": 100,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "variants": [
+    "g000",
+    "g001",
+    "g010",
+    "g011",
+    "g100",
+    "g101",
+    "g110",
+    "g111",
+    "g111_slow",
+    "g111_joint",
+    "gru",
+    "g101_noisy",
+    "g101_none",
+    "gru_noisy",
+    "gru_none"
+  ],
+  "out": "results",
+  "train_n": 3072,
+  "val_n": 768,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "slow_lr": 0.00015,
+  "flip_probability": 0.15,
+  "conditions": {
+    "id12": {
+      "steps": 12,
+      "region": "early",
+      "noise": 1.0
+    },
+    "shift12": {
+      "steps": 12,
+      "region": "late",
+      "noise": 1.0
+    },
+    "random12": {
+      "steps": 12,
+      "region": "all",
+      "noise": 1.0
+    },
+    "delay24": {
+      "steps": 24,
+      "region": "early",
+      "noise": 1.0
+    },
+    "noise12": {
+      "steps": 12,
+      "region": "early",
+      "noise": 3.0
+    }
+  },
+  "torch": "2.14.0+cpu",
+  "numpy": "2.3.5",
+  "threads": 1
+}

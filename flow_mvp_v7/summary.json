@@ -1,0 +1,522 @@
+[
+  {
+    "n": 64,
+    "mode": "dense",
+    "final_mean": {
+      "mean": 0.6125,
+      "std": 0.016046930745742084
+    },
+    "plasticity": {
+      "mean": 0.75283203125,
+      "std": 0.0365178394617377
+    },
+    "forgetting": {
+      "mean": 0.19283854166666667,
+      "std": 0.044701726941442754
+    },
+    "bwt": {
+      "mean": -0.187109375,
+      "std": 0.0463706683671896
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.7748386414640285,
+      "std": 0.0777441903461373
+    },
+    "initial_selectivity_used": {
+      "mean": 0.04336026996412692,
+      "std": 0.008300133999528196
+    },
+    "final_selectivity_used": {
+      "mean": 0.1291469134694466,
+      "std": 0.03669903476210574
+    },
+    "final_route_similarity": {
+      "mean": 0.9969292660554251,
+      "std": 0.0013246678920276317
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 5.782917213439942,
+      "std": 0.4146538358442105
+    }
+  },
+  {
+    "n": 64,
+    "mode": "topk",
+    "final_mean": {
+      "mean": 0.6125,
+      "std": 0.016046930745742084
+    },
+    "plasticity": {
+      "mean": 0.75283203125,
+      "std": 0.0365178394617377
+    },
+    "forgetting": {
+      "mean": 0.19283854166666667,
+      "std": 0.044701726941442754
+    },
+    "bwt": {
+      "mean": -0.187109375,
+      "std": 0.0463706683671896
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.7748386414640285,
+      "std": 0.0777441903461373
+    },
+    "initial_selectivity_used": {
+      "mean": 0.04336026996412692,
+      "std": 0.008300133999528196
+    },
+    "final_selectivity_used": {
+      "mean": 0.1291469134694466,
+      "std": 0.03669903476210574
+    },
+    "final_route_similarity": {
+      "mean": 0.9969292660554251,
+      "std": 0.0013246678920276317
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 5.782917213439942,
+      "std": 0.4146538358442105
+    }
+  },
+  {
+    "n": 128,
+    "mode": "dense",
+    "final_mean": {
+      "mean": 0.61640625,
+      "std": 0.014026298549871658
+    },
+    "plasticity": {
+      "mean": 0.7837890625,
+      "std": 0.02972636439574471
+    },
+    "forgetting": {
+      "mean": 0.2274739583333333,
+      "std": 0.04708386266180146
+    },
+    "bwt": {
+      "mean": -0.2231770833333333,
+      "std": 0.05442801783488011
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.8629444494887757,
+      "std": 0.11463447138501323
+    },
+    "initial_selectivity_used": {
+      "mean": 0.028423078460889744,
+      "std": 0.007491414798297925
+    },
+    "final_selectivity_used": {
+      "mean": 0.10675648968240414,
+      "std": 0.014549113805286633
+    },
+    "final_route_similarity": {
+      "mean": 0.9958470940589905,
+      "std": 0.0017430431457023646
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 7.451970481872559,
+      "std": 1.24843685812291
+    }
+  },
+  {
+    "n": 128,
+    "mode": "topk",
+    "final_mean": {
+      "mean": 0.75634765625,
+      "std": 0.06191047152626025
+    },
+    "plasticity": {
+      "mean": 0.871337890625,
+      "std": 0.047821658385528494
+    },
+    "forgetting": {
+      "mean": 0.15338541666666666,
+      "std": 0.055584243149295776
+    },
+    "bwt": {
+      "mean": -0.1533203125,
+      "std": 0.05571210843754771
+    },
+    "initial_selection_overlap": {
+      "mean": 0.33372039695580796,
+      "std": 0.013977815472445853
+    },
+    "final_selection_overlap": {
+      "mean": 0.31127069046099975,
+      "std": 0.010217253824764934
+    },
+    "overlap_change": {
+      "mean": -0.022449706494808198,
+      "std": 0.014116578700537197
+    },
+    "final_activation_overlap": {
+      "mean": 0.27883480635811286,
+      "std": 0.0179156393933551
+    },
+    "initial_selectivity_used": {
+      "mean": 0.6270303028836585,
+      "std": 0.009393488716799948
+    },
+    "final_selectivity_used": {
+      "mean": 0.707124216950896,
+      "std": 0.02162056679293048
+    },
+    "final_route_similarity": {
+      "mean": 0.9993906259536743,
+      "std": 0.0004297639600738488
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 5.724765300750732,
+      "std": 0.18520908543633172
+    }
+  },
+  {
+    "n": 256,
+    "mode": "dense",
+    "final_mean": {
+      "mean": 0.5845703125,
+      "std": 0.04154467207515341
+    },
+    "plasticity": {
+      "mean": 0.766845703125,
+      "std": 0.04844546098813999
+    },
+    "forgetting": {
+      "mean": 0.25358072916666663,
+      "std": 0.06920246775691541
+    },
+    "bwt": {
+      "mean": -0.24303385416666665,
+      "std": 0.07938524822515398
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.9390807262886799,
+      "std": 0.06853799672145054
+    },
+    "initial_selectivity_used": {
+      "mean": 0.04606960934023158,
+      "std": 0.01881112340390301
+    },
+    "final_selectivity_used": {
+      "mean": 0.10478444953797754,
+      "std": 0.053329156290385614
+    },
+    "final_route_similarity": {
+      "mean": 0.9939167241255442,
+      "std": 0.003107045573092266
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 8.754322910308838,
+      "std": 2.892550864013073
+    }
+  },
+  {
+    "n": 256,
+    "mode": "topk",
+    "final_mean": {
+      "mean": 0.765673828125,
+      "std": 0.04795869007303815
+    },
+    "plasticity": {
+      "mean": 0.927197265625,
+      "std": 0.0344084143793715
+    },
+    "forgetting": {
+      "mean": 0.21536458333333336,
+      "std": 0.03729636391833477
+    },
+    "bwt": {
+      "mean": -0.21536458333333336,
+      "std": 0.03729636391833477
+    },
+    "initial_selection_overlap": {
+      "mean": 0.13604525973399478,
+      "std": 0.007884897511000218
+    },
+    "final_selection_overlap": {
+      "mean": 0.1801387292643388,
+      "std": 0.01289315058589579
+    },
+    "overlap_change": {
+      "mean": 0.04409346953034401,
+      "std": 0.009033928564842676
+    },
+    "final_activation_overlap": {
+      "mean": 0.18013872881567605,
+      "std": 0.012893150415315874
+    },
+    "initial_selectivity_used": {
+      "mean": 0.8568592998634775,
+      "std": 0.009128254516918982
+    },
+    "final_selectivity_used": {
+      "mean": 0.8364602366628008,
+      "std": 0.007830669812729368
+    },
+    "final_route_similarity": {
+      "mean": 0.9996490180492401,
+      "std": 0.0004472058692554867
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 4.984763526916504,
+      "std": 0.38860179047207144
+    }
+  },
+  {
+    "n": 512,
+    "mode": "dense",
+    "final_mean": {
+      "mean": 0.50849609375,
+      "std": 0.10610479081112172
+    },
+    "plasticity": {
+      "mean": 0.776513671875,
+      "std": 0.0492785015416218
+    },
+    "forgetting": {
+      "mean": 0.35735677083333334,
+      "std": 0.09659344629592183
+    },
+    "bwt": {
+      "mean": -0.35735677083333334,
+      "std": 0.09659344629592183
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.9054874259398702,
+      "std": 0.10023730494093325
+    },
+    "initial_selectivity_used": {
+      "mean": 0.04514534714468669,
+      "std": 0.013751471673564674
+    },
+    "final_selectivity_used": {
+      "mean": 0.141933882879352,
+      "std": 0.05714810008792437
+    },
+    "final_route_similarity": {
+      "mean": 0.9934492925802866,
+      "std": 0.004324042962935058
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 14.009333610534668,
+      "std": 2.352170743644832
+    }
+  },
+  {
+    "n": 512,
+    "mode": "topk",
+    "final_mean": {
+      "mean": 0.78427734375,
+      "std": 0.04525322819359442
+    },
+    "plasticity": {
+      "mean": 0.918212890625,
+      "std": 0.05541158605054619
+    },
+    "forgetting": {
+      "mean": 0.18059895833333334,
+      "std": 0.03369761730691991
+    },
+    "bwt": {
+      "mean": -0.17858072916666667,
+      "std": 0.03618014331533148
+    },
+    "initial_selection_overlap": {
+      "mean": 0.07267384901642798,
+      "std": 0.009052044597149212
+    },
+    "final_selection_overlap": {
+      "mean": 0.16340832884112994,
+      "std": 0.029104164463809007
+    },
+    "overlap_change": {
+      "mean": 0.09073447982470197,
+      "std": 0.02920399909555118
+    },
+    "final_activation_overlap": {
+      "mean": 0.1634083285970476,
+      "std": 0.0291041643929378
+    },
+    "initial_selectivity_used": {
+      "mean": 0.9264844227274386,
+      "std": 0.008773135129891392
+    },
+    "final_selectivity_used": {
+      "mean": 0.8483045811347237,
+      "std": 0.03788358766825042
+    },
+    "final_route_similarity": {
+      "mean": 0.9991705457369487,
+      "std": 0.0007857854081113038
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 3.804728078842163,
+      "std": 0.3384257863110531
+    }
+  },
+  {
+    "n": 1024,
+    "mode": "dense",
+    "final_mean": {
+      "mean": 0.578125,
+      "std": 0.13773675389650775
+    },
+    "plasticity": {
+      "mean": 0.92802734375,
+      "std": 0.1075588947691618
+    },
+    "forgetting": {
+      "mean": 0.4665364583333333,
+      "std": 0.060681222056856964
+    },
+    "bwt": {
+      "mean": -0.4665364583333333,
+      "std": 0.060681222056856964
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.8066952879232439,
+      "std": 0.14773016987281432
+    },
+    "initial_selectivity_used": {
+      "mean": 0.04643571573739539,
+      "std": 0.016159480043707358
+    },
+    "final_selectivity_used": {
+      "mean": 0.08115590780504553,
+      "std": 0.0359609193054704
+    },
+    "final_route_similarity": {
+      "mean": 0.9940084338188171,
+      "std": 0.0013272118828440225
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 19.962075805664064,
+      "std": 4.0340650383759025
+    }
+  },
+  {
+    "n": 1024,
+    "mode": "topk",
+    "final_mean": {
+      "mean": 0.696484375,
+      "std": 0.07513810000080896
+    },
+    "plasticity": {
+      "mean": 0.869091796875,
+      "std": 0.05498353668380341
+    },
+    "forgetting": {
+      "mean": 0.23372395833333334,
+      "std": 0.0626528249022707
+    },
+    "bwt": {
+      "mean": -0.23014322916666666,
+      "std": 0.06796256045712082
+    },
+    "initial_selection_overlap": {
+      "mean": 0.03160653747618199,
+      "std": 0.005752046081774647
+    },
+    "final_selection_overlap": {
+      "mean": 0.11800323420514662,
+      "std": 0.024157168427249357
+    },
+    "overlap_change": {
+      "mean": 0.08639669672896465,
+      "std": 0.02891186741948809
+    },
+    "final_activation_overlap": {
+      "mean": 0.11800323368322266,
+      "std": 0.024157167635555223
+    },
+    "initial_selectivity_used": {
+      "mean": 0.9669058194805592,
+      "std": 0.0065250411748444545
+    },
+    "final_selectivity_used": {
+      "mean": 0.8835506680729235,
+      "std": 0.028298756953923712
+    },
+    "final_route_similarity": {
+      "mean": 0.9992503881454468,
+      "std": 0.0009278507607553201
+    },
+    "final_W_spectral_norm_estimate": {
+      "mean": 3.2875145435333253,
+      "std": 0.12191513843024016
+    }
+  }
+]

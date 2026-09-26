@@ -1,0 +1,92 @@
+[
+  {
+    "seed": 11,
+    "cue": "clean",
+    "conditional_optimal_expected_accuracy": 1.0,
+    "oracle_empirical_accuracy": 1.0
+  },
+  {
+    "seed": 11,
+    "cue": "noisy",
+    "conditional_optimal_expected_accuracy": 0.8588787317276001,
+    "oracle_empirical_accuracy": 0.8544921875
+  },
+  {
+    "seed": 11,
+    "cue": "none",
+    "conditional_optimal_expected_accuracy": 0.702522873878479,
+    "oracle_empirical_accuracy": 0.697998046875
+  },
+  {
+    "seed": 22,
+    "cue": "clean",
+    "conditional_optimal_expected_accuracy": 1.0,
+    "oracle_empirical_accuracy": 1.0
+  },
+  {
+    "seed": 22,
+    "cue": "noisy",
+    "conditional_optimal_expected_accuracy": 0.8617605566978455,
+    "oracle_empirical_accuracy": 0.86083984375
+  },
+  {
+    "seed": 22,
+    "cue": "none",
+    "conditional_optimal_expected_accuracy": 0.7039713859558105,
+    "oracle_empirical_accuracy": 0.712158203125
+  },
+  {
+    "seed": 33,
+    "cue": "clean",
+    "conditional_optimal_expected_accuracy": 1.0,
+    "oracle_empirical_accuracy": 1.0
+  },
+  {
+    "seed": 33,
+    "cue": "noisy",
+    "conditional_optimal_expected_accuracy": 0.8642668724060059,
+    "oracle_empirical_accuracy": 0.87353515625
+  },
+  {
+    "seed": 33,
+    "cue": "none",
+    "conditional_optimal_expected_accuracy": 0.7092611193656921,
+    "oracle_empirical_accuracy": 0.723876953125
+  },
+  {
+    "seed": 44,
+    "cue": "clean",
+    "conditional_optimal_expected_accuracy": 1.0,
+    "oracle_empirical_accuracy": 1.0
+  },
+  {
+    "seed": 44,
+    "cue": "noisy",
+    "conditional_optimal_expected_accuracy": 0.8606507778167725,
+    "oracle_empirical_accuracy": 0.8603515625
+  },
+  {
+    "seed": 44,
+    "cue": "none",
+    "conditional_optimal_expected_accuracy": 0.7052246332168579,
+    "oracle_empirical_accuracy": 0.706298828125
+  },
+  {
+    "seed": 55,
+    "cue": "clean",
+    "conditional_optimal_expected_accuracy": 1.0,
+    "oracle_empirical_accuracy": 1.0
+  },
+  {
+    "seed": 55,
+    "cue": "noisy",
+    "conditional_optimal_expected_accuracy": 0.8595936894416809,
+    "oracle_empirical_accuracy": 0.8623046875
+  },
+  {
+    "seed": 55,
+    "cue": "none",
+    "conditional_optimal_expected_accuracy": 0.7033529877662659,
+    "oracle_empirical_accuracy": 0.70751953125
+  }
+]

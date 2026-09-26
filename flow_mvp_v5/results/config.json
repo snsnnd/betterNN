@@ -1,0 +1,31 @@
+{
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "kinds": [
+    "frozen",
+    "slow",
+    "joint",
+    "gru"
+  ],
+  "windows": [
+    0,
+    10,
+    5
+  ],
+  "epochs": 60,
+  "train_n": 1024,
+  "val_n": 512,
+  "test_n": 2048,
+  "steps": 20,
+  "rule_arrival": 4,
+  "batch": 256,
+  "lr": 0.003,
+  "slow_lr": 0.00015,
+  "loss": "final output only",
+  "window_zero": "full BPTT",
+  "selection": "ID validation pair accuracy",
+  "torch": "2.14.0+cpu"
+}

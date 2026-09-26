@@ -1,0 +1,3 @@
+matrix_equal: True
+v7 final_mean=0.746094 v8 final_mean=0.746094
+v7 forgetting=0.211589 v8 forgetting=0.211589

@@ -1,0 +1,272 @@
+[
+  {
+    "seed": 11,
+    "edge_count": 809,
+    "density_including_self": 0.197509765625,
+    "mean_out_degree": 12.640625,
+    "mean_reachable_path": 1.8757440476190477,
+    "reachable_pair_fraction": 1.0,
+    "strong_components": 1,
+    "undirected_clustering": 0.3560386682446608,
+    "spectral_radius": 0.5080829858779907,
+    "spectral_norm": 0.8999997973442078,
+    "effective_rank": 49.97311782836914,
+    "route_delta_id_pp": 0.1953125,
+    "route_delta_delay_pp": 0.2197265625,
+    "soft_mean_gate": 0.42908763885498047,
+    "bernoulli_proxy_entropy_bits": 0.13406254351139069,
+    "temporal_abs_change": 0.005554065573960543,
+    "counterfactual_task_distance": 0.5264336268107096,
+    "task_distance_matrix": [
+      [
+        0.0,
+        0.6162545084953308,
+        0.862553060054779,
+        0.17768722772598267
+      ],
+      [
+        0.6162545084953308,
+        0.0,
+        0.25146955251693726,
+        0.5646201968193054
+      ],
+      [
+        0.862553060054779,
+        0.25146955251693726,
+        0.0,
+        0.6860172152519226
+      ],
+      [
+        0.17768722772598267,
+        0.5646201968193054,
+        0.6860172152519226,
+        0.0
+      ]
+    ],
+    "edge_fraction_above_0.25": 0.4606502950191498,
+    "edge_fraction_above_0.5": 0.43255099654197693,
+    "edge_fraction_above_0.75": 0.3952380120754242,
+    "id_dynamic_accuracy": 0.967041015625,
+    "id_global_static_accuracy": 0.96533203125,
+    "id_task_static_accuracy": 0.967041015625,
+    "delay_dynamic_accuracy": 0.947998046875,
+    "delay_global_static_accuracy": 0.944580078125,
+    "delay_task_static_accuracy": 0.9482421875
+  },
+  {
+    "seed": 22,
+    "edge_count": 842,
+    "density_including_self": 0.20556640625,
+    "mean_out_degree": 13.15625,
+    "mean_reachable_path": 1.8420138888888888,
+    "reachable_pair_fraction": 1.0,
+    "strong_components": 1,
+    "undirected_clustering": 0.3557698645091432,
+    "spectral_radius": 0.5232861042022705,
+    "spectral_norm": 0.8999999761581421,
+    "effective_rank": 50.302188873291016,
+    "route_delta_id_pp": -0.2685546875,
+    "route_delta_delay_pp": -0.29296875,
+    "soft_mean_gate": 0.7420739531517029,
+    "bernoulli_proxy_entropy_bits": 0.0863017737865448,
+    "temporal_abs_change": 0.00011379397619748488,
+    "counterfactual_task_distance": 0.4157945495098829,
+    "task_distance_matrix": [
+      [
+        0.0,
+        0.2572362422943115,
+        0.03967298939824104,
+        0.706345796585083
+      ],
+      [
+        0.2572362422943115,
+        0.0,
+        0.25092563033103943,
+        0.4963732957839966
+      ],
+      [
+        0.03967298939824104,
+        0.25092563033103943,
+        0.0,
+        0.744213342666626
+      ],
+      [
+        0.706345796585083,
+        0.4963732957839966,
+        0.744213342666626,
+        0.0
+      ]
+    ],
+    "edge_fraction_above_0.25": 0.7460845112800598,
+    "edge_fraction_above_0.5": 0.7460845112800598,
+    "edge_fraction_above_0.75": 0.7460845112800598,
+    "id_dynamic_accuracy": 0.846923828125,
+    "id_global_static_accuracy": 0.83837890625,
+    "id_task_static_accuracy": 0.847412109375,
+    "delay_dynamic_accuracy": 0.8232421875,
+    "delay_global_static_accuracy": 0.81689453125,
+    "delay_task_static_accuracy": 0.8232421875
+  },
+  {
+    "seed": 33,
+    "edge_count": 817,
+    "density_including_self": 0.199462890625,
+    "mean_out_degree": 12.765625,
+    "mean_reachable_path": 1.863343253968254,
+    "reachable_pair_fraction": 1.0,
+    "strong_components": 1,
+    "undirected_clustering": 0.3555381085763516,
+    "spectral_radius": 0.4545814096927643,
+    "spectral_norm": 0.8999998569488525,
+    "effective_rank": 49.725364685058594,
+    "route_delta_id_pp": 11.6943359375,
+    "route_delta_delay_pp": 11.8408203125,
+    "soft_mean_gate": 0.5074760317802429,
+    "bernoulli_proxy_entropy_bits": 0.1565535068511963,
+    "temporal_abs_change": 0.003728206269443035,
+    "counterfactual_task_distance": 0.5644297854353985,
+    "task_distance_matrix": [
+      [
+        0.0,
+        0.7468659281730652,
+        0.06002185121178627,
+        0.6386064887046814
+      ],
+      [
+        0.7468659281730652,
+        0.0,
+        0.6930046677589417,
+        0.6000555753707886
+      ],
+      [
+        0.06002185121178627,
+        0.6930046677589417,
+        0.0,
+        0.6480242013931274
+      ],
+      [
+        0.6386064887046814,
+        0.6000555753707886,
+        0.6480242013931274,
+        0.0
+      ]
+    ],
+    "edge_fraction_above_0.25": 0.5417695045471191,
+    "edge_fraction_above_0.5": 0.52232426404953,
+    "edge_fraction_above_0.75": 0.5142856240272522,
+    "id_dynamic_accuracy": 0.8583984375,
+    "id_global_static_accuracy": 0.85546875,
+    "id_task_static_accuracy": 0.8583984375,
+    "delay_dynamic_accuracy": 0.838134765625,
+    "delay_global_static_accuracy": 0.835693359375,
+    "delay_task_static_accuracy": 0.838134765625
+  },
+  {
+    "seed": 44,
+    "edge_count": 790,
+    "density_including_self": 0.19287109375,
+    "mean_out_degree": 12.34375,
+    "mean_reachable_path": 1.882688492063492,
+    "reachable_pair_fraction": 1.0,
+    "strong_components": 1,
+    "undirected_clustering": 0.34425416683866467,
+    "spectral_radius": 0.46710437536239624,
+    "spectral_norm": 0.8999999761581421,
+    "effective_rank": 50.28300476074219,
+    "route_delta_id_pp": 2.294921875,
+    "route_delta_delay_pp": 3.955078125,
+    "soft_mean_gate": 0.35038813948631287,
+    "bernoulli_proxy_entropy_bits": 0.2035384327173233,
+    "temporal_abs_change": 0.0013894623843953013,
+    "counterfactual_task_distance": 0.5575988423079252,
+    "task_distance_matrix": [
+      [
+        0.0,
+        0.9508562684059143,
+        0.6397046446800232,
+        0.9973692297935486
+      ],
+      [
+        0.9508562684059143,
+        0.0,
+        0.35348519682884216,
+        0.04651300981640816
+      ],
+      [
+        0.6397046446800232,
+        0.35348519682884216,
+        0.0,
+        0.35766470432281494
+      ],
+      [
+        0.9973692297935486,
+        0.04651300981640816,
+        0.35766470432281494,
+        0.0
+      ]
+    ],
+    "edge_fraction_above_0.25": 0.37037673592567444,
+    "edge_fraction_above_0.5": 0.29578471183776855,
+    "edge_fraction_above_0.75": 0.29578471183776855,
+    "id_dynamic_accuracy": 0.85595703125,
+    "id_global_static_accuracy": 0.85400390625,
+    "id_task_static_accuracy": 0.85595703125,
+    "delay_dynamic_accuracy": 0.838623046875,
+    "delay_global_static_accuracy": 0.8359375,
+    "delay_task_static_accuracy": 0.838623046875
+  },
+  {
+    "seed": 55,
+    "edge_count": 818,
+    "density_including_self": 0.19970703125,
+    "mean_out_degree": 12.78125,
+    "mean_reachable_path": 1.853422619047619,
+    "reachable_pair_fraction": 1.0,
+    "strong_components": 1,
+    "undirected_clustering": 0.3703738006443204,
+    "spectral_radius": 0.5078478455543518,
+    "spectral_norm": 0.8999998569488525,
+    "effective_rank": 51.1500358581543,
+    "route_delta_id_pp": -0.439453125,
+    "route_delta_delay_pp": -0.09765625,
+    "soft_mean_gate": 0.7097606658935547,
+    "bernoulli_proxy_entropy_bits": 0.18715260922908783,
+    "temporal_abs_change": 0.00025369905051775277,
+    "counterfactual_task_distance": 0.4299321599925558,
+    "task_distance_matrix": [
+      [
+        0.0,
+        0.0007933247834444046,
+        0.704234778881073,
+        0.4661945104598999
+      ],
+      [
+        0.0007933247834444046,
+        0.0,
+        0.7041851878166199,
+        0.46614471077919006
+      ],
+      [
+        0.704234778881073,
+        0.7041851878166199,
+        0.0,
+        0.23804044723510742
+      ],
+      [
+        0.4661945104598999,
+        0.46614471077919006,
+        0.23804044723510742,
+        0.0
+      ]
+    ],
+    "edge_fraction_above_0.25": 0.7499093413352966,
+    "edge_fraction_above_0.5": 0.7049493789672852,
+    "edge_fraction_above_0.75": 0.6322250962257385,
+    "id_dynamic_accuracy": 0.84814453125,
+    "id_global_static_accuracy": 0.855224609375,
+    "id_task_static_accuracy": 0.84814453125,
+    "delay_dynamic_accuracy": 0.839599609375,
+    "delay_global_static_accuracy": 0.834716796875,
+    "delay_task_static_accuracy": 0.839599609375
+  }
+]

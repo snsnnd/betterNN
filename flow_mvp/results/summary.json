@@ -1,0 +1,50 @@
+{
+  "readout_only": {
+    "accuracy_mean": 0.612060546875,
+    "accuracy_std": 0.012458350412278392,
+    "trainable": 65,
+    "train_seconds_mean": 2.08270693999998
+  },
+  "controller_only": {
+    "accuracy_mean": 0.5586751302083334,
+    "accuracy_std": 0.0766167325345743,
+    "trainable": 376,
+    "train_seconds_mean": 5.495909469666667
+  },
+  "upper_only": {
+    "accuracy_mean": 0.8521321614583334,
+    "accuracy_std": 0.06273242331414686,
+    "trainable": 229,
+    "train_seconds_mean": 3.6772763336666494
+  },
+  "lower_only": {
+    "accuracy_mean": 0.6383463541666666,
+    "accuracy_std": 0.012045645420575268,
+    "trainable": 277,
+    "train_seconds_mean": 4.1701475049999885
+  },
+  "modulated": {
+    "accuracy_mean": 0.925537109375,
+    "accuracy_std": 0.004876705164901899,
+    "trainable": 441,
+    "train_seconds_mean": 5.188154887666656
+  },
+  "slow_backbone": {
+    "accuracy_mean": 0.944091796875,
+    "accuracy_std": 0.004955513459517685,
+    "trainable": 4537,
+    "train_seconds_mean": 5.7240610933333
+  },
+  "rnn": {
+    "accuracy_mean": 0.92138671875,
+    "accuracy_std": 0.003813598474563796,
+    "trainable": 4801,
+    "train_seconds_mean": 2.1176145176666714
+  },
+  "mlp": {
+    "accuracy_mean": 0.764892578125,
+    "accuracy_std": 0.017539086968419736,
+    "trainable": 571,
+    "train_seconds_mean": 0.4808894099999937
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "11": {
+    "conditional_optimal_expected_accuracy": 0.702522873878479,
+    "majority_rule_empirical_accuracy": 0.697998046875
+  },
+  "22": {
+    "conditional_optimal_expected_accuracy": 0.7039713859558105,
+    "majority_rule_empirical_accuracy": 0.712158203125
+  },
+  "33": {
+    "conditional_optimal_expected_accuracy": 0.7092611193656921,
+    "majority_rule_empirical_accuracy": 0.723876953125
+  },
+  "44": {
+    "conditional_optimal_expected_accuracy": 0.7052246332168579,
+    "majority_rule_empirical_accuracy": 0.706298828125
+  },
+  "55": {
+    "conditional_optimal_expected_accuracy": 0.7033529877662659,
+    "majority_rule_empirical_accuracy": 0.70751953125
+  }
+}

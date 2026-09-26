@@ -1,0 +1,1 @@
+PASS 50 final checkpoints, 200 final task scores; active-state budget <=64; fixed B/mask; N64 dense/topk all-stage equivalence.

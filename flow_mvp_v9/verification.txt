@@ -1,0 +1,1 @@
+PASS 5 pretrain, 35 arm rows, 15 controls; all stage scores reproduced; frozen groups bitwise unchanged.

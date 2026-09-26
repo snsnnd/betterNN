@@ -1,0 +1,44 @@
+{
+  "flow_mvp": {
+    "files": 41,
+    "python_files": 4,
+    "checkpoints": 24,
+    "bytes": 1213487
+  },
+  "flow_mvp_v2": {
+    "files": 57,
+    "python_files": 5,
+    "checkpoints": 30,
+    "bytes": 1904553
+  },
+  "flow_mvp_v3": {
+    "files": 100,
+    "python_files": 6,
+    "checkpoints": 75,
+    "bytes": 4300488
+  },
+  "flow_mvp_v4": {
+    "files": 172,
+    "python_files": 12,
+    "checkpoints": 122,
+    "bytes": 7243881
+  },
+  "flow_mvp_v5": {
+    "files": 52,
+    "python_files": 5,
+    "checkpoints": 36,
+    "bytes": 1493605
+  },
+  "flow_mvp_v6": {
+    "files": 87,
+    "python_files": 7,
+    "checkpoints": 63,
+    "bytes": 2806899
+  },
+  "flow_mvp_v7": {
+    "files": 131,
+    "python_files": 5,
+    "checkpoints": 55,
+    "bytes": 130519315
+  }
+}

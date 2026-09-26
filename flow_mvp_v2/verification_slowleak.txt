@@ -1,0 +1,2 @@
+PASS: task labels, marker count/regions, deterministic generation, controller gradients, frozen W.
+PASS: 3 checkpoints, 15 test accuracies reproduced exactly; frozen tensors unchanged.

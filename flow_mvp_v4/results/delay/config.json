@@ -1,0 +1,88 @@
+{
+  "study": "delay",
+  "jobs": [
+    {
+      "study": "delay",
+      "mode": "no_route",
+      "seed": 11
+    },
+    {
+      "study": "delay",
+      "mode": "dynamic",
+      "seed": 11
+    },
+    {
+      "study": "delay",
+      "mode": "static",
+      "seed": 11
+    },
+    {
+      "study": "delay",
+      "mode": "slow",
+      "seed": 11
+    },
+    {
+      "study": "delay",
+      "mode": "gru",
+      "seed": 11
+    },
+    {
+      "study": "delay",
+      "mode": "no_route",
+      "seed": 22
+    },
+    {
+      "study": "delay",
+      "mode": "dynamic",
+      "seed": 22
+    },
+    {
+      "study": "delay",
+      "mode": "static",
+      "seed": 22
+    },
+    {
+      "study": "delay",
+      "mode": "slow",
+      "seed": 22
+    },
+    {
+      "study": "delay",
+      "mode": "gru",
+      "seed": 22
+    },
+    {
+      "study": "delay",
+      "mode": "no_route",
+      "seed": 33
+    },
+    {
+      "study": "delay",
+      "mode": "dynamic",
+      "seed": 33
+    },
+    {
+      "study": "delay",
+      "mode": "static",
+      "seed": 33
+    },
+    {
+      "study": "delay",
+      "mode": "slow",
+      "seed": 33
+    },
+    {
+      "study": "delay",
+      "mode": "gru",
+      "seed": 33
+    }
+  ],
+  "epochs": 100,
+  "train_n": 3072,
+  "val_n": 768,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "slow_lr": 0.00015,
+  "torch": "2.14.0+cpu"
+}

@@ -1,0 +1,47 @@
+{
+  "epochs": 100,
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "out": "results_slowleak",
+  "variants": [
+    "marker_slowleak"
+  ],
+  "train_n": 3072,
+  "val_n": 768,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "backbone_lr": 0.00015,
+  "conditions": {
+    "id12": {
+      "steps": 12,
+      "region": "early",
+      "noise": 1.0
+    },
+    "shift12": {
+      "steps": 12,
+      "region": "late",
+      "noise": 1.0
+    },
+    "random12": {
+      "steps": 12,
+      "region": "all",
+      "noise": 1.0
+    },
+    "delay24": {
+      "steps": 24,
+      "region": "early",
+      "noise": 1.0
+    },
+    "noise12": {
+      "steps": 12,
+      "region": "early",
+      "noise": 3.0
+    }
+  },
+  "torch": "2.14.0+cpu",
+  "numpy": "2.3.5"
+}

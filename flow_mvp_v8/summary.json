@@ -1,0 +1,194 @@
+[
+  {
+    "mode": "dense",
+    "active_budget": 256,
+    "plasticity": {
+      "mean": 0.766845703125,
+      "std": 0.04844546098813999
+    },
+    "final_mean": {
+      "mean": 0.5845703125,
+      "std": 0.04154467207515341
+    },
+    "forgetting": {
+      "mean": 0.25358072916666663,
+      "std": 0.06920246775691541
+    },
+    "bwt": {
+      "mean": -0.24303385416666665,
+      "std": 0.07938524822515398
+    },
+    "initial_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "final_selection_overlap": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "selection_overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.9390807262886799,
+      "std": 0.06853799672145054
+    },
+    "initial_selectivity_used": {
+      "mean": 0.0460696051444093,
+      "std": 0.018811127852177444
+    },
+    "final_selectivity_used": {
+      "mean": 0.10478469190196393,
+      "std": 0.053329268614375196
+    },
+    "final_route_similarity": {
+      "mean": 0.9939166943232218,
+      "std": 0.0031070699351562025
+    },
+    "support_iou_init_final": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "selector_l2_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "trainable": {
+      "mean": 66244.0,
+      "std": 0.0
+    },
+    "seconds": {
+      "mean": 19.458675352599858,
+      "std": 2.3814909209071207
+    }
+  },
+  {
+    "mode": "fixed_topk",
+    "active_budget": 64,
+    "plasticity": {
+      "mean": 0.91611328125,
+      "std": 0.04522391242748711
+    },
+    "final_mean": {
+      "mean": 0.772265625,
+      "std": 0.0777629857150988
+    },
+    "forgetting": {
+      "mean": 0.19225260416666665,
+      "std": 0.0461187320115773
+    },
+    "bwt": {
+      "mean": -0.191796875,
+      "std": 0.04653263098360665
+    },
+    "initial_selection_overlap": {
+      "mean": 0.13604525973399478,
+      "std": 0.007884897511000218
+    },
+    "final_selection_overlap": {
+      "mean": 0.13604525973399478,
+      "std": 0.007884897511000218
+    },
+    "selection_overlap_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "final_activation_overlap": {
+      "mean": 0.1360452595660737,
+      "std": 0.007884897983542413
+    },
+    "initial_selectivity_used": {
+      "mean": 0.8568592996126775,
+      "std": 0.009128255018350342
+    },
+    "final_selectivity_used": {
+      "mean": 0.8838517721062467,
+      "std": 0.010228496527034493
+    },
+    "final_route_similarity": {
+      "mean": 0.9996737698713938,
+      "std": 0.0005213503016540022
+    },
+    "support_iou_init_final": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "selector_l2_change": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "trainable": {
+      "mean": 66244.0,
+      "std": 0.0
+    },
+    "seconds": {
+      "mean": 19.82662182280019,
+      "std": 1.9641841946786147
+    }
+  },
+  {
+    "mode": "learned_topk",
+    "active_budget": 64,
+    "plasticity": {
+      "mean": 0.927197265625,
+      "std": 0.0344084143793715
+    },
+    "final_mean": {
+      "mean": 0.765673828125,
+      "std": 0.04795869007303815
+    },
+    "forgetting": {
+      "mean": 0.21536458333333336,
+      "std": 0.03729636391833477
+    },
+    "bwt": {
+      "mean": -0.21536458333333336,
+      "std": 0.03729636391833477
+    },
+    "initial_selection_overlap": {
+      "mean": 0.13604525973399478,
+      "std": 0.007884897511000218
+    },
+    "final_selection_overlap": {
+      "mean": 0.1801387292643388,
+      "std": 0.01289315058589579
+    },
+    "selection_overlap_change": {
+      "mean": 0.04409346953034401,
+      "std": 0.009033928564842676
+    },
+    "final_activation_overlap": {
+      "mean": 0.18013872881567605,
+      "std": 0.012893150415315874
+    },
+    "initial_selectivity_used": {
+      "mean": 0.8568592996126775,
+      "std": 0.009128255018350342
+    },
+    "final_selectivity_used": {
+      "mean": 0.8364602098577804,
+      "std": 0.007830668326033756
+    },
+    "final_route_similarity": {
+      "mean": 0.9996490180492401,
+      "std": 0.00044721353483599257
+    },
+    "support_iou_init_final": {
+      "mean": 0.5966145833333334,
+      "std": 0.049983297313284186
+    },
+    "selector_l2_change": {
+      "mean": 7.3754571914672855,
+      "std": 0.7632496259237995
+    },
+    "trainable": {
+      "mean": 67268.0,
+      "std": 0.0
+    },
+    "seconds": {
+      "mean": 19.973584483599915,
+      "std": 0.6167106312115304
+    }
+  }
+]

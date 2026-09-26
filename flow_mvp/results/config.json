@@ -1,0 +1,27 @@
+{
+  "epochs": 100,
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "out": "results",
+  "variants": [
+    "readout_only",
+    "controller_only",
+    "upper_only",
+    "lower_only",
+    "modulated",
+    "slow_backbone",
+    "rnn",
+    "mlp"
+  ],
+  "torch": "2.14.0+cpu",
+  "numpy": "2.3.5",
+  "train_n": 2048,
+  "val_n": 512,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "backbone_lr": 0.00015
+}

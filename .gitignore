@@ -1,0 +1,10 @@
+# WSL/Linux 虚拟环境（数 GB，不上传）
+.venv/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 编辑器/系统
+.DS_Store

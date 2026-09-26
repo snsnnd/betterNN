@@ -1,0 +1,326 @@
+{
+  "dynamic": {
+    "id_bit_accuracy": {
+      "mean": 0.8541259765625,
+      "std": 0.09908162350592323
+    },
+    "id_pair_accuracy": {
+      "mean": 0.76220703125,
+      "std": 0.14220704164466982
+    },
+    "id_opposite_pair_accuracy": {
+      "mean": 0.5359549522399902,
+      "std": 0.274003047201002
+    },
+    "late_rule_bit_accuracy": {
+      "mean": 0.8183186848958334,
+      "std": 0.07635635468252358
+    },
+    "late_rule_pair_accuracy": {
+      "mean": 0.7010091145833334,
+      "std": 0.08592963905216344
+    },
+    "late_rule_opposite_pair_accuracy": {
+      "mean": 0.42103666067123413,
+      "std": 0.165955841246168
+    },
+    "long_bit_accuracy": {
+      "mean": 0.8784586588541666,
+      "std": 0.09721598245639476
+    },
+    "long_pair_accuracy": {
+      "mean": 0.7903645833333334,
+      "std": 0.15788827971450461
+    },
+    "long_opposite_pair_accuracy": {
+      "mean": 0.5927750170230865,
+      "std": 0.31038835776188484
+    },
+    "reverse_input_bit_accuracy": {
+      "mean": 0.8585611979166666,
+      "std": 0.096130687571817
+    },
+    "reverse_input_pair_accuracy": {
+      "mean": 0.7714029947916666,
+      "std": 0.13201583080055226
+    },
+    "reverse_input_opposite_pair_accuracy": {
+      "mean": 0.541554868221283,
+      "std": 0.26989425064345757
+    },
+    "trainable": {
+      "mean": 500.0,
+      "std": 0.0
+    }
+  },
+  "static": {
+    "id_bit_accuracy": {
+      "mean": 0.75830078125,
+      "std": 0.005571276224240247
+    },
+    "id_pair_accuracy": {
+      "mean": 0.5929361979166666,
+      "std": 0.02870115083077373
+    },
+    "id_opposite_pair_accuracy": {
+      "mean": 0.194632887840271,
+      "std": 0.05532345409896439
+    },
+    "late_rule_bit_accuracy": {
+      "mean": 0.7475179036458334,
+      "std": 0.00811775226604789
+    },
+    "late_rule_pair_accuracy": {
+      "mean": 0.5780436197916666,
+      "std": 0.02067617906055243
+    },
+    "late_rule_opposite_pair_accuracy": {
+      "mean": 0.18294319262107214,
+      "std": 0.058773553208482134
+    },
+    "long_bit_accuracy": {
+      "mean": 0.7688802083333334,
+      "std": 0.015535735415823796
+    },
+    "long_pair_accuracy": {
+      "mean": 0.5999348958333334,
+      "std": 0.025112487131675305
+    },
+    "long_opposite_pair_accuracy": {
+      "mean": 0.20878976583480835,
+      "std": 0.0622608856831922
+    },
+    "reverse_input_bit_accuracy": {
+      "mean": 0.7587483723958334,
+      "std": 0.01030126865561327
+    },
+    "reverse_input_pair_accuracy": {
+      "mean": 0.5902506510416666,
+      "std": 0.02274223759727678
+    },
+    "reverse_input_opposite_pair_accuracy": {
+      "mean": 0.1780081788698832,
+      "std": 0.05904483977829618
+    },
+    "trainable": {
+      "mean": 116.0,
+      "std": 0.0
+    }
+  },
+  "none": {
+    "id_bit_accuracy": {
+      "mean": 0.7513834635416666,
+      "std": 0.0040529059561444794
+    },
+    "id_pair_accuracy": {
+      "mean": 0.5654296875,
+      "std": 0.05138507720053585
+    },
+    "id_opposite_pair_accuracy": {
+      "mean": 0.1576614553729693,
+      "std": 0.10237852437380525
+    },
+    "late_rule_bit_accuracy": {
+      "mean": 0.7441813151041666,
+      "std": 0.0075863859369512
+    },
+    "late_rule_pair_accuracy": {
+      "mean": 0.555419921875,
+      "std": 0.0397184608623026
+    },
+    "late_rule_opposite_pair_accuracy": {
+      "mean": 0.15187442675232887,
+      "std": 0.09721592512800079
+    },
+    "long_bit_accuracy": {
+      "mean": 0.7582600911458334,
+      "std": 0.0072591647615394845
+    },
+    "long_pair_accuracy": {
+      "mean": 0.5751139322916666,
+      "std": 0.04585447979545297
+    },
+    "long_opposite_pair_accuracy": {
+      "mean": 0.17762079959114394,
+      "std": 0.11012682651210386
+    },
+    "reverse_input_bit_accuracy": {
+      "mean": 0.7558186848958334,
+      "std": 0.005029138852695435
+    },
+    "reverse_input_pair_accuracy": {
+      "mean": 0.5734049479166666,
+      "std": 0.03665796754698911
+    },
+    "reverse_input_opposite_pair_accuracy": {
+      "mean": 0.15504348402221999,
+      "std": 0.09834758992272642
+    },
+    "trainable": {
+      "mean": 100.0,
+      "std": 0.0
+    }
+  },
+  "rule_blind": {
+    "id_bit_accuracy": {
+      "mean": 0.7606608072916666,
+      "std": 0.006348047488944561
+    },
+    "id_pair_accuracy": {
+      "mean": 0.613037109375,
+      "std": 0.04458424944545441
+    },
+    "id_opposite_pair_accuracy": {
+      "mean": 0.23597644766171774,
+      "std": 0.09912198826455987
+    },
+    "late_rule_bit_accuracy": {
+      "mean": 0.7482096354166666,
+      "std": 0.006779391431062043
+    },
+    "late_rule_pair_accuracy": {
+      "mean": 0.5970052083333334,
+      "std": 0.040539352905072316
+    },
+    "late_rule_opposite_pair_accuracy": {
+      "mean": 0.21947664767503738,
+      "std": 0.09730468074694021
+    },
+    "long_bit_accuracy": {
+      "mean": 0.7740885416666666,
+      "std": 0.021437970533480556
+    },
+    "long_pair_accuracy": {
+      "mean": 0.623291015625,
+      "std": 0.04353103337504428
+    },
+    "long_opposite_pair_accuracy": {
+      "mean": 0.25566665331522626,
+      "std": 0.10291876612001628
+    },
+    "reverse_input_bit_accuracy": {
+      "mean": 0.7623697916666666,
+      "std": 0.01047412601427144
+    },
+    "reverse_input_pair_accuracy": {
+      "mean": 0.613037109375,
+      "std": 0.053978272022689094
+    },
+    "reverse_input_opposite_pair_accuracy": {
+      "mean": 0.22275985777378082,
+      "std": 0.11493940318750356
+    },
+    "trainable": {
+      "mean": 500.0,
+      "std": 0.0
+    }
+  },
+  "dynamic_slow": {
+    "id_bit_accuracy": {
+      "mean": 0.95703125,
+      "std": 0.04303372412434454
+    },
+    "id_pair_accuracy": {
+      "mean": 0.9140625,
+      "std": 0.08606744824868907
+    },
+    "id_opposite_pair_accuracy": {
+      "mean": 0.8296503822008768,
+      "std": 0.17003697640552365
+    },
+    "late_rule_bit_accuracy": {
+      "mean": 0.92333984375,
+      "std": 0.05120860521489044
+    },
+    "late_rule_pair_accuracy": {
+      "mean": 0.8466796875,
+      "std": 0.10241721042978089
+    },
+    "late_rule_opposite_pair_accuracy": {
+      "mean": 0.6997730334599813,
+      "std": 0.19887013564370845
+    },
+    "long_bit_accuracy": {
+      "mean": 0.9703776041666666,
+      "std": 0.03386705104473333
+    },
+    "long_pair_accuracy": {
+      "mean": 0.9407552083333334,
+      "std": 0.06773410208946666
+    },
+    "long_opposite_pair_accuracy": {
+      "mean": 0.8815540273984274,
+      "std": 0.1346996480090952
+    },
+    "reverse_input_bit_accuracy": {
+      "mean": 0.957275390625,
+      "std": 0.03985497559628633
+    },
+    "reverse_input_pair_accuracy": {
+      "mean": 0.91455078125,
+      "std": 0.07970995119257265
+    },
+    "reverse_input_opposite_pair_accuracy": {
+      "mean": 0.8253783384958903,
+      "std": 0.16515641318111682
+    },
+    "trainable": {
+      "mean": 4596.0,
+      "std": 0.0
+    }
+  },
+  "gru": {
+    "id_bit_accuracy": {
+      "mean": 0.9967447916666666,
+      "std": 0.0005504455264676385
+    },
+    "id_pair_accuracy": {
+      "mean": 0.9934895833333334,
+      "std": 0.001100891052935277
+    },
+    "id_opposite_pair_accuracy": {
+      "mean": 0.9915076295534769,
+      "std": 0.004626301374741832
+    },
+    "late_rule_bit_accuracy": {
+      "mean": 0.9864501953125,
+      "std": 0.0024687192890816266
+    },
+    "late_rule_pair_accuracy": {
+      "mean": 0.9730631510416666,
+      "std": 0.005123076411307663
+    },
+    "late_rule_opposite_pair_accuracy": {
+      "mean": 0.949424664179484,
+      "std": 0.010054725671833659
+    },
+    "long_bit_accuracy": {
+      "mean": 0.7973225911458334,
+      "std": 0.0712744641271718
+    },
+    "long_pair_accuracy": {
+      "mean": 0.75146484375,
+      "std": 0.009325404909562636
+    },
+    "long_opposite_pair_accuracy": {
+      "mean": 0.5073815981547037,
+      "std": 0.026317818792180776
+    },
+    "reverse_input_bit_accuracy": {
+      "mean": 0.9629720052083334,
+      "std": 0.011013646951471216
+    },
+    "reverse_input_pair_accuracy": {
+      "mean": 0.9259440104166666,
+      "std": 0.022027293902942433
+    },
+    "reverse_input_opposite_pair_accuracy": {
+      "mean": 0.8571864366531372,
+      "std": 0.04723268521301818
+    },
+    "trainable": {
+      "mean": 3810.0,
+      "std": 0.0
+    }
+  }
+}

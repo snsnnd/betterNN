@@ -1,0 +1,2 @@
+PASS: salience rule/labels, no hidden-hint use in learned model, salience gradient, delayed-rule causality, local readout dimensions.
+PASS: 36 new checkpoints; 90 salience and 216 routing accuracy entries exactly reproduced; frozen tensors unchanged.

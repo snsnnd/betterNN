@@ -1,0 +1,163 @@
+{
+  "study": "topology",
+  "jobs": [
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 101,
+      "mask_seed": 11
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 101,
+      "mask_seed": 11
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 101,
+      "mask_seed": 22
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 101,
+      "mask_seed": 22
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 101,
+      "mask_seed": 33
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 101,
+      "mask_seed": 33
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 101,
+      "mask_seed": 44
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 101,
+      "mask_seed": 44
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 101,
+      "mask_seed": 55
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 101,
+      "mask_seed": 55
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 202,
+      "mask_seed": 11
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 202,
+      "mask_seed": 11
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 202,
+      "mask_seed": 22
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 202,
+      "mask_seed": 22
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 202,
+      "mask_seed": 33
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 202,
+      "mask_seed": 33
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 202,
+      "mask_seed": 44
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 202,
+      "mask_seed": 44
+    },
+    {
+      "study": "topology",
+      "mode": "no_route",
+      "seed": 202,
+      "mask_seed": 55
+    },
+    {
+      "study": "topology",
+      "mode": "dynamic",
+      "seed": 202,
+      "mask_seed": 55
+    },
+    {
+      "study": "topology",
+      "mode": "static",
+      "seed": 101,
+      "mask_seed": 11
+    },
+    {
+      "study": "topology",
+      "mode": "static",
+      "seed": 101,
+      "mask_seed": 22
+    },
+    {
+      "study": "topology",
+      "mode": "static",
+      "seed": 101,
+      "mask_seed": 33
+    },
+    {
+      "study": "topology",
+      "mode": "static",
+      "seed": 101,
+      "mask_seed": 44
+    },
+    {
+      "study": "topology",
+      "mode": "static",
+      "seed": 101,
+      "mask_seed": 55
+    }
+  ],
+  "epochs": 100,
+  "train_n": 3072,
+  "val_n": 768,
+  "test_n": 4096,
+  "batch": 256,
+  "lr": 0.003,
+  "slow_lr": 0.00015,
+  "torch": "2.14.0+cpu"
+}

@@ -1,0 +1,1262 @@
+[
+  {
+    "seed": 11,
+    "kind": "dynamic",
+    "trainable": 500,
+    "val_pair_accuracy": 0.7291666865348816,
+    "best_epoch": 97,
+    "train_seconds": 30.730646963000027,
+    "id_bit_accuracy": 0.835205078125,
+    "id_pair_accuracy": 0.710205078125,
+    "id_opposite_pair_accuracy": 0.42682328820228577,
+    "late_rule_bit_accuracy": 0.808349609375,
+    "late_rule_pair_accuracy": 0.66650390625,
+    "late_rule_opposite_pair_accuracy": 0.3390243947505951,
+    "long_bit_accuracy": 0.859130859375,
+    "long_pair_accuracy": 0.738037109375,
+    "long_opposite_pair_accuracy": 0.4778936803340912,
+    "reverse_input_bit_accuracy": 0.8460693359375,
+    "reverse_input_pair_accuracy": 0.7236328125,
+    "reverse_input_opposite_pair_accuracy": 0.4399799108505249,
+    "weighted_gate_entropy_bits": 0.056821178644895554,
+    "paired_rule_gate_distance": 0.1266663521528244,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.6017985939979553,
+    "edge_fraction_gate_gt_0.5": 0.6017985939979553,
+    "edge_fraction_gate_gt_0.9": 0.5467900037765503,
+    "rule0_post_gate_matrix": [
+      [
+        0.9999744892120361,
+        0.7094497084617615,
+        0.9918580651283264,
+        0.9998776912689209
+      ],
+      [
+        0.6583898663520813,
+        0.9999983906745911,
+        0.9999744892120361,
+        1.530637928226497e-05
+      ],
+      [
+        0.45757004618644714,
+        0.5211731195449829,
+        0.00029324169736355543,
+        0.7038957476615906
+      ],
+      [
+        0.5741285681724548,
+        0.7381471991539001,
+        0.735395610332489,
+        0.0007536299526691437
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.999750554561615,
+        0.6386028528213501,
+        0.07194188982248306,
+        0.9998152256011963
+      ],
+      [
+        0.4921857416629791,
+        0.9999127984046936,
+        0.999959409236908,
+        0.0003875878464896232
+      ],
+      [
+        0.33620819449424744,
+        0.5122345685958862,
+        0.0003596608294174075,
+        0.7504279017448425
+      ],
+      [
+        0.545563280582428,
+        0.7492431998252869,
+        0.7137132287025452,
+        0.0012519211741164327
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.611083984375
+  },
+  {
+    "seed": 11,
+    "kind": "static",
+    "trainable": 116,
+    "val_pair_accuracy": 0.5703125,
+    "best_epoch": 96,
+    "train_seconds": 24.857054309999967,
+    "id_bit_accuracy": 0.7628173828125,
+    "id_pair_accuracy": 0.563720703125,
+    "id_opposite_pair_accuracy": 0.13509544730186462,
+    "late_rule_bit_accuracy": 0.755615234375,
+    "late_rule_pair_accuracy": 0.5556640625,
+    "late_rule_opposite_pair_accuracy": 0.1180487796664238,
+    "long_bit_accuracy": 0.77880859375,
+    "long_pair_accuracy": 0.576904296875,
+    "long_opposite_pair_accuracy": 0.14754098653793335,
+    "reverse_input_bit_accuracy": 0.7669677734375,
+    "reverse_input_pair_accuracy": 0.564208984375,
+    "reverse_input_opposite_pair_accuracy": 0.11049723625183105,
+    "weighted_gate_entropy_bits": 0.18776939809322357,
+    "paired_rule_gate_distance": 0.0,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.6417656540870667,
+    "edge_fraction_gate_gt_0.5": 0.6417656540870667,
+    "edge_fraction_gate_gt_0.9": 0.6417656540870667,
+    "rule0_post_gate_matrix": [
+      [
+        0.9639745354652405,
+        0.5,
+        0.9656305909156799,
+        0.9705744385719299
+      ],
+      [
+        0.5,
+        0.9809231162071228,
+        0.9854385256767273,
+        0.052460189908742905
+      ],
+      [
+        0.5,
+        0.5,
+        0.02222038246691227,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.027855778113007545
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.9639745354652405,
+        0.5,
+        0.9656305909156799,
+        0.9705744385719299
+      ],
+      [
+        0.5,
+        0.9809231162071228,
+        0.9854385256767273,
+        0.052460189908742905
+      ],
+      [
+        0.5,
+        0.5,
+        0.02222038246691227,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.027855778113007545
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.563720703125
+  },
+  {
+    "seed": 11,
+    "kind": "none",
+    "trainable": 100,
+    "val_pair_accuracy": 0.5377604365348816,
+    "best_epoch": 47,
+    "train_seconds": 23.401854664999973,
+    "id_bit_accuracy": 0.7537841796875,
+    "id_pair_accuracy": 0.520751953125,
+    "id_opposite_pair_accuracy": 0.04356338828802109,
+    "late_rule_bit_accuracy": 0.7523193359375,
+    "late_rule_pair_accuracy": 0.52099609375,
+    "late_rule_opposite_pair_accuracy": 0.043414633721113205,
+    "long_bit_accuracy": 0.762451171875,
+    "long_pair_accuracy": 0.53271484375,
+    "long_opposite_pair_accuracy": 0.05216095224022865,
+    "reverse_input_bit_accuracy": 0.7611083984375,
+    "reverse_input_pair_accuracy": 0.533203125,
+    "reverse_input_opposite_pair_accuracy": 0.04218985512852669,
+    "weighted_gate_entropy_bits": 2.913795697168098e-06,
+    "paired_rule_gate_distance": 0.0,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 1.0,
+    "edge_fraction_gate_gt_0.5": 1.0,
+    "edge_fraction_gate_gt_0.9": 1.0,
+    "rule0_post_gate_matrix": [
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.520751953125
+  },
+  {
+    "seed": 11,
+    "kind": "rule_blind",
+    "trainable": 500,
+    "val_pair_accuracy": 0.5703125,
+    "best_epoch": 97,
+    "train_seconds": 32.3697752999999,
+    "id_bit_accuracy": 0.7633056640625,
+    "id_pair_accuracy": 0.5654296875,
+    "id_opposite_pair_accuracy": 0.13607439398765564,
+    "late_rule_bit_accuracy": 0.755615234375,
+    "late_rule_pair_accuracy": 0.555908203125,
+    "late_rule_opposite_pair_accuracy": 0.1180487796664238,
+    "long_bit_accuracy": 0.7794189453125,
+    "long_pair_accuracy": 0.578369140625,
+    "long_opposite_pair_accuracy": 0.15052160620689392,
+    "reverse_input_bit_accuracy": 0.76708984375,
+    "reverse_input_pair_accuracy": 0.564453125,
+    "reverse_input_opposite_pair_accuracy": 0.11049723625183105,
+    "weighted_gate_entropy_bits": 0.0016145461704581976,
+    "paired_rule_gate_distance": 1.444541108952535e-08,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.6417656540870667,
+    "edge_fraction_gate_gt_0.5": 0.6417656540870667,
+    "edge_fraction_gate_gt_0.9": 0.6417656540870667,
+    "rule0_post_gate_matrix": [
+      [
+        0.9999931454658508,
+        0.6686489582061768,
+        0.9999847412109375,
+        0.9999741911888123
+      ],
+      [
+        0.5784862041473389,
+        0.9999987483024597,
+        0.9999983906745911,
+        1.3028356079303194e-05
+      ],
+      [
+        0.36299797892570496,
+        0.5260425806045532,
+        2.5621362510719337e-05,
+        0.7224621772766113
+      ],
+      [
+        0.6079218983650208,
+        0.7838049530982971,
+        0.7313559651374817,
+        0.0002558667620178312
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.9999931454658508,
+        0.6686497330665588,
+        0.9999847412109375,
+        0.9999741911888123
+      ],
+      [
+        0.5784925818443298,
+        0.9999987483024597,
+        0.9999983906745911,
+        1.3027591194259003e-05
+      ],
+      [
+        0.36300039291381836,
+        0.5260404944419861,
+        2.5620216547395103e-05,
+        0.722463071346283
+      ],
+      [
+        0.6079251170158386,
+        0.783804714679718,
+        0.7313566207885742,
+        0.00025585360708646476
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.5654296875
+  },
+  {
+    "seed": 11,
+    "kind": "dynamic_slow",
+    "trainable": 4596,
+    "val_pair_accuracy": 0.9635416865348816,
+    "best_epoch": 100,
+    "train_seconds": 32.940821041999925,
+    "id_bit_accuracy": 0.9810791015625,
+    "id_pair_accuracy": 0.962158203125,
+    "id_opposite_pair_accuracy": 0.9251101613044739,
+    "late_rule_bit_accuracy": 0.9549560546875,
+    "late_rule_pair_accuracy": 0.909912109375,
+    "late_rule_opposite_pair_accuracy": 0.8199999928474426,
+    "long_bit_accuracy": 0.989501953125,
+    "long_pair_accuracy": 0.97900390625,
+    "long_opposite_pair_accuracy": 0.9572777152061462,
+    "reverse_input_bit_accuracy": 0.9803466796875,
+    "reverse_input_pair_accuracy": 0.960693359375,
+    "reverse_input_opposite_pair_accuracy": 0.9201406240463257,
+    "weighted_gate_entropy_bits": 0.17076268792152405,
+    "paired_rule_gate_distance": 0.5031430721282959,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.8487743139266968,
+    "edge_fraction_gate_gt_0.5": 0.6470764875411987,
+    "edge_fraction_gate_gt_0.9": 0.6470764875411987,
+    "rule0_post_gate_matrix": [
+      [
+        0.9993167519569397,
+        0.5425155162811279,
+        0.9972230792045593,
+        0.0001950285950442776
+      ],
+      [
+        0.6214818358421326,
+        0.9998500943183899,
+        0.0002102267899317667,
+        0.9985489249229431
+      ],
+      [
+        0.5253066420555115,
+        0.5078777074813843,
+        0.9995941519737244,
+        0.5924696922302246
+      ],
+      [
+        0.41131678223609924,
+        0.6866796612739563,
+        0.6770048141479492,
+        0.9994254112243652
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.999768078327179,
+        0.48772451281547546,
+        9.986015356844291e-05,
+        0.9967365264892578
+      ],
+      [
+        0.3834848403930664,
+        0.9993351101875305,
+        0.9980835318565369,
+        0.0001694070379016921
+      ],
+      [
+        0.4686053693294525,
+        0.6329982876777649,
+        0.9996883273124695,
+        0.7283580899238586
+      ],
+      [
+        0.4655470848083496,
+        0.6533263325691223,
+        0.6462781429290771,
+        0.9991517663002014
+      ]
+    ],
+    "both_rules_correct_opposite": 0.9230769276618958,
+    "global_static_intervention_pair_accuracy": 0.515380859375
+  },
+  {
+    "seed": 11,
+    "kind": "gru",
+    "trainable": 3810,
+    "val_pair_accuracy": 0.99609375,
+    "best_epoch": 90,
+    "train_seconds": 10.188195595000025,
+    "id_bit_accuracy": 0.997314453125,
+    "id_pair_accuracy": 0.99462890625,
+    "id_opposite_pair_accuracy": 0.9936367869377136,
+    "late_rule_bit_accuracy": 0.983642578125,
+    "late_rule_pair_accuracy": 0.96728515625,
+    "late_rule_opposite_pair_accuracy": 0.938048779964447,
+    "long_bit_accuracy": 0.7615966796875,
+    "long_pair_accuracy": 0.754638671875,
+    "long_opposite_pair_accuracy": 0.5027322173118591,
+    "reverse_input_bit_accuracy": 0.9735107421875,
+    "reverse_input_pair_accuracy": 0.947021484375,
+    "reverse_input_opposite_pair_accuracy": 0.9010547399520874
+  },
+  {
+    "seed": 22,
+    "kind": "dynamic",
+    "trainable": 500,
+    "val_pair_accuracy": 0.6549479365348816,
+    "best_epoch": 23,
+    "train_seconds": 28.937474271000156,
+    "id_bit_accuracy": 0.765869140625,
+    "id_pair_accuracy": 0.6533203125,
+    "id_opposite_pair_accuracy": 0.3333333432674408,
+    "late_rule_bit_accuracy": 0.7474365234375,
+    "late_rule_pair_accuracy": 0.6376953125,
+    "late_rule_opposite_pair_accuracy": 0.3120533525943756,
+    "long_bit_accuracy": 0.7923583984375,
+    "long_pair_accuracy": 0.665283203125,
+    "long_opposite_pair_accuracy": 0.35620439052581787,
+    "reverse_input_bit_accuracy": 0.769287109375,
+    "reverse_input_pair_accuracy": 0.669921875,
+    "reverse_input_opposite_pair_accuracy": 0.33718591928482056,
+    "weighted_gate_entropy_bits": 0.14035916328430176,
+    "paired_rule_gate_distance": 0.005306979641318321,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.4717608094215393,
+    "edge_fraction_gate_gt_0.5": 0.36378729343414307,
+    "edge_fraction_gate_gt_0.9": 0.36378729343414307,
+    "rule0_post_gate_matrix": [
+      [
+        0.38453420996665955,
+        0.7126882076263428,
+        0.9997520446777344,
+        0.0072186775505542755
+      ],
+      [
+        0.5173738598823547,
+        9.212340228259563e-05,
+        0.9996728301048279,
+        0.9989216327667236
+      ],
+      [
+        0.6921190619468689,
+        0.4758464992046356,
+        0.00102087517734617,
+        0.3237241208553314
+      ],
+      [
+        0.3465137481689453,
+        0.4631045162677765,
+        0.504787266254425,
+        0.0007682679570280015
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.33919283747673035,
+        0.6740293502807617,
+        0.9993895888328552,
+        0.005693813785910606
+      ],
+      [
+        0.45447930693626404,
+        0.00011368716513970867,
+        0.9996678829193115,
+        0.9985361695289612
+      ],
+      [
+        0.7116586565971375,
+        0.49706533551216125,
+        0.0009367955499328673,
+        0.35568204522132874
+      ],
+      [
+        0.37316229939460754,
+        0.4188578426837921,
+        0.5057735443115234,
+        0.0016040420159697533
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.6533203125
+  },
+  {
+    "seed": 22,
+    "kind": "static",
+    "trainable": 116,
+    "val_pair_accuracy": 0.6028645634651184,
+    "best_epoch": 22,
+    "train_seconds": 24.732459799000026,
+    "id_bit_accuracy": 0.760009765625,
+    "id_pair_accuracy": 0.593994140625,
+    "id_opposite_pair_accuracy": 0.20434781908988953,
+    "late_rule_bit_accuracy": 0.74755859375,
+    "late_rule_pair_accuracy": 0.58203125,
+    "late_rule_opposite_pair_accuracy": 0.1981896162033081,
+    "long_bit_accuracy": 0.77685546875,
+    "long_pair_accuracy": 0.59619140625,
+    "long_opposite_pair_accuracy": 0.20681264996528625,
+    "reverse_input_bit_accuracy": 0.7620849609375,
+    "reverse_input_pair_accuracy": 0.606201171875,
+    "reverse_input_opposite_pair_accuracy": 0.2035175859928131,
+    "weighted_gate_entropy_bits": 0.8346050381660461,
+    "paired_rule_gate_distance": 0.0,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 1.0,
+    "edge_fraction_gate_gt_0.5": 0.36378729343414307,
+    "edge_fraction_gate_gt_0.9": 0.0,
+    "rule0_post_gate_matrix": [
+      [
+        0.26527881622314453,
+        0.5,
+        0.760498583316803,
+        0.48835253715515137
+      ],
+      [
+        0.5,
+        0.2213079184293747,
+        0.7735276222229004,
+        0.7010623812675476
+      ],
+      [
+        0.5,
+        0.5,
+        0.24526478350162506,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.2666027843952179
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.26527881622314453,
+        0.5,
+        0.760498583316803,
+        0.48835253715515137
+      ],
+      [
+        0.5,
+        0.2213079184293747,
+        0.7735276222229004,
+        0.7010623812675476
+      ],
+      [
+        0.5,
+        0.5,
+        0.24526478350162506,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.2666027843952179
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.593994140625
+  },
+  {
+    "seed": 22,
+    "kind": "none",
+    "trainable": 100,
+    "val_pair_accuracy": 0.5768229365348816,
+    "best_epoch": 19,
+    "train_seconds": 20.21999017600001,
+    "id_bit_accuracy": 0.7467041015625,
+    "id_pair_accuracy": 0.553955078125,
+    "id_opposite_pair_accuracy": 0.18792270123958588,
+    "late_rule_bit_accuracy": 0.7373046875,
+    "late_rule_pair_accuracy": 0.54638671875,
+    "late_rule_opposite_pair_accuracy": 0.18103858828544617,
+    "long_bit_accuracy": 0.762451171875,
+    "long_pair_accuracy": 0.56884765625,
+    "long_opposite_pair_accuracy": 0.22238442301750183,
+    "reverse_input_bit_accuracy": 0.7552490234375,
+    "reverse_input_pair_accuracy": 0.58203125,
+    "reverse_input_opposite_pair_accuracy": 0.20050251483917236,
+    "weighted_gate_entropy_bits": 2.913795697168098e-06,
+    "paired_rule_gate_distance": 0.0,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 1.0,
+    "edge_fraction_gate_gt_0.5": 1.0,
+    "edge_fraction_gate_gt_0.9": 1.0,
+    "rule0_post_gate_matrix": [
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.553955078125
+  },
+  {
+    "seed": 22,
+    "kind": "rule_blind",
+    "trainable": 500,
+    "val_pair_accuracy": 0.6575520634651184,
+    "best_epoch": 23,
+    "train_seconds": 29.072068743000045,
+    "id_bit_accuracy": 0.7652587890625,
+    "id_pair_accuracy": 0.65380859375,
+    "id_opposite_pair_accuracy": 0.3342995047569275,
+    "late_rule_bit_accuracy": 0.7467041015625,
+    "late_rule_pair_accuracy": 0.636962890625,
+    "late_rule_opposite_pair_accuracy": 0.3120533525943756,
+    "long_bit_accuracy": 0.7923583984375,
+    "long_pair_accuracy": 0.665283203125,
+    "long_opposite_pair_accuracy": 0.35620439052581787,
+    "reverse_input_bit_accuracy": 0.7696533203125,
+    "reverse_input_pair_accuracy": 0.671142578125,
+    "reverse_input_opposite_pair_accuracy": 0.3402009904384613,
+    "weighted_gate_entropy_bits": 0.054460566490888596,
+    "paired_rule_gate_distance": 2.159417391567331e-07,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.4717608094215393,
+    "edge_fraction_gate_gt_0.5": 0.4717608094215393,
+    "edge_fraction_gate_gt_0.9": 0.4717608094215393,
+    "rule0_post_gate_matrix": [
+      [
+        0.9801583290100098,
+        0.5882664322853088,
+        0.9997072815895081,
+        0.002211767015978694
+      ],
+      [
+        0.44540801644325256,
+        6.377668614732102e-05,
+        0.9997372627258301,
+        0.9986684322357178
+      ],
+      [
+        0.7203193306922913,
+        0.4886777102947235,
+        0.0006947456276975572,
+        0.34403541684150696
+      ],
+      [
+        0.3648022711277008,
+        0.37462639808654785,
+        0.5689771771430969,
+        0.0009137015440501273
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.980158269405365,
+        0.5882671475410461,
+        0.9997071623802185,
+        0.002211760962381959
+      ],
+      [
+        0.4454081058502197,
+        6.377623503794894e-05,
+        0.9997374415397644,
+        0.9986684322357178
+      ],
+      [
+        0.7203194499015808,
+        0.4886772930622101,
+        0.0006947428919374943,
+        0.3440355360507965
+      ],
+      [
+        0.36480191349983215,
+        0.3746265172958374,
+        0.5689767003059387,
+        0.000913696363568306
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.65380859375
+  },
+  {
+    "seed": 22,
+    "kind": "dynamic_slow",
+    "trainable": 4596,
+    "val_pair_accuracy": 0.8125,
+    "best_epoch": 100,
+    "train_seconds": 31.301754990000063,
+    "id_bit_accuracy": 0.9073486328125,
+    "id_pair_accuracy": 0.814697265625,
+    "id_opposite_pair_accuracy": 0.6333333253860474,
+    "late_rule_bit_accuracy": 0.8642578125,
+    "late_rule_pair_accuracy": 0.728515625,
+    "late_rule_opposite_pair_accuracy": 0.47022390365600586,
+    "long_bit_accuracy": 0.9312744140625,
+    "long_pair_accuracy": 0.862548828125,
+    "long_opposite_pair_accuracy": 0.7260340452194214,
+    "reverse_input_bit_accuracy": 0.9112548828125,
+    "reverse_input_pair_accuracy": 0.822509765625,
+    "reverse_input_opposite_pair_accuracy": 0.6346733570098877,
+    "weighted_gate_entropy_bits": 0.08059795945882797,
+    "paired_rule_gate_distance": 0.22913038730621338,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.8048847913742065,
+    "edge_fraction_gate_gt_0.5": 0.7570443153381348,
+    "edge_fraction_gate_gt_0.9": 0.7131905555725098,
+    "rule0_post_gate_matrix": [
+      [
+        0.999625027179718,
+        0.5959753394126892,
+        0.999897301197052,
+        9.981958282878622e-05
+      ],
+      [
+        0.6517459750175476,
+        0.001170631032437086,
+        0.0002295739686815068,
+        0.9999211430549622
+      ],
+      [
+        0.3608095943927765,
+        0.4308509826660156,
+        0.9994017481803894,
+        0.3218822777271271
+      ],
+      [
+        0.6531901955604553,
+        0.62214595079422,
+        0.7498355507850647,
+        0.999325692653656
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.9999995827674866,
+        0.7652809023857117,
+        0.9999848008155823,
+        0.997424840927124
+      ],
+      [
+        0.6344280242919922,
+        5.210562903812388e-06,
+        0.9996973872184753,
+        0.9999647736549377
+      ],
+      [
+        0.742002010345459,
+        0.4959980547428131,
+        0.9992112517356873,
+        0.2817460000514984
+      ],
+      [
+        0.4018830955028534,
+        0.44088733196258545,
+        0.4041857421398163,
+        0.9995944499969482
+      ]
+    ],
+    "both_rules_correct_opposite": 0.569343090057373,
+    "global_static_intervention_pair_accuracy": 0.55078125
+  },
+  {
+    "seed": 22,
+    "kind": "gru",
+    "trainable": 3810,
+    "val_pair_accuracy": 0.99609375,
+    "best_epoch": 76,
+    "train_seconds": 8.800566674000038,
+    "id_bit_accuracy": 0.9967041015625,
+    "id_pair_accuracy": 0.993408203125,
+    "id_opposite_pair_accuracy": 0.9946860074996948,
+    "late_rule_bit_accuracy": 0.98828125,
+    "late_rule_pair_accuracy": 0.97705078125,
+    "late_rule_opposite_pair_accuracy": 0.9571224451065063,
+    "long_bit_accuracy": 0.7509765625,
+    "long_pair_accuracy": 0.740966796875,
+    "long_opposite_pair_accuracy": 0.483698308467865,
+    "reverse_input_bit_accuracy": 0.9638671875,
+    "reverse_input_pair_accuracy": 0.927734375,
+    "reverse_input_opposite_pair_accuracy": 0.8633165955543518
+  },
+  {
+    "seed": 33,
+    "kind": "dynamic",
+    "trainable": 500,
+    "val_pair_accuracy": 0.92578125,
+    "best_epoch": 95,
+    "train_seconds": 27.686192075999998,
+    "id_bit_accuracy": 0.9613037109375,
+    "id_pair_accuracy": 0.923095703125,
+    "id_opposite_pair_accuracy": 0.8477082252502441,
+    "late_rule_bit_accuracy": 0.899169921875,
+    "late_rule_pair_accuracy": 0.798828125,
+    "late_rule_opposite_pair_accuracy": 0.6120322346687317,
+    "long_bit_accuracy": 0.98388671875,
+    "long_pair_accuracy": 0.9677734375,
+    "long_opposite_pair_accuracy": 0.9442269802093506,
+    "reverse_input_bit_accuracy": 0.9603271484375,
+    "reverse_input_pair_accuracy": 0.920654296875,
+    "reverse_input_opposite_pair_accuracy": 0.8474987745285034,
+    "weighted_gate_entropy_bits": 0.06274531781673431,
+    "paired_rule_gate_distance": 0.8789780735969543,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.6084952354431152,
+    "edge_fraction_gate_gt_0.5": 0.572501003742218,
+    "edge_fraction_gate_gt_0.9": 0.572501003742218,
+    "rule0_post_gate_matrix": [
+      [
+        0.002305059926584363,
+        0.43508145213127136,
+        0.9999995231628418,
+        0.010809707455337048
+      ],
+      [
+        0.7265520691871643,
+        0.04829370602965355,
+        0.09420216083526611,
+        0.9999995827674866
+      ],
+      [
+        0.3505949079990387,
+        0.5630268454551697,
+        0.9999995231628418,
+        0.5030526518821716
+      ],
+      [
+        0.48632678389549255,
+        0.4024561643600464,
+        0.48102641105651855,
+        0.9991701245307922
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.0056447978131473064,
+        0.6516410112380981,
+        0.0007009426481090486,
+        0.9999847412109375
+      ],
+      [
+        0.5185876488685608,
+        0.9999799132347107,
+        0.9999591708183289,
+        0.0009687470155768096
+      ],
+      [
+        0.3676774501800537,
+        0.6002579927444458,
+        0.0008271536789834499,
+        0.7012119293212891
+      ],
+      [
+        0.43200287222862244,
+        0.41964784264564514,
+        0.616642415523529,
+        3.868409476126544e-05
+      ]
+    ],
+    "both_rules_correct_opposite": 0.8257575631141663,
+    "global_static_intervention_pair_accuracy": 0.592529296875
+  },
+  {
+    "seed": 33,
+    "kind": "static",
+    "trainable": 116,
+    "val_pair_accuracy": 0.6627604365348816,
+    "best_epoch": 28,
+    "train_seconds": 21.148260759000095,
+    "id_bit_accuracy": 0.7520751953125,
+    "id_pair_accuracy": 0.62109375,
+    "id_opposite_pair_accuracy": 0.24445539712905884,
+    "late_rule_bit_accuracy": 0.7393798828125,
+    "late_rule_pair_accuracy": 0.596435546875,
+    "late_rule_opposite_pair_accuracy": 0.2325911819934845,
+    "long_bit_accuracy": 0.7509765625,
+    "long_pair_accuracy": 0.626708984375,
+    "long_opposite_pair_accuracy": 0.27201566100120544,
+    "reverse_input_bit_accuracy": 0.7471923828125,
+    "reverse_input_pair_accuracy": 0.600341796875,
+    "reverse_input_opposite_pair_accuracy": 0.2200097143650055,
+    "weighted_gate_entropy_bits": 0.7118453979492188,
+    "paired_rule_gate_distance": 0.0,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 1.0,
+    "edge_fraction_gate_gt_0.5": 0.8981000185012817,
+    "edge_fraction_gate_gt_0.9": 0.0,
+    "rule0_post_gate_matrix": [
+      [
+        0.1860482543706894,
+        0.5,
+        0.8165810704231262,
+        0.816373348236084
+      ],
+      [
+        0.5,
+        0.6745400428771973,
+        0.8307352662086487,
+        0.8141355514526367
+      ],
+      [
+        0.5,
+        0.5,
+        0.833353579044342,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.8020913004875183
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.1860482543706894,
+        0.5,
+        0.8165810704231262,
+        0.816373348236084
+      ],
+      [
+        0.5,
+        0.6745400428771973,
+        0.8307352662086487,
+        0.8141355514526367
+      ],
+      [
+        0.5,
+        0.5,
+        0.833353579044342,
+        0.5
+      ],
+      [
+        0.5,
+        0.5,
+        0.5,
+        0.8020913004875183
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.62109375
+  },
+  {
+    "seed": 33,
+    "kind": "none",
+    "trainable": 100,
+    "val_pair_accuracy": 0.6627604365348816,
+    "best_epoch": 30,
+    "train_seconds": 19.127364902999943,
+    "id_bit_accuracy": 0.753662109375,
+    "id_pair_accuracy": 0.62158203125,
+    "id_opposite_pair_accuracy": 0.24149827659130096,
+    "late_rule_bit_accuracy": 0.742919921875,
+    "late_rule_pair_accuracy": 0.598876953125,
+    "late_rule_opposite_pair_accuracy": 0.23117005825042725,
+    "long_bit_accuracy": 0.7498779296875,
+    "long_pair_accuracy": 0.623779296875,
+    "long_opposite_pair_accuracy": 0.2583170235157013,
+    "reverse_input_bit_accuracy": 0.7510986328125,
+    "reverse_input_pair_accuracy": 0.60498046875,
+    "reverse_input_opposite_pair_accuracy": 0.22243808209896088,
+    "weighted_gate_entropy_bits": 2.913795697168098e-06,
+    "paired_rule_gate_distance": 0.0,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 1.0,
+    "edge_fraction_gate_gt_0.5": 1.0,
+    "edge_fraction_gate_gt_0.9": 1.0,
+    "rule0_post_gate_matrix": [
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.62158203125
+  },
+  {
+    "seed": 33,
+    "kind": "rule_blind",
+    "trainable": 500,
+    "val_pair_accuracy": 0.6627604365348816,
+    "best_epoch": 33,
+    "train_seconds": 28.57140738299995,
+    "id_bit_accuracy": 0.75341796875,
+    "id_pair_accuracy": 0.619873046875,
+    "id_opposite_pair_accuracy": 0.23755544424057007,
+    "late_rule_bit_accuracy": 0.7423095703125,
+    "late_rule_pair_accuracy": 0.59814453125,
+    "late_rule_opposite_pair_accuracy": 0.22832781076431274,
+    "long_bit_accuracy": 0.75048828125,
+    "long_pair_accuracy": 0.626220703125,
+    "long_opposite_pair_accuracy": 0.2602739632129669,
+    "reverse_input_bit_accuracy": 0.7503662109375,
+    "reverse_input_pair_accuracy": 0.603515625,
+    "reverse_input_opposite_pair_accuracy": 0.2175813466310501,
+    "weighted_gate_entropy_bits": 0.012857826426625252,
+    "paired_rule_gate_distance": 1.5207751502543942e-08,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.8981000185012817,
+    "edge_fraction_gate_gt_0.5": 0.8981000185012817,
+    "edge_fraction_gate_gt_0.9": 0.8981000185012817,
+    "rule0_post_gate_matrix": [
+      [
+        7.215132791316137e-05,
+        0.4977606534957886,
+        0.999898374080658,
+        0.9999170303344727
+      ],
+      [
+        0.5731614232063293,
+        0.998540461063385,
+        0.9999253153800964,
+        0.9998592734336853
+      ],
+      [
+        0.432841032743454,
+        0.6545447707176208,
+        0.9998722672462463,
+        0.4064883887767792
+      ],
+      [
+        0.3777938187122345,
+        0.4413245618343353,
+        0.5554078221321106,
+        0.9991521835327148
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        7.21516043995507e-05,
+        0.4977603256702423,
+        0.999898374080658,
+        0.9999170303344727
+      ],
+      [
+        0.573161244392395,
+        0.998540461063385,
+        0.9999253153800964,
+        0.9998592734336853
+      ],
+      [
+        0.432841420173645,
+        0.6545450091362,
+        0.9998722672462463,
+        0.40648820996284485
+      ],
+      [
+        0.3777937889099121,
+        0.4413243532180786,
+        0.5554080605506897,
+        0.9991521835327148
+      ]
+    ],
+    "both_rules_correct_opposite": 0.0,
+    "global_static_intervention_pair_accuracy": 0.619873046875
+  },
+  {
+    "seed": 33,
+    "kind": "dynamic_slow",
+    "trainable": 4596,
+    "val_pair_accuracy": 0.9622395634651184,
+    "best_epoch": 99,
+    "train_seconds": 30.775357387999975,
+    "id_bit_accuracy": 0.982666015625,
+    "id_pair_accuracy": 0.96533203125,
+    "id_opposite_pair_accuracy": 0.9305076599121094,
+    "late_rule_bit_accuracy": 0.9508056640625,
+    "late_rule_pair_accuracy": 0.901611328125,
+    "late_rule_opposite_pair_accuracy": 0.8090952038764954,
+    "long_bit_accuracy": 0.9903564453125,
+    "long_pair_accuracy": 0.980712890625,
+    "long_opposite_pair_accuracy": 0.9613503217697144,
+    "reverse_input_bit_accuracy": 0.980224609375,
+    "reverse_input_pair_accuracy": 0.96044921875,
+    "reverse_input_opposite_pair_accuracy": 0.9213210344314575,
+    "weighted_gate_entropy_bits": 0.15478722751140594,
+    "paired_rule_gate_distance": 0.5107417702674866,
+    "before_rule_state_difference": 0.0,
+    "edge_fraction_gate_gt_0.1": 0.7896426916122437,
+    "edge_fraction_gate_gt_0.5": 0.6418014764785767,
+    "edge_fraction_gate_gt_0.9": 0.6418014764785767,
+    "rule0_post_gate_matrix": [
+      [
+        0.99422287940979,
+        0.5388486981391907,
+        0.9985325336456299,
+        2.4676694010850042e-05
+      ],
+      [
+        0.7303750514984131,
+        0.9997120499610901,
+        3.550871042534709e-05,
+        0.9993808269500732
+      ],
+      [
+        0.5040730834007263,
+        0.475187748670578,
+        0.9998412132263184,
+        0.6413212418556213
+      ],
+      [
+        0.6557233929634094,
+        0.48332592844963074,
+        0.5038785934448242,
+        0.9998009204864502
+      ]
+    ],
+    "rule1_post_gate_matrix": [
+      [
+        0.9970067143440247,
+        0.559676468372345,
+        2.514121115382295e-05,
+        0.9979124665260315
+      ],
+      [
+        0.5923184752464294,
+        0.9997175335884094,
+        0.9981428980827332,
+        4.378885205369443e-05
+      ],
+      [
+        0.5303553938865662,
+        0.6480122208595276,
+        0.9998976588249207,
+        0.7172216773033142
+      ],
+      [
+        0.48201027512550354,
+        0.4051302671432495,
+        0.5838239789009094,
+        0.9998493194580078
+      ]
+    ],
+    "both_rules_correct_opposite": 0.9469696879386902,
+    "global_static_intervention_pair_accuracy": 0.513916015625
+  },
+  {
+    "seed": 33,
+    "kind": "gru",
+    "trainable": 3810,
+    "val_pair_accuracy": 1.0,
+    "best_epoch": 67,
+    "train_seconds": 9.129236020999997,
+    "id_bit_accuracy": 0.9962158203125,
+    "id_pair_accuracy": 0.992431640625,
+    "id_opposite_pair_accuracy": 0.9862000942230225,
+    "late_rule_bit_accuracy": 0.9874267578125,
+    "late_rule_pair_accuracy": 0.974853515625,
+    "late_rule_opposite_pair_accuracy": 0.9531027674674988,
+    "long_bit_accuracy": 0.87939453125,
+    "long_pair_accuracy": 0.7587890625,
+    "long_opposite_pair_accuracy": 0.5357142686843872,
+    "reverse_input_bit_accuracy": 0.9515380859375,
+    "reverse_input_pair_accuracy": 0.903076171875,
+    "reverse_input_opposite_pair_accuracy": 0.8071879744529724
+  }
+]
