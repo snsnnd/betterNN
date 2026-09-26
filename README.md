@@ -2,7 +2,7 @@
 
 这是一个基于 **Python / PyTorch 的神经网络研究实验集**，研究能否通过小型控制网络调节循环网络中的信息写入、内部传递和状态保持，以及这些机制对泛化、短窗口训练和持续学习的影响。
 
-项目包含第 1～11 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第十轮建立了**每个任务单独可学（约 99.8%）的新 benchmark A'B'C'D'**；第十一轮在 3 个任务顺序 × 5 种 replay 比例 × {all, freeze_W} 上完成 150 条流，结论是 **replay 几乎消除遗忘（r=12.5% 时遗忘 1.03 个百分点），而 freeze_W 没有叠加收益，只损失可塑性**。
+项目包含第 1～12 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第十轮建立了每个任务单独可学的 A'B'C'D' benchmark；第十一轮证明低比例 replay 几乎消除遗忘；第十二轮完成 **Flow vs 容量匹配 GRU/RNN 的等预算 replay 曲线**：Flow 用约 6～7% replay 就把遗忘压到 ≤3 个百分点，GRU 在 25% 时仍有 5.72 个百分点，vanilla RNN 在该预算下未学会任务。
 
 ## 项目在做什么
 
@@ -24,9 +24,10 @@
 |---|---|
 | [框架设计原理与改进方案](docs/FRAMEWORK_DESIGN.md) | 调制器如何作用于底层、梯度与记忆机制、理论性质和待验证的新设计 |
 | [架构与代码说明](docs/ARCHITECTURE.md) | 模型组件、数据流、第七轮实现、指标含义和代码入口 |
-| [十一轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
+| [十二轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
 | [运行与复现指南](docs/REPRODUCING.md) | 环境依赖、各轮命令、输出文件、续跑及现有脚本注意事项 |
 | [原始归档说明](README_START_HERE.md) | 原交付包说明、历史文件和校验信息 |
+| [第十二轮：架构等预算 replay 报告](flow_mvp_v12/REPORT.md) | Flow/GRU/RNN 曲线与所需 replay 比例 |
 | [第十一轮：replay × 参数保护报告](flow_mvp_v11/REPORT.md) | 比例曲线、Pareto 与 freeze_W 配对差值 |
 | [第十轮：benchmark 校准报告](flow_mvp_v10/REPORT.md) | 新任务集的单任务可学性、预算选择与 CL 基线 |
 | [第九轮：遗忘定位报告](flow_mvp_v9/REPORT.md) | 保护各组与 replay 的实测结果 |
@@ -48,6 +49,7 @@ betterNN/
 ├── flow_mvp_v9/          # 第9轮：持续学习遗忘定位（保护W/控制器/读出 + replay）
 ├── flow_mvp_v10/         # 第10轮：持续学习benchmark校准（A'B'C'D'）
 ├── flow_mvp_v11/         # 第11轮：replay比例 × {all,freeze_W} × 3任务顺序
+├── flow_mvp_v12/         # 第12轮：Flow vs 容量匹配 GRU/RNN 等预算 replay
 ├── historical_deliveries/# 第1～6轮历史ZIP交付件
 ├── docs/                # 本次整理的项目级文档
 ├── .venv/               # WSL/Linux GPU环境（uv创建，Python 3.11 + torch 2.14.0+cu130）
@@ -57,7 +59,7 @@ betterNN/
 └── SHA256SUMS.txt       # 原归档完整性校验
 ```
 
-按现有 `COUNTS.json`，原归档的七个实验目录合计 **640 个文件、44 个 Python 文件、405 个 `.pt` 文件**。检查点数量包含历史副本和预训练起点，不能等同于独立训练次数。第八～十一轮为本次新增：第八轮 48 个文件、16 个检查点；第九轮 194 个文件、125 个检查点；第十轮 198 个文件、100 个检查点；第十一轮 766 个文件、600 个检查点（约 329MB）。都不在原归档统计与校验范围内。
+按现有 `COUNTS.json`，原归档的七个实验目录合计 **640 个文件、44 个 Python 文件、405 个 `.pt` 文件**。检查点数量包含历史副本和预训练起点，不能等同于独立训练次数。第八～十二轮为本次新增：第八轮 48 个文件、16 个检查点；第九轮 194 个文件、125 个检查点；第十轮 198 个文件、100 个检查点；第十一轮 766 个文件、600 个检查点；第十二轮 916 个文件、720 个检查点。都不在原归档统计与校验范围内。
 
 ## 当前可以得出的结论
 
@@ -69,13 +71,14 @@ betterNN/
 - **遗忘定位：replay 最有效，冻结控制器最伤**：第 9 轮 all 组最终平均 58.46%、遗忘 25.36 个百分点；固定预算 replay 以少看 25% 当前数据的代价取得最终 69.46%、遗忘 16.84%；freeze_W / ctrl_only 略优于 all（约 63%）；freeze_ctrl 崩溃到 34.99%、遗忘 43.87%，readout_only 无法学会新任务（47.45%）。
 - **新 benchmark 已排除“任务本身学不会”的混杂**：第 10 轮 A'B'C'D' 单独学习全部 99.8%，验证选择 65 轮/阶段；顺序 CL 基线 acquisition 97.37%、最终平均 80.80%、遗忘 22.10 个百分点。
 - **replay 几乎消除遗忘，冻结 W 不再有价值**：第 11 轮 all 组 r=6.25%/12.5%/25% 的最终平均为 97.43%/99.05%/99.53%，遗忘 3.14/1.03/0.39 个百分点；freeze_W 在各比例下最终平均低 3.5～4.9 个百分点（配对 1/15 为正）。稳定性主要由 replay 解决，冻结 W 只损失可塑性。
+- **同等 replay 预算下 Flow 的 memory efficiency 明显更高**：第 12 轮 Flow（66k 参数）用 5.80%/6.66%/13.06% 的 replay 把遗忘降到 ≤5/≤3/≤1 个百分点；容量匹配 GRU（67k）在 25% replay 时遗忘仍有 5.72 个百分点，vanilla RNN（67k）在该预算下根本没学会（acquisition 60.4%）。
 
 上述数字属于不同任务和训练协议，不能拼成跨轮性能提升曲线。所有数据均为合成数据；Top-K 当前仍执行稠密计算，尚无真实稀疏加速、真实数据泛化或通用智能的验证。
 
 ## 从哪里开始
 
 - **理解项目**：先读本页，再读[设计原理](docs/FRAMEWORK_DESIGN.md)、[架构](docs/ARCHITECTURE.md)和[实验总结](docs/EXPERIMENTS.md)。
-- **看最新结果**：打开 [flow_mvp_v11/REPORT.md](flow_mvp_v11/REPORT.md)、[replay_matrix.png](flow_mvp_v11/replay_matrix.png)、[flow_mvp_v10/REPORT.md](flow_mvp_v10/REPORT.md) 与 [flow_mvp_v9/REPORT.md](flow_mvp_v9/REPORT.md)，无需训练。
+- **看最新结果**：打开 [flow_mvp_v12/REPORT.md](flow_mvp_v12/REPORT.md)、[architecture_replay.png](flow_mvp_v12/architecture_replay.png)、[flow_mvp_v11/REPORT.md](flow_mvp_v11/REPORT.md) 与 [flow_mvp_v10/REPORT.md](flow_mvp_v10/REPORT.md)，无需训练。
 - **运行已有模型**：在 `flow_mvp/` 中安装该轮依赖，执行 `python predict.py`；完整步骤见[复现指南](docs/REPRODUCING.md)。
 
 本次整理基于现有源码与归档结果；原归档已通过 SHA-256 校验。第八、九轮使用项目根目录 `.venv`（uv 创建，Python 3.11 + torch 2.14.0+cu130）在 RTX 4060 上运行；第十、十一轮按轻量实验改用 CPU 并行。第一～七轮未在本环境重新训练，其核验记录属于原实验运行记录。

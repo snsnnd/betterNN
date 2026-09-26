@@ -176,6 +176,8 @@ selection = hard_top16 + (soft - stop_gradient(soft))
 | `flow_mvp_v10/analyze.py` / `plot.py` | 第十轮状态复算、预算判定、报告与 `benchmark.png` |
 | `flow_mvp_v11/experiment.py` | replay 比例 × 参数保护 × 任务顺序的 150 条流 |
 | `flow_mvp_v11/analyze.py` / `plot.py` | 第十一轮复算、配对差值、报告与 `replay_matrix.png` |
+| `flow_mvp_v12/experiment.py` | Flow/GRU/RNN 容量匹配与等预算 replay 训练 |
+| `flow_mvp_v12/analyze.py` / `plot.py` | 第十二轮复算、所需 replay 插值、报告与 `architecture_replay.png` |
 | `build_all_experiments.py` | 生成实验归档、索引和校验信息 |
 | `.venv/` | 第八轮使用的 uv 管理 GPU 环境（WSL/Linux） |
 
