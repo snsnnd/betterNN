@@ -174,6 +174,8 @@ selection = hard_top16 + (soft - stop_gradient(soft))
 | `flow_mvp_v9/analyze.py` / `plot.py` | 第九轮全阶段核验、汇总、报告与 `forgetting.png` |
 | `flow_mvp_v10/experiment.py` | A'B'C'D' 校准、验证选预算与 CL 基线 |
 | `flow_mvp_v10/analyze.py` / `plot.py` | 第十轮状态复算、预算判定、报告与 `benchmark.png` |
+| `flow_mvp_v11/experiment.py` | replay 比例 × 参数保护 × 任务顺序的 150 条流 |
+| `flow_mvp_v11/analyze.py` / `plot.py` | 第十一轮复算、配对差值、报告与 `replay_matrix.png` |
 | `build_all_experiments.py` | 生成实验归档、索引和校验信息 |
 | `.venv/` | 第八轮使用的 uv 管理 GPU 环境（WSL/Linux） |
 

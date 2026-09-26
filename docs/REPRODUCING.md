@@ -17,7 +17,7 @@
 
 第五～七轮的精确版本是归档声明，是否可从当前安装源取得需以实际安装结果为准。改用其他版本可能无法通过代码中的逐值相等断言。
 
-第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU）：
+第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十、十一轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU，且可多进程并行）：
 
 ```bash
 uv venv /mnt/d/betterNN/.venv --python 3.11
@@ -276,7 +276,7 @@ cd flow_mvp_v9
 - `analyze.py` 需要完整的“种子数 × 组数”结果，默认要求 5 种子 × 7 组，并核对 15 个对照。
 - 同样按 JSON 是否存在跳过训练；独立复现需使用工作副本。
 
-## 7. 第十轮：benchmark 校准（最新）
+## 7. 第十轮：benchmark 校准
 
 工作目录：`flow_mvp_v10/`。新 benchmark A'B'C'D'，先用验证集选训练预算，再跑顺序 CL 基线。全部在 CPU 运行。
 
@@ -293,9 +293,31 @@ cd flow_mvp_v10
 注意：
 
 - `analyze.py --epochs` 指校准曲线的最大长度（150），CL 阶段预算记录在结果行内（65）。
-- 第十一轮将在此 benchmark 上运行 replay × 参数保护矩阵；旧任务集继续保留在第八、九轮。
+- 第十一轮在此 benchmark 上运行 replay × 参数保护矩阵；旧任务集继续保留在第八、九轮。
 
-## 8. 原归档校验与打包
+## 8. 第十一轮：replay × 参数保护（最新）
+
+工作目录：`flow_mvp_v11/`。150 条流（2 组 × 5 比例 × 3 顺序 × 5 种子），可三个顺序并行，每进程单线程（32 核机器上约 30 分钟跑完）。
+
+```bash
+cd flow_mvp_v11
+for o in o0 o1 o2; do
+  /mnt/d/betterNN/.venv/bin/python experiment.py --orders $o --out results --device cpu > logs/$o.log 2>&1 &
+done
+wait
+/mnt/d/betterNN/.venv/bin/python analyze.py    # 600 个阶段检查点复算 + REPORT.md
+/mnt/d/betterNN/.venv/bin/python plot.py       # replay_matrix.png
+```
+
+实测：150 条流并行约 30 分钟；核验约 4 分钟；o0+r0+all 与第十轮基线 5/5 一致。
+
+注意：
+
+- 回放比例用 `--ratios`，例如 `--ratios 0 0.25`；顺序用 `--orders o0 o1 o2`。
+- 冒烟：`--epochs 2 --seeds 11 --ratios 0 .25 --orders o0`。
+- 结果按流保存：`results/{order}_{arm}_r{label}_{seed}.json` 与 `_stage{0..3}.pt`。
+
+## 9. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -315,7 +337,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 9. 常见问题
+## 10. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|
