@@ -2,7 +2,7 @@
 
 这是一个基于 **Python / PyTorch 的神经网络研究实验集**，研究能否通过小型控制网络调节循环网络中的信息写入、内部传递和状态保持，以及这些机制对泛化、短窗口训练和持续学习的影响。
 
-项目包含第 1～13 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第十二轮证明 Flow 比容量匹配 GRU/RNN 更省 replay；第十三轮定位机制：**旧任务策略主要存放在 Controller＋W（换回 ctrl 恢复 A 到 91.4%、ctrl+W 到 99.8%），replay 使任务梯度冲突由负转正，并发现 Write 门在 5 步截断下从未被训练**。
+项目包含第 1～14 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第十三轮发现 Write 门在 5 步截断下从未被训练；第十四轮把它作为唯一变量做因果归因：**随机固定、常数写入与真正训练的 Write 表现没有可测差异，Write 可从架构中删除，输入注入用常数即可。**
 
 ## 项目在做什么
 
@@ -27,6 +27,7 @@
 | [十三轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
 | [运行与复现指南](docs/REPRODUCING.md) | 环境依赖、各轮命令、输出文件、续跑及现有脚本注意事项 |
 | [原始归档说明](README_START_HERE.md) | 原交付包说明、历史文件和校验信息 |
+| [第十四轮：Write 因果归因报告](flow_mvp_v14/REPORT.md) | 五种写入模式的对照与删除判定 |
 | [第十三轮：replay 保护机制报告](flow_mvp_v13/REPORT.md) | 梯度冲突、组件移植与缓冲大小 |
 | [第十二轮：架构等预算 replay 报告](flow_mvp_v12/REPORT.md) | Flow/GRU/RNN 曲线与所需 replay 比例 |
 | [第十一轮：replay × 参数保护报告](flow_mvp_v11/REPORT.md) | 比例曲线、Pareto 与 freeze_W 配对差值 |
@@ -52,6 +53,7 @@ betterNN/
 ├── flow_mvp_v11/         # 第11轮：replay比例 × {all,freeze_W} × 3任务顺序
 ├── flow_mvp_v12/         # 第12轮：Flow vs 容量匹配 GRU/RNN 等预算 replay
 ├── flow_mvp_v13/         # 第13轮：replay 保护机制（梯度冲突/组件移植/缓冲扫描）
+├── flow_mvp_v14/         # 第14轮：Write 因果归因（frozen/常数/真训练/局部监督）
 ├── historical_deliveries/# 第1～6轮历史ZIP交付件
 ├── docs/                # 本次整理的项目级文档
 ├── .venv/               # WSL/Linux GPU环境（uv创建，Python 3.11 + torch 2.14.0+cu130）
@@ -61,7 +63,7 @@ betterNN/
 └── SHA256SUMS.txt       # 原归档完整性校验
 ```
 
-按现有 `COUNTS.json`，原归档的七个实验目录合计 **640 个文件、44 个 Python 文件、405 个 `.pt` 文件**。检查点数量包含历史副本和预训练起点，不能等同于独立训练次数。第八～十三轮为本次新增：第八轮 48 个文件、16 个检查点；第九轮 194 个文件、125 个检查点；第十轮 198 个文件、100 个检查点；第十一轮 766 个文件、600 个检查点；第十二轮 916 个文件、720 个检查点；第十三轮 171 个文件、120 个检查点。都不在原归档统计与校验范围内。
+按现有 `COUNTS.json`，原归档的七个实验目录合计 **640 个文件、44 个 Python 文件、405 个 `.pt` 文件**。检查点数量包含历史副本和预训练起点，不能等同于独立训练次数。第八～十四轮为本次新增：第八轮 48 个文件、16 个检查点；第九轮 194 个文件、125 个检查点；第十轮 198 个文件、100 个检查点；第十一轮 766 个文件、600 个检查点；第十二轮 916 个文件、720 个检查点；第十三轮 171 个文件、120 个检查点；第十四轮 267 个文件、200 个检查点。都不在原归档统计与校验范围内。
 
 ## 当前可以得出的结论
 
@@ -74,16 +76,17 @@ betterNN/
 - **新 benchmark 已排除“任务本身学不会”的混杂**：第 10 轮 A'B'C'D' 单独学习全部 99.8%，验证选择 65 轮/阶段；顺序 CL 基线 acquisition 97.37%、最终平均 80.80%、遗忘 22.10 个百分点。
 - **replay 几乎消除遗忘，冻结 W 不再有价值**：第 11 轮 all 组 r=6.25%/12.5%/25% 的最终平均为 97.43%/99.05%/99.53%，遗忘 3.14/1.03/0.39 个百分点；freeze_W 在各比例下最终平均低 3.5～4.9 个百分点（配对 1/15 为正）。稳定性主要由 replay 解决，冻结 W 只损失可塑性。
 - **同等 replay 预算下 Flow 的 memory efficiency 明显更高**：第 12 轮 Flow（66k 参数）用 5.80%/6.66%/13.06% 的 replay 把遗忘降到 ≤5/≤3/≤1 个百分点；容量匹配 GRU（67k）在 25% replay 时遗忘仍有 5.72 个百分点，vanilla RNN（67k）在该预算下根本没学会（acquisition 60.4%）。
-- **旧策略存放在 Controller＋W，replay 降低梯度冲突**：第 13 轮 r=0 最终模型中换回 ctrl 使 A 恢复 75.74%→91.39%，ctrl+W 恢复到 99.75%，readout 无影响；任务梯度 cosine 在 replay 模型中由负转正（hold −0.63→+0.30 等），所需 α* 中位数 ≤2.83%。
+- **旧策略存放在 Controller＋W，replay 降低梯度冲突**：第 13 轮 r=0 最终模型中换回 ctrl 使 A 恢复 75.74%→91.39%，ctrl+W 恢复到 99.75%，readout 无影响；replay 显著改变任务梯度关系：在 Hold 上稳定把冲突转为兼容（−0.63→+0.30 等），并在部分 W/Route/Readout 阶段减弱冲突（并非所有组件都转正）；所需 α* 中位数 ≤2.83%。
 - **发现 Write 门从未被训练**：输入只在 t=0/1 写入，而 5 步截断的梯度窗口只覆盖最后 5 步，Write 梯度恒为 0（全 BPTT 下非零）。这影响第七轮以来所有对 Write 的解释。
 - **缓冲存在容量阈值**：第 13 轮 M=1/2/4/8/16/32 样本每任务的遗忘为 24.78/22.16/13.80/6.80/4.14/0.73 个百分点。
+- **Write 门可以删除**：第 14 轮随机固定、常数写入（p=1/0.5）、完整 BPTT 真训练与局部监督写出之间没有可测差异（final 差值 ≤0.9 个百分点、配对方向不一致）；架构可简化为 W＋Route＋Hold＋Readout，输入注入用常数。
 
 上述数字属于不同任务和训练协议，不能拼成跨轮性能提升曲线。所有数据均为合成数据；Top-K 当前仍执行稠密计算，尚无真实稀疏加速、真实数据泛化或通用智能的验证。
 
 ## 从哪里开始
 
 - **理解项目**：先读本页，再读[设计原理](docs/FRAMEWORK_DESIGN.md)、[架构](docs/ARCHITECTURE.md)和[实验总结](docs/EXPERIMENTS.md)。
-- **看最新结果**：打开 [flow_mvp_v13/REPORT.md](flow_mvp_v13/REPORT.md)、[mechanism.png](flow_mvp_v13/mechanism.png)、[flow_mvp_v12/REPORT.md](flow_mvp_v12/REPORT.md) 与 [flow_mvp_v11/REPORT.md](flow_mvp_v11/REPORT.md)，无需训练。
+- **看最新结果**：打开 [flow_mvp_v14/REPORT.md](flow_mvp_v14/REPORT.md)、[write_attribution.png](flow_mvp_v14/write_attribution.png)、[flow_mvp_v13/REPORT.md](flow_mvp_v13/REPORT.md) 与 [flow_mvp_v12/REPORT.md](flow_mvp_v12/REPORT.md)，无需训练。
 - **运行已有模型**：在 `flow_mvp/` 中安装该轮依赖，执行 `python predict.py`；完整步骤见[复现指南](docs/REPRODUCING.md)。
 
 本次整理基于现有源码与归档结果；原归档已通过 SHA-256 校验。第八、九轮使用项目根目录 `.venv`（uv 创建，Python 3.11 + torch 2.14.0+cu130）在 RTX 4060 上运行；第十、十一轮按轻量实验改用 CPU 并行。第一～七轮未在本环境重新训练，其核验记录属于原实验运行记录。

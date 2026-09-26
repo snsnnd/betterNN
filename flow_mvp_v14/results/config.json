@@ -1,0 +1,35 @@
+{
+  "n": 256,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "write_modes": [
+    "frozen",
+    "const1",
+    "const05",
+    "full_bptt",
+    "aux"
+  ],
+  "ratios": {
+    "0": "0",
+    "0.125": "12.5"
+  },
+  "order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "epochs": 65,
+  "lr": 0.003,
+  "batch": 128,
+  "buffer_per_task": 32,
+  "aux_lambda": 0.5,
+  "aux_boundary": 4,
+  "torch": "2.14.0+cu130",
+  "device": "cpu"
+}

@@ -180,6 +180,8 @@ selection = hard_top16 + (soft - stop_gradient(soft))
 | `flow_mvp_v12/analyze.py` / `plot.py` | 第十二轮复算、所需 replay 插值、报告与 `architecture_replay.png` |
 | `flow_mvp_v13/gradient_conflict.py` / `transplant.py` | 第十三轮梯度冲突与组件移植（复用第十一轮检查点） |
 | `flow_mvp_v13/buffer_scan.py` / `analyze.py` / `plot.py` | 缓冲扫描、机制汇总与 `mechanism.png` |
+| `flow_mvp_v14/experiment.py` | Write 五模式因果归因（frozen/const/full_bptt/aux） |
+| `flow_mvp_v14/analyze.py` / `plot.py` | 第十四轮复算、判定、报告与 `write_attribution.png` |
 | `build_all_experiments.py` | 生成实验归档、索引和校验信息 |
 | `.venv/` | 第八轮使用的 uv 管理 GPU 环境（WSL/Linux） |
 
