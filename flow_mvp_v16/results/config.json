@@ -1,0 +1,94 @@
+{
+  "n": 256,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "orders": {
+    "o0": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "o1": [
+      3,
+      2,
+      1,
+      0
+    ],
+    "o2": [
+      1,
+      3,
+      0,
+      2
+    ]
+  },
+  "methods": [
+    "none",
+    "sample",
+    "route",
+    "hold",
+    "route_hold",
+    "hybrid"
+  ],
+  "budgets": {
+    "none": [
+      0
+    ],
+    "sample": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "route": [
+      7,
+      28,
+      112
+    ],
+    "hold": [
+      17,
+      68,
+      272
+    ],
+    "route_hold": [
+      6,
+      12,
+      24,
+      48,
+      96,
+      192
+    ],
+    "hybrid": [
+      [
+        24,
+        1
+      ],
+      [
+        96,
+        2
+      ],
+      [
+        192,
+        4
+      ]
+    ]
+  },
+  "band_per_step": 16,
+  "lambda": 0.5,
+  "sample_bytes": 728,
+  "route_bytes": 108,
+  "hold_bytes": 44,
+  "rh_bytes": 124,
+  "epochs": 65,
+  "lr": 0.003,
+  "batch": 128,
+  "torch": "2.14.0+cu130",
+  "device": "cpu"
+}

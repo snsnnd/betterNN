@@ -184,6 +184,8 @@ selection = hard_top16 + (soft - stop_gradient(soft))
 | `flow_mvp_v14/analyze.py` / `plot.py` | 第十四轮复算、判定、报告与 `write_attribution.png` |
 | `flow_mvp_v15/experiment.py` | Flow-v2 正式基线（结构无 Write，输入常数注入） |
 | `flow_mvp_v15/analyze.py` / `plot.py` | 第十五轮复算、基线判定、报告与 `flowv2_baseline.png` |
+| `flow_mvp_v16/experiment.py` | 存储对照：样本 replay 与 Route/Hold 策略蒸馏 |
+| `flow_mvp_v16/analyze.py` / `plot.py` | 第十六轮复算、字节阈值、漂移汇总与 `policy_replay.png` |
 | `build_all_experiments.py` | 生成实验归档、索引和校验信息 |
 | `.venv/` | 第八轮使用的 uv 管理 GPU 环境（WSL/Linux） |
 
