@@ -1,0 +1,53 @@
+{
+  "n": 256,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "orders": {
+    "o0": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "o1": [
+      3,
+      2,
+      1,
+      0
+    ],
+    "o2": [
+      1,
+      3,
+      0,
+      2
+    ]
+  },
+  "models": [
+    "flowv2",
+    "linear",
+    "preroute",
+    "iter"
+  ],
+  "scan_ready": {
+    "flowv2": false,
+    "linear": false,
+    "preroute": true,
+    "iter": true
+  },
+  "ratios": {
+    "0": "0",
+    "0.125": "12.5"
+  },
+  "window": 5,
+  "band_per_step": 16,
+  "epochs": 65,
+  "lr": 0.003,
+  "batch": 128,
+  "torch": "2.14.0+cu130",
+  "device": "cpu"
+}

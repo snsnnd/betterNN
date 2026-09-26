@@ -186,6 +186,8 @@ selection = hard_top16 + (soft - stop_gradient(soft))
 | `flow_mvp_v15/analyze.py` / `plot.py` | 第十五轮复算、基线判定、报告与 `flowv2_baseline.png` |
 | `flow_mvp_v16/experiment.py` | 存储对照：样本 replay 与 Route/Hold 策略蒸馏 |
 | `flow_mvp_v16/analyze.py` / `plot.py` | 第十六轮复算、字节阈值、漂移汇总与 `policy_replay.png` |
+| `flow_mvp_v17/experiment.py` | 四种动力学接线（flowv2/linear/preroute/iter）与 40 步外推 |
+| `flow_mvp_v17/scan_check.py` / `analyze.py` / `plot.py` | 仿射扫描验证、复算、报告与 `parallel_dynamics.png` |
 | `build_all_experiments.py` | 生成实验归档、索引和校验信息 |
 | `.venv/` | 第八轮使用的 uv 管理 GPU 环境（WSL/Linux） |
 

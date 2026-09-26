@@ -1,0 +1,17 @@
+{
+  "preroute": {
+    "seq_vs_scan_max_abs": 2.2118911147117615e-09,
+    "model_vs_seq_max_abs": 0.001556455623358488
+  },
+  "iter_pass2": {
+    "pass2_seq_vs_scan": 2.561137080192566e-09,
+    "pass2_model_vs_scan": 0.001556130708195269
+  },
+  "timing": {
+    "T": 512,
+    "batch": 8,
+    "seq_seconds": 0.09823351100203581,
+    "scan_seconds": 14.027214894998906,
+    "speedup": 0.007003065949824352
+  }
+}
