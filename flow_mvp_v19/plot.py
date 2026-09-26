@@ -53,4 +53,29 @@ for k, steps in enumerate([20, 40]):
 fig.tight_layout()
 fig.savefig(ROOT / 'solver_convergence.png', dpi=150)
 plt.close(fig)
-print('wrote operator_structure.png, solver_convergence.png')
+
+bench = ROOT / 'results/solver_bench_zero.json'
+if bench.exists():
+    rows = json.loads(bench.read_text())['rows']
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
+    names = ['serial', 'gs_jvp', 'structured', 'structured_seq']
+    for ax, batch in [(axes[0], 1), (axes[1], 8)]:
+        for name in names:
+            xs, ys = [], []
+            for r in rows:
+                if r['batch'] == batch and r['K'] == 0 and name in r and 'latency_s' in r[name]:
+                    xs.append(r['steps'])
+                    ys.append(r[name]['latency_s'] * 1e3)
+            if xs:
+                order = np.argsort(xs)
+                ax.loglog(np.array(xs)[order], np.array(ys)[order], marker='o', label=name)
+        ax.set_xlabel('sequence length T')
+        ax.set_ylabel('latency (ms)')
+        ax.set_title(f'zero centers, K=0, batch={batch}')
+        ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(ROOT / 'solver_pareto.png', dpi=150)
+    plt.close(fig)
+    print('wrote operator_structure.png, solver_convergence.png, solver_pareto.png')
+else:
+    print('wrote operator_structure.png, solver_convergence.png')

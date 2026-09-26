@@ -1,0 +1,572 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 40,
+      "batch": 1,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.016966055994998896,
+        "peak_bytes": 37884416.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.1414943654963281,
+        "peak_bytes": 41046528.0,
+        "acc256": 0.5859375
+      },
+      "structured": {
+        "latency_s": 0.03155924999737181,
+        "peak_bytes": 59237888.0,
+        "acc256": 0.5859375,
+        "ops_bytes": 73984000,
+        "compose_calls": 0
+      },
+      "structured_seq": {
+        "latency_s": 0.019355035499756923,
+        "peak_bytes": 59500032.0,
+        "acc256": 0.5859375,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 8,
+      "effective_depth_seq": 14
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 40,
+      "batch": 8,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.020730738000565907,
+        "peak_bytes": 37948928.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.14613683249990572,
+        "peak_bytes": 41218560.0,
+        "acc256": 0.5859375
+      },
+      "structured": {
+        "latency_s": 0.0735133849993872,
+        "peak_bytes": 198461440.0,
+        "acc256": 0.5859375,
+        "ops_bytes": 73984000,
+        "compose_calls": 0
+      },
+      "structured_seq": {
+        "latency_s": 0.03703188999861595,
+        "peak_bytes": 189117952.0,
+        "acc256": 0.5859375,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 8,
+      "effective_depth_seq": 14
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 40,
+      "batch": 32,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.026242029998684302,
+        "peak_bytes": 38171648.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.1575837929995032,
+        "peak_bytes": 42073088.0,
+        "acc256": 0.5859375
+      },
+      "structured": {
+        "latency_s": 0.3196787310007494,
+        "peak_bytes": 533599232.0,
+        "acc256": 0.5859375,
+        "ops_bytes": 73984000,
+        "compose_calls": 0
+      },
+      "structured_seq": {
+        "latency_s": 0.10138947349696537,
+        "peak_bytes": 503531520.0,
+        "acc256": 0.5859375,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 8,
+      "effective_depth_seq": 14
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 40,
+      "batch": 1,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.01952726999661536,
+        "peak_bytes": 37884416.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.2732395009988977,
+        "peak_bytes": 41046528.0,
+        "acc256": 0.390625
+      },
+      "structured": {
+        "latency_s": 0.05505272000300465,
+        "peak_bytes": 65199616.0,
+        "acc256": 0.265625,
+        "ops_bytes": 73984000,
+        "compose_calls": 0
+      },
+      "structured_seq": {
+        "latency_s": 0.024556540498451795,
+        "peak_bytes": 62492160.0,
+        "acc256": 0.26953125,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 12,
+      "effective_depth_seq": 28
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 40,
+      "batch": 8,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.023552601000119466,
+        "peak_bytes": 37948928.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.37166774500292377,
+        "peak_bytes": 41218560.0,
+        "acc256": 0.390625
+      },
+      "structured": {
+        "latency_s": 0.19986025449907174,
+        "peak_bytes": 237762048.0,
+        "acc256": 0.265625,
+        "ops_bytes": 73984000,
+        "compose_calls": 0
+      },
+      "structured_seq": {
+        "latency_s": 0.07137694799894234,
+        "peak_bytes": 213661184.0,
+        "acc256": 0.26953125,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 12,
+      "effective_depth_seq": 28
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 40,
+      "batch": 32,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.020518813998933183,
+        "peak_bytes": 38171648.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.34728496499883477,
+        "peak_bytes": 42073088.0,
+        "acc256": 0.390625
+      },
+      "structured": {
+        "latency_s": 0.8007771114971547,
+        "peak_bytes": 652300288.0,
+        "acc256": 0.265625,
+        "ops_bytes": 73984000,
+        "compose_calls": 0
+      },
+      "structured_seq": {
+        "latency_s": 0.21762977550315554,
+        "peak_bytes": 577804288.0,
+        "acc256": 0.26953125,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 12,
+      "effective_depth_seq": 28
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 128,
+      "batch": 1,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.06694520349992672,
+        "peak_bytes": 44462592.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.49035639700014144,
+        "peak_bytes": 53414400.0,
+        "acc256": 0.39453125
+      },
+      "structured": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 2): The algorithm failed to converge because the input matrix is ill-conditioned or has too "
+      },
+      "structured_seq": {
+        "latency_s": 0.0328562510003394,
+        "peak_bytes": 113285632.0,
+        "acc256": 0.51953125,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 9,
+      "effective_depth_seq": 36
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 128,
+      "batch": 8,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.0971616989991162,
+        "peak_bytes": 44527104.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.44524783400265733,
+        "peak_bytes": 53744128.0,
+        "acc256": 0.39453125
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "latency_s": 0.08253704299931997,
+        "peak_bytes": 526177280.0,
+        "acc256": 0.51953125,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 9,
+      "effective_depth_seq": 36
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 128,
+      "batch": 32,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.09614593799778959,
+        "peak_bytes": 44749824.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.5020320459952927,
+        "peak_bytes": 55139328.0,
+        "acc256": 0.39453125
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "latency_s": 0.5088060460002453,
+        "peak_bytes": 526988288.0,
+        "acc256": 0.51953125,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 9,
+      "effective_depth_seq": 36
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 128,
+      "batch": 1,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.08707782649798901,
+        "peak_bytes": 44462592.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 0.9524845904998074,
+        "peak_bytes": 53414400.0,
+        "acc256": 0.2578125
+      },
+      "structured": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 2): The algorithm failed to converge because the input matrix is ill-conditioned or has too "
+      },
+      "structured_seq": {
+        "latency_s": 0.05073244549930678,
+        "peak_bytes": 122855936.0,
+        "acc_error": "_LinAlgError"
+      },
+      "effective_depth_scan": 13,
+      "effective_depth_seq": 72
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 128,
+      "batch": 8,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.08206145550138899,
+        "peak_bytes": 44527104.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 1.1455185070008156,
+        "peak_bytes": 53744128.0,
+        "acc256": 0.2578125
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 159): The algorithm failed to converge because the input matrix is ill-conditioned or has to"
+      },
+      "effective_depth_scan": 13,
+      "effective_depth_seq": 72
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 128,
+      "batch": 32,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.0971625944985135,
+        "peak_bytes": 44749824.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 1.058615470501536,
+        "peak_bytes": 55139328.0,
+        "acc256": 0.2578125
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 159): The algorithm failed to converge because the input matrix is ill-conditioned or has to"
+      },
+      "effective_depth_scan": 13,
+      "effective_depth_seq": 72
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 512,
+      "batch": 1,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.3080977959980373,
+        "peak_bytes": 73167360.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 1.8872504085011315,
+        "peak_bytes": 107383296.0,
+        "acc256": 0.265625
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "latency_s": 0.07220841699745506,
+        "peak_bytes": 343510528.0,
+        "acc256": 0.265625,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 11,
+      "effective_depth_seq": 132
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 512,
+      "batch": 8,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.2702571225017891,
+        "peak_bytes": 73231872.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 1.7800396040038322,
+        "peak_bytes": 108401152.0,
+        "acc256": 0.265625
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "latency_s": 0.44684917050108197,
+        "peak_bytes": 580840448.0,
+        "acc256": 0.265625,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 11,
+      "effective_depth_seq": 132
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 512,
+      "batch": 32,
+      "L": 4,
+      "K": 0,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.3952922069984197,
+        "peak_bytes": 73454592.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 1.9237573450009222,
+        "peak_bytes": 112155648.0,
+        "acc256": 0.265625
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "latency_s": 2.250196724999114,
+        "peak_bytes": 584010752.0,
+        "acc256": 0.265625,
+        "ops_bytes": 0
+      },
+      "effective_depth_scan": 11,
+      "effective_depth_seq": 132
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 512,
+      "batch": 1,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.2595494814995618,
+        "peak_bytes": 73167360.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 3.222737259002315,
+        "peak_bytes": 107383296.0,
+        "acc256": 0.265625
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 33): The algorithm failed to converge because the input matrix is ill-conditioned or has too"
+      },
+      "effective_depth_scan": 15,
+      "effective_depth_seq": 264
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 512,
+      "batch": 8,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.27700052550062537,
+        "peak_bytes": 73231872.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 3.5539257925011043,
+        "peak_bytes": 108401152.0,
+        "acc256": 0.265625
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 33): The algorithm failed to converge because the input matrix is ill-conditioned or has too"
+      },
+      "effective_depth_scan": 15,
+      "effective_depth_seq": 264
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 512,
+      "batch": 32,
+      "L": 4,
+      "K": 1,
+      "rmax": 16,
+      "device": "cuda",
+      "serial": {
+        "latency_s": 0.39122088449948933,
+        "peak_bytes": 73454592.0,
+        "acc256": 1.0
+      },
+      "gs_jvp": {
+        "latency_s": 3.7025847865043033,
+        "peak_bytes": 112155648.0,
+        "acc256": 0.265625
+      },
+      "structured": {
+        "error": "OverflowError: scan composition overflow (fp32)"
+      },
+      "structured_seq": {
+        "error": "_LinAlgError: linalg.eigh: (Batch element 33): The algorithm failed to converge because the input matrix is ill-conditioned or has too"
+      },
+      "effective_depth_scan": 15,
+      "effective_depth_seq": 264
+    }
+  ],
+  "device": "cuda",
+  "seconds": 578.7283154130055
+}
