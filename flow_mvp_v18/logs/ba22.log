@@ -1,0 +1,46 @@
+/mnt/d/betterNN/.venv/lib/python3.11/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/mnt/d/betterNN/flow_mvp_v18/block_affine.py:184: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  vals.append(float((a - b).norm(dim=(1, 2)).mean() / (b.norm(dim=(1, 2)).mean() + 1e-9)))
+seed 22 task 0 steps 20 L 1 done
+seed 22 task 0 steps 20 L 2 done
+seed 22 task 0 steps 20 L 4 done
+seed 22 task 0 steps 20 L 5 done
+seed 22 task 0 steps 20 L 10 done
+seed 22 task 0 steps 40 L 1 done
+seed 22 task 0 steps 40 L 2 done
+seed 22 task 0 steps 40 L 4 done
+seed 22 task 0 steps 40 L 5 done
+seed 22 task 0 steps 40 L 10 done
+seed 22 task 1 steps 20 L 1 done
+seed 22 task 1 steps 20 L 2 done
+seed 22 task 1 steps 20 L 4 done
+seed 22 task 1 steps 20 L 5 done
+seed 22 task 1 steps 20 L 10 done
+seed 22 task 1 steps 40 L 1 done
+seed 22 task 1 steps 40 L 2 done
+seed 22 task 1 steps 40 L 4 done
+seed 22 task 1 steps 40 L 5 done
+seed 22 task 1 steps 40 L 10 done
+seed 22 task 2 steps 20 L 1 done
+seed 22 task 2 steps 20 L 2 done
+seed 22 task 2 steps 20 L 4 done
+seed 22 task 2 steps 20 L 5 done
+seed 22 task 2 steps 20 L 10 done
+seed 22 task 2 steps 40 L 1 done
+seed 22 task 2 steps 40 L 2 done
+seed 22 task 2 steps 40 L 4 done
+seed 22 task 2 steps 40 L 5 done
+seed 22 task 2 steps 40 L 10 done
+seed 22 task 3 steps 20 L 1 done
+seed 22 task 3 steps 20 L 2 done
+seed 22 task 3 steps 20 L 4 done
+seed 22 task 3 steps 20 L 5 done
+seed 22 task 3 steps 20 L 10 done
+seed 22 task 3 steps 40 L 1 done
+seed 22 task 3 steps 40 L 2 done
+seed 22 task 3 steps 40 L 4 done
+seed 22 task 3 steps 40 L 5 done
+seed 22 task 3 steps 40 L 10 done
+wrote ba_seed22.json 404 rows in 855.6 s

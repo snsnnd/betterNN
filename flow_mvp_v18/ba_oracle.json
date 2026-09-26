@@ -1,0 +1,125 @@
+{
+  "rows": [
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 20,
+      "L": 4,
+      "init": "flow",
+      "K": null,
+      "acc": 0.984375,
+      "Eh": 0.0
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 20,
+      "L": 4,
+      "init": "preroute_ref",
+      "K": null,
+      "acc": 0.734375,
+      "Eh": 0.0
+    },
+    {
+      "seed": 11,
+      "task": 0,
+      "steps": 20,
+      "L": 4,
+      "init": "oracle",
+      "K": 0,
+      "acc": 0.984375,
+      "Eh": 0.0
+    },
+    {
+      "seed": 11,
+      "task": 1,
+      "steps": 20,
+      "L": 4,
+      "init": "flow",
+      "K": null,
+      "acc": 0.953125,
+      "Eh": 0.0
+    },
+    {
+      "seed": 11,
+      "task": 1,
+      "steps": 20,
+      "L": 4,
+      "init": "preroute_ref",
+      "K": null,
+      "acc": 0.6875,
+      "Eh": 0.0
+    },
+    {
+      "seed": 11,
+      "task": 1,
+      "steps": 20,
+      "L": 4,
+      "init": "oracle",
+      "K": 0,
+      "acc": 0.953125,
+      "Eh": 0.0
+    },
+    {
+      "seed": 22,
+      "task": 0,
+      "steps": 20,
+      "L": 4,
+      "init": "flow",
+      "K": null,
+      "acc": 1.0,
+      "Eh": 0.0
+    },
+    {
+      "seed": 22,
+      "task": 0,
+      "steps": 20,
+      "L": 4,
+      "init": "preroute_ref",
+      "K": null,
+      "acc": 0.859375,
+      "Eh": 0.0
+    },
+    {
+      "seed": 22,
+      "task": 0,
+      "steps": 20,
+      "L": 4,
+      "init": "oracle",
+      "K": 0,
+      "acc": 1.0,
+      "Eh": 0.0
+    },
+    {
+      "seed": 22,
+      "task": 1,
+      "steps": 20,
+      "L": 4,
+      "init": "flow",
+      "K": null,
+      "acc": 1.0,
+      "Eh": 0.0
+    },
+    {
+      "seed": 22,
+      "task": 1,
+      "steps": 20,
+      "L": 4,
+      "init": "preroute_ref",
+      "K": null,
+      "acc": 0.75,
+      "Eh": 0.0
+    },
+    {
+      "seed": 22,
+      "task": 1,
+      "steps": 20,
+      "L": 4,
+      "init": "oracle",
+      "K": 0,
+      "acc": 1.0,
+      "Eh": 0.0
+    }
+  ],
+  "seconds": 0.9389829960018687
+}

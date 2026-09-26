@@ -17,7 +17,7 @@
 
 第五～七轮的精确版本是归档声明，是否可从当前安装源取得需以实际安装结果为准。改用其他版本可能无法通过代码中的逐值相等断言。
 
-第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十～十七轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU，且可多进程并行）：
+第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十～十八轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU，且可多进程并行）：
 
 ```bash
 uv venv /mnt/d/betterNN/.venv --python 3.11
@@ -403,7 +403,7 @@ wait
 
 实测：1320 个阶段是本仓库迄今最重的单轮，约 1 小时（6 进程）；核验约 8 分钟。若只做探索可用 `--orders o0 --limit-budgets 2` 缩小。
 
-## 14. 第十七轮：可并行动力学（最新）
+## 14. 第十七轮：可并行动力学
 
 工作目录：`flow_mvp_v17/`。先跑扫描验证，再按模型 4 进程并行训练（120 条流）。`iter` 模型最慢（两遍 rollout + 40 步外推评估）。
 
@@ -421,7 +421,22 @@ wait
 
 实测：4 进程并行约 50 分钟（iter 为瓶颈）；核验约 5 分钟；flowv2 与第十五轮逐位一致 10/10。
 
-## 15. 原归档校验与打包
+## 15. 第十八轮：block-affine 可压缩性（最新）
+
+工作目录：`flow_mvp_v18/`。纯诊断：复用 v15 Flow 与 v17 PreRoute 检查点，无需训练；5 个种子可并行，每进程约 1 分钟。
+
+```bash
+cd flow_mvp_v18
+for s in 11 22 33 44 55; do
+  /mnt/d/betterNN/.venv/bin/python block_affine.py --seeds $s --out ba_seed$s.json --sigma-diagnostic > logs/ba$s.log 2>&1 &
+done
+wait
+/mnt/d/betterNN/.venv/bin/python block_affine.py --seeds 11 22 --tasks 0 1 --steps 20 --ls 4 --ks 0 --inits oracle --batch 64 --out ba_oracle.json
+/mnt/d/betterNN/.venv/bin/python analyze.py
+/mnt/d/betterNN/.venv/bin/python plot.py
+```
+
+## 16. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -441,7 +456,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 16. 常见问题
+## 17. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

@@ -188,6 +188,8 @@ selection = hard_top16 + (soft - stop_gradient(soft))
 | `flow_mvp_v16/analyze.py` / `plot.py` | 第十六轮复算、字节阈值、漂移汇总与 `policy_replay.png` |
 | `flow_mvp_v17/experiment.py` | 四种动力学接线（flowv2/linear/preroute/iter）与 40 步外推 |
 | `flow_mvp_v17/scan_check.py` / `analyze.py` / `plot.py` | 仿射扫描验证、复算、报告与 `parallel_dynamics.png` |
+| `flow_mvp_v18/block_affine.py` | 块仿射迭代重线性化诊断（JVP/Jacobian、E_h） |
+| `flow_mvp_v18/analyze.py` / `plot.py` | 第十八轮汇总、报告与 `compressibility.png`；`block_jacobi.py` 为失败记录 |
 | `build_all_experiments.py` | 生成实验归档、索引和校验信息 |
 | `.venv/` | 第八轮使用的 uv 管理 GPU 环境（WSL/Linux） |
 
