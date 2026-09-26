@@ -1,0 +1,11 @@
+ratio=0 seed=11 done
+ratio=0 seed=22 done
+ratio=0 seed=33 done
+ratio=0 seed=44 done
+ratio=0 seed=55 done
+ratio=12.5 seed=11 done
+ratio=12.5 seed=22 done
+ratio=12.5 seed=33 done
+ratio=12.5 seed=44 done
+ratio=12.5 seed=55 done
+wrote transplant.json records 80 in 51.2 s

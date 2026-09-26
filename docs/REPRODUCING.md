@@ -17,7 +17,7 @@
 
 第五～七轮的精确版本是归档声明，是否可从当前安装源取得需以实际安装结果为准。改用其他版本可能无法通过代码中的逐值相等断言。
 
-第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十～十二轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU，且可多进程并行）：
+第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十～十三轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU，且可多进程并行）：
 
 ```bash
 uv venv /mnt/d/betterNN/.venv --python 3.11
@@ -317,7 +317,7 @@ wait
 - 冒烟：`--epochs 2 --seeds 11 --ratios 0 .25 --orders o0`。
 - 结果按流保存：`results/{order}_{arm}_r{label}_{seed}.json` 与 `_stage{0..3}.pt`。
 
-## 9. 第十二轮：架构等预算 replay（最新）
+## 9. 第十二轮：架构等预算 replay
 
 工作目录：`flow_mvp_v12/`。180 条流（3 架构 × 4 比例 × 3 顺序 × 5 种子），三顺序可并行。
 
@@ -333,7 +333,26 @@ wait
 
 实测：180 条流并行完成；核验 720 个阶段检查点约 4 分钟；flow 路径与第十一轮 all 组 20/20 逐位一致。
 
-## 10. 原归档校验与打包
+## 10. 第十三轮：replay 保护机制（最新）
+
+工作目录：`flow_mvp_v13/`。梯度冲突与组件移植复用第十一轮检查点，无需重训；缓冲扫描新增 30 条流。
+
+```bash
+cd flow_mvp_v13
+/mnt/d/betterNN/.venv/bin/python gradient_conflict.py
+/mnt/d/betterNN/.venv/bin/python transplant.py
+for M in 1 2 4 8 16 32; do
+  /mnt/d/betterNN/.venv/bin/python buffer_scan.py --orders o0 --archs flow --ratios .125 \
+    --buffer-per-task $M --out results_buffer --device cpu > logs/m$M.log 2>&1 &
+done
+wait
+/mnt/d/betterNN/.venv/bin/python analyze.py
+/mnt/d/betterNN/.venv/bin/python plot.py
+```
+
+实测：冲突 27 秒、移植 51 秒、缓冲扫描并行约 3 分钟；M=32 与第十一轮 r=12.5% 逐位一致。
+
+## 11. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -353,7 +372,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 11. 常见问题
+## 12. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|
