@@ -13,10 +13,11 @@
 | 第5～7轮 | `torch==2.14.0+cpu`、`numpy==2.3.5`、`matplotlib` |
 | 第8轮 | `torch==2.14.0`、`numpy==2.4.6`、`matplotlib==3.11.2`（uv 环境，CUDA 13） |
 | 第9轮 | `torch==2.14.0`、`numpy==2.4.6`（同 .venv） |
+| 第10轮 | 同上；轻量实验用 CPU 更快 |
 
 第五～七轮的精确版本是归档声明，是否可从当前安装源取得需以实际安装结果为准。改用其他版本可能无法通过代码中的逐值相等断言。
 
-第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），已在 RTX 4060 上完成训练与核验：
+第八、九轮使用项目根目录的 `.venv`（由 uv 创建，WSL/Linux，Python 3.11，复用 uv 缓存中的 GPU torch），在 RTX 4060 上运行；第十轮等轻量实验按经验改在 CPU 运行（N=256 时 CPU 明显快于 GPU）：
 
 ```bash
 uv venv /mnt/d/betterNN/.venv --python 3.11
@@ -248,7 +249,7 @@ cd flow_mvp_v8
 - 输出：`results/{mode}_256_{seed}.json` / `.pt`、`summary.json`、`all_metrics.json`、`paired_differences.json`、`REPORT.md`、`verification.txt`、`attribution.png`。
 - `analyze.py` 会重写 `REPORT.md` 与 `verification.txt`，内容完全由脚本生成。
 
-## 6. 第九轮：遗忘定位（最新）
+## 6. 第九轮：遗忘定位
 
 工作目录：`flow_mvp_v9/`。协议为先全参数学习 A，再对 B/C/D 分别保护 W/控制器/读出并加入固定预算 replay。
 
@@ -275,7 +276,26 @@ cd flow_mvp_v9
 - `analyze.py` 需要完整的“种子数 × 组数”结果，默认要求 5 种子 × 7 组，并核对 15 个对照。
 - 同样按 JSON 是否存在跳过训练；独立复现需使用工作副本。
 
-## 7. 原归档校验与打包
+## 7. 第十轮：benchmark 校准（最新）
+
+工作目录：`flow_mvp_v10/`。新 benchmark A'B'C'D'，先用验证集选训练预算，再跑顺序 CL 基线。全部在 CPU 运行。
+
+```bash
+cd flow_mvp_v10
+/mnt/d/betterNN/.venv/bin/python experiment.py --modes pretrain scratch adapt --epochs 150 --out results --device cpu
+/mnt/d/betterNN/.venv/bin/python experiment.py --modes cl --epochs 65 --out results --device cpu
+/mnt/d/betterNN/.venv/bin/python analyze.py --epochs 150    # 复算、写 benchmark.json 与 REPORT.md
+/mnt/d/betterNN/.venv/bin/python plot.py                    # benchmark.png
+```
+
+实测：校准约 9 分钟；E90=48、E95=65；CL 基线 acquisition 97.37%、最终平均 80.80%、遗忘 22.10 个百分点。`results_legacy_calibration/` 保留了旧互补任务集的校准结果（D 无法稳定 adapt 的失败证据）。
+
+注意：
+
+- `analyze.py --epochs` 指校准曲线的最大长度（150），CL 阶段预算记录在结果行内（65）。
+- 第十一轮将在此 benchmark 上运行 replay × 参数保护矩阵；旧任务集继续保留在第八、九轮。
+
+## 8. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -295,7 +315,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 8. 常见问题
+## 9. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|
