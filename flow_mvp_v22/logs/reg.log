@@ -1,0 +1,13 @@
+arms ['B', 'All'] ratios [0.125] epochs 65
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_11 stage 0 [0.988, 0.525, 0.733, 0.73] O_B 0.9506
+B_o0_r12.5_11 stage 1 [0.652, 0.98, 0.509, 0.753] O_B 0.939
+B_o0_r12.5_11 stage 2 [0.902, 0.723, 0.966, 0.713] O_B 0.9099
+B_o0_r12.5_11 stage 3 [0.93, 0.923, 0.925, 0.999] O_B 0.8685
+All_o0_r12.5_11 stage 0 [0.986, 0.521, 0.739, 0.728] O_B 0.9535
+All_o0_r12.5_11 stage 1 [0.855, 0.984, 0.494, 0.682] O_B 0.9257
+All_o0_r12.5_11 stage 2 [0.98, 0.889, 0.991, 0.717] O_B 0.8914
+All_o0_r12.5_11 stage 3 [0.954, 0.979, 0.943, 1.0] O_B 0.8687
+all 2 jobs in 130.9 s

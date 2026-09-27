@@ -3,11 +3,11 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 21 轮**（commit `e375489`，Adaptive Input Decoupling，见 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)）
+- 最新轮次：**第 22 轮**（Long-range Credit Attribution，见 [flow_mvp_v22/REPORT.md](flow_mvp_v22/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数；B 固定）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
-- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 完成可训练 B 的解耦实验
-- V21 的关键方法学约定：**hybrid 信用分配**（core 5 步截断 / B 全 BPTT，双 optimizer、分别 clip）；当前瓶颈是 B 的长程信用，而非解耦本身
+- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 完成可训练 B 的解耦实验；V22 完成长程信用归因
+- V21 的方法学约定：**hybrid 信用分配**（core 5 步截断 / B 全 BPTT，双 optimizer、分别 clip）；当前已确认的必要杠杆是 **B 的完整信用**，而 core 的 5 步窗口在 A'B'C'D' 上足够（V22）
 
 ---
 
@@ -47,7 +47,10 @@
 11. **overlap 的代价集中在 W/Hold（v20）**：α=0.5/1 时 Δcos(W)=−0.22/−0.17、Δcos(Hold)=−0.11/−0.11；r=12.5% 下 overlap 族 final 0.94/0.91/0.92，低于主族 0.97–0.99。
 12. **5 步截断下 B 的梯度恒为 0（v21）**：输入在 t=0/1 而 detach 在 t=5/10/15，`∇B≡0`（与 v13 Write 同源）；hybrid 协议（core 截断 / B 全 BPTT、双 optimizer、分别 clip）可在不改变 core 学习规则（梯度逐位相同）的前提下训练 B。
 13. **B 自发解耦存在但不足以达标（v21）**：learnable (λ=0) 把 O_B 从 1.0 降到 init 的 0.83–0.91（0/5 ≤0.75）；overlap penalty 可强解耦（O_B→0.12/0.001）但 hybrid 下遗忘仅变 ±0.6pp。
-14. **B 的完整长程信用才是瓶颈（v21）**：Full-BPTT 敏感性（40 流）中，r=12.5% fixed-overlap 遗忘 4.66pp → learnable/overlap0.1 **1.83/1.86pp**（达到 fixed-disjoint 1.95 水平）；r=0 各臂 ≈24pp 无差异。
+14. **B 的完整信用是必要杠杆（v21；V22 修正）**：5 步截断下 `∇B≡0`，B 必须拿全 BPTT 才能学习；hybrid（core 截断 / B 全 BPTT）下 learnable B 把 fixed-overlap 的 3 顺序遗忘从 9.04pp 降到 5.4–6.6pp。V21D 的“Full-BPTT 把 overlap 代价从 4.66 压到 1.83pp”只在 o0 测得，**匹配口径下不可复现（见 16）**。
+15. **长程信用归因是零结果（v22）**：把 `{W,Route,Hold}` 的 Full/T 信用做成 2³ 因子（B 恒 Full；10 seeds × 3 顺序）：G=F(B)−F(All)=**0.17pp**，主效应 ME_W/R/H=−0.14/+0.05/+0.36pp（同向 5/10、4/10、5/10）；没有单一子集（含 All）能稳定降低 r=12.5% 遗忘；r=0 负控所有 arm 24–25pp、|ME|≤0.4pp。
+16. **V21 的 hybrid→Full gap 主要是聚合错配（v22）**：6.63pp（3 顺序 hybrid）vs 1.83pp（仅 o0 Full）= 表面 4.80pp；匹配同 5 seeds/3 顺序后 1.11pp、10 seeds/3 顺序 0.17pp；分顺序 B−All = +1.08（o0，5/10）、+1.39（o1，6/10）、−1.94（o2，4/10）。固定-overlap/解耦的结论（H1）不受影响（V20/V21 都是 3 顺序口径）。
+17. **信用窗口损失真实存在但不构成遗忘瓶颈（v22）**：训练后 5 步梯度相对 20 步：W cos≈0.33（模长 6–10%）、hold≈0.50–0.65、route≈0.74–0.84；打开 Full 信用仍不改变遗忘——梯度几何失配不是功能重要性的可靠代理。
 
 ### 已被否定/削弱
 
@@ -68,6 +71,10 @@
 | B 任务梯度能自发强解耦（≤0.75·O_B^init） | 否（0.83–0.91，0/5） | v21 |
 | hybrid 下显式解耦正则降低遗忘 | 否（Δforget ≤0.6pp，虽然 O_B→0.001） | v21 |
 | orth penalty 有额外价值 | 否（init 已 |cos|≈0，ΔO_B≈−0.01） | v21 |
+| Route/Hold 是长程信用的主要载体 | 否（ME_R=+0.05、ME_H=+0.36pp，G≈0；源自 v13 策略定位） | v22 |
+| core 的 5 步窗口是遗忘瓶颈 | 否（2³ 因子匹配口径无效应，r=0 同样无） | v22 |
+| V21D 的 o0 Full-BPTT 优势可外推到 3 顺序 | 否（o1 +1.39、o2 −1.94；10 seeds 聚合 0.17pp） | v22 |
+| `cos(g5,g20)` 等梯度窗口失配可预测遗忘 | 否（W cos≈0.33 但 Full 无收益） | v22 |
 
 ---
 
@@ -140,6 +147,7 @@
 | v19 | 并行求解器可行性 | 结构：rank≤4/块≤4L、scan tree 秩饱和~12、r=16 无损；0C：eager 无加速、scan 溢出、PreRoute 长 T 发散 → 并行线冻结 | [flow_mvp_v19](flow_mvp_v19/) |
 | v20 | B 输入拓扑 × 动力学 | H1 否（任务侧等能量无关）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突、replay 下变差；s_W 零结果 | [flow_mvp_v20](flow_mvp_v20/) |
 | v21 | Adaptive Input Decoupling | 5 步截断下 ∇B≡0；hybrid（core 截断/B 全 BPTT）core 梯度与 V20 逐位一致；H2a 否、overlap penalty 强解耦但 hybrid 下不降遗忘；Full-BPTT 敏感性中解耦消除 overlap 代价（4.66→1.83pp） | [flow_mvp_v21](flow_mvp_v21/) |
+| v22 | Long-range Credit Attribution | `{W,Route,Hold}` 的 2³ Full/T 信用因子：匹配口径下归因零结果（G=0.17pp、|ME|≤0.36pp）；V21 的 hybrid→Full gap 是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 无效应；credit audit 显示窗口损失真实但不预测遗忘 | [flow_mvp_v22](flow_mvp_v22/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -156,7 +164,7 @@ betterNN/
 │   ├── ARCHITECTURE.md       # 模型/代码结构/指标定义
 │   ├── FRAMEWORK_DESIGN.md   # 设计原理、梯度路径、改进方向
 │   └── REPRODUCING.md        # 环境与逐轮命令
-├── flow_mvp/ … flow_mvp_v21/ # 每轮独立目录（代码+结果+报告）
+├── flow_mvp/ … flow_mvp_v22/ # 每轮独立目录（代码+结果+报告）
 ├── historical_deliveries/    # 第1～6轮历史 ZIP
 ├── .venv/                    # 运行环境（未入库；见 §7）
 └── SHA256SUMS.txt / MANIFEST.json / COUNTS.json  # 原归档校验（只覆盖第1～7轮）
@@ -182,7 +190,7 @@ betterNN/
 - 单轮完整复现：见 [docs/REPRODUCING.md](docs/REPRODUCING.md)。
 - 部分运行用 `--out smoke`（会写自己的 summary/report，不覆盖主结果）。
 - 大批量扫描按方法/种子拆成多个后台进程：用 `setsid ... > logs/X.log 2>&1 < /dev/null &` 启动（避免用 `pkill -f` 清进程——模式会匹配到当前 shell 自身）；完成后跑 `analyze.py`。
-- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟。
+- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟；v22 = 320 条 r=12.5% 流 + 80 条 r=0 + 160 单任务，28 进程约 33 分钟（内存吃紧，`--jobs 10` 更稳）。
 
 ---
 
@@ -202,6 +210,10 @@ betterNN/
 12. **推送**：仓库含大量 `.pt`（现约 5GB+），v20/v21 单次 push 约 600MB～1GB；用长超时（30 分钟），不要中途打断（中断后重推即可）。
 13. **可训练模块 + 参数级诊断**：v21 中 learnable B 的 `eff_B` 用 cat 拼接而非原地赋值（原地写入不进计算图）；A/B 通道指标用 `O_B`（幅度重叠，符号无关）而不是支撑交集（dense 参数下无信息）；drift 用 `B_eff` 相对量，raw 范数只作诊断。
 14. **后台进程管理**：启动用 `setsid ... < /dev/null &`；清理时按 PID（`pgrep` + `kill`），不要 `pkill -f 'results/B'` 这类会匹配到当前 shell 命令自身的模式。
+15. **聚合口径必须匹配（V22 教训）**：V21 的“6.63→1.83pp”是 3 顺序 vs o0-only 的错配；V22 匹配后 gap 只剩 1.11pp（5 seeds）/0.17pp（10 seeds）。比较信用/协议时必须同 seeds、同 orders、同聚合方式；单顺序（尤其 o0）方差极大（0–17pp），不能单独下结论。
+16. **逐组信用窗口实现**：V22 在同一参数快照跑两条通道（period=5 + 20 步），按组拼装梯度；`B` 臂与 V21 hybrid 逐位一致（`verify_protocol.py` 固化）；`All` 与 V21D 矩阵差 0.038（V21D 联合 clip vs V22 分别 clip；实测 clip 会生效 max pre-clip norm≈1.9–2.5），但遗忘均值一致（1.95 vs 1.83）。
+17. **内存/并行**：本机 5GB，`--jobs 28` 在 9p 缓存+子进程下会 thrash（约 230s/流）；`--jobs 10` 稳定（约 100s/流）。重负载前先 `free -g`。
+18. **r=0 别带全 orders**：`--orders o0 o1 o2 --ratios 0 .125` 会把 r=0 跑满 3 顺序（预注册只要 o0，多一倍开销）；负控用 `--orders o0 --ratios 0`。
 
 ---
 
@@ -209,33 +221,34 @@ betterNN/
 
 按优先级：
 
-1. **V21 已完成（Adaptive Input Decoupling）**：5 步截断下 `∇B≡0`（v13 Write 同源）；hybrid 协议（core 截断 / B 全 BPTT，双 optimizer、分别 clip）可在 core 梯度与 V20 逐位一致（diff=0）的前提下训练 B。结果：H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→init 的 0.83–0.91）；overlap penalty 强解耦（O_B→0.001）但 hybrid 下遗忘仅 ±0.6pp；Full-BPTT 敏感性显示解耦能消除 overlap 代价（4.66→1.83pp）。**瓶颈是 B 的长程信用，而不是解耦本身。** 下一步候选：
-   - **给 B 的局部/在线长程信用**：eligibility trace、局部预测目标、synthetic gradient、slow-controller credit；前提是不把全序列 BPTT 的串行/显存代价带回 Flow-v3。
-   - **区分“初始 B 更优”与“学到解耦”**：V21 中 learnable-random 在 r=12.5% 最好（4.75pp）但 O_B 几乎不变，需要用同初始 O_B 的对照拆开。
+1. **V22 已完成（Long-range Credit Attribution）**：把 `{W,Route,Hold}` 的 Full/T 信用做成 2³ 因子（B 恒 Full；10 seeds × 3 顺序 × r=12.5%，r=0 负控）。结论：匹配口径下**归因零结果**（G=0.17pp、|ME|≤0.36pp）；V21 的 hybrid→Full gap 主要是“3 顺序 vs o0-only”的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 全部 arm 24–25pp；credit audit 显示训练后 W 的 cos(g5,g20)≈0.33（模长 6–10%）但打开 Full 无收益。**core 的 5 步窗口在 A'B'C'D' 上足够；不要为 core 设计 eligibility trace/synthetic gradient。** 下一步候选：
+   - **先造出能暴露 core 窗口缺陷的协议**：更长序列（T≥40）、多事件/多次写入、部分可观测、需要跨事件组合规则；验收标准 = core 窗口（5 vs 20）在 3 顺序下有 ≥2pp 且方向一致的遗忘差，再谈局部信用机制。
+   - **B 的局部/在线长程信用**：B 的完整信用是唯一稳健的长程需求（V21）；研究能否用 eligibility trace / 延迟输入信用近似 hybrid 的双通道，去掉完整图的内存/串行成本。
+   - **解释顺序敏感性**：o0 有弱信号（Hold ME +0.79pp、9/10；B−All +1.08pp）而 o2 反转（−1.94pp），需查任务顺序 × replay 分布 × B 初始化/mask 的交互。
    - V20 遗留：可达性度量重做（随机 probe 退化）；任务协议需能体现动力学差异（更长序列/多事件/部分可观测）。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 3. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
 4. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。
 5. 更远期：结构生长/修剪、频率/脉冲/相位调制（都要求先固定平均参数或信息预算）。
 
-当前不建议：继续加新门、扩大规模（N≥512）或在未解决“为什么 replay 这么有效”之前做复杂 consolidation；也不建议在没有局部/在线信用方案之前把 B 的可训练版直接塞回 5 步截断协议（它拿不到梯度）。
+当前不建议：继续加新门、扩大规模（N≥512）、为 core 加长程信用机制，或在未解决“为什么 replay 这么有效”之前做复杂 consolidation；把 B 的可训练版直接塞回 5 步截断协议仍然不可行（它拿不到梯度，必须走 hybrid 或等价的双通道）。
 
 ---
 
 ## 10. 新 agent 第一小时清单
 
 1. 读本文件 + [README.md](README.md) + [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
-2. 读四份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）。
+2. 读五份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）、[v22](flow_mvp_v22/REPORT.md)（长程信用归因与 V21 gap 重审）。
 3. 检查环境与一致性：
    ```bash
    git status -sb && git ls-remote origin | head -2
    sha256sum --quiet -c SHA256SUMS.txt
    .venv/bin/python -c "import torch; print(torch.__version__)"
-   cd flow_mvp_v21 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3   # 读缓存指标，约 15 秒
-   cd flow_mvp_v21 && /mnt/d/betterNN/.venv/bin/python experiment.py --credit-check --seeds 11   # Phase 0 机制抽查
+   cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3    # 读缓存指标，约 5 秒
+   cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python verify_protocol.py     # B 逐位回归 + 梯度等价 + clip 生效
    ```
 4. 复核当前最佳配方（可选）：v15 smoke `--epochs 2 --seeds 11 --out smoke` 或 v11 `--ratios 0 .125` 小规模。
-5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v22/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
+5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v23/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
 
 ---
 

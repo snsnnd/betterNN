@@ -1,0 +1,406 @@
+arms ['B', 'B+W', 'B+R', 'B+H', 'B+W+R', 'B+W+H', 'B+R+H', 'All'] ratios [0.125] epochs 65
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_77 stage 0 [0.987, 0.521, 0.731, 0.747] O_B 0.9856
+B_o0_r12.5_66 stage 0 [0.989, 0.502, 0.738, 0.701] O_B 0.9494
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_22 stage 0 [0.987, 0.473, 0.714, 0.707] O_B 0.9773
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_33 stage 0 [0.997, 0.499, 0.742, 0.734] O_B 0.9387
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_44 stage 0 [0.993, 0.486, 0.729, 0.756] O_B 0.9638
+B_o0_r12.5_11 stage 0 [0.988, 0.525, 0.733, 0.73] O_B 0.9506
+B_o0_r12.5_88 stage 0 [0.993, 0.505, 0.71, 0.726] O_B 0.9442
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_55 stage 0 [0.986, 0.464, 0.714, 0.738] O_B 0.9733
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_110 stage 0 [0.989, 0.485, 0.735, 0.745] O_B 0.962
+B_o0_r12.5_77 stage 1 [0.792, 0.968, 0.537, 0.75] O_B 0.9363
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B_o0_r12.5_99 stage 0 [0.987, 0.508, 0.728, 0.744] O_B 0.9614
+B_o0_r12.5_33 stage 1 [0.931, 0.99, 0.521, 0.717] O_B 0.9256
+B_o0_r12.5_66 stage 1 [0.939, 0.989, 0.538, 0.709] O_B 0.9433
+B_o0_r12.5_11 stage 1 [0.652, 0.98, 0.509, 0.753] O_B 0.939
+B_o0_r12.5_88 stage 1 [0.896, 0.983, 0.483, 0.659] O_B 0.9466
+B_o0_r12.5_44 stage 1 [0.641, 0.943, 0.532, 0.794] O_B 0.9508
+B_o0_r12.5_55 stage 1 [0.713, 0.97, 0.479, 0.777] O_B 0.8914
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_11 stage 0 [0.985, 0.523, 0.733, 0.727] O_B 0.9484
+B_o0_r12.5_22 stage 1 [0.895, 0.983, 0.502, 0.727] O_B 0.9149
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_22 stage 0 [0.986, 0.478, 0.705, 0.703] O_B 0.9732
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_33 stage 0 [0.986, 0.489, 0.727, 0.723] O_B 0.9491
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_44 stage 0 [0.99, 0.487, 0.731, 0.761] O_B 0.9702
+B_o0_r12.5_77 stage 2 [0.928, 0.913, 0.986, 0.737] O_B 0.8255
+B_o0_r12.5_110 stage 1 [0.941, 0.992, 0.506, 0.747] O_B 0.9276
+B_o0_r12.5_99 stage 1 [0.926, 0.991, 0.522, 0.81] O_B 0.9209
+B_o0_r12.5_33 stage 2 [0.982, 0.918, 0.99, 0.76] O_B 0.9145
+B_o0_r12.5_55 stage 2 [0.903, 0.686, 0.99, 0.752] O_B 0.7723
+B_o0_r12.5_11 stage 2 [0.902, 0.723, 0.966, 0.713] O_B 0.9099
+B_o0_r12.5_66 stage 2 [0.992, 0.956, 0.999, 0.733] O_B 0.9299
+B_o0_r12.5_88 stage 2 [0.938, 0.956, 0.989, 0.715] O_B 0.9488
+B_o0_r12.5_44 stage 2 [0.936, 0.693, 0.979, 0.753] O_B 0.9078
+B_o0_r12.5_22 stage 2 [0.958, 0.935, 0.988, 0.714] O_B 0.8245
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_55 stage 0 [0.986, 0.458, 0.718, 0.729] O_B 0.9838
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_66 stage 0 [0.989, 0.49, 0.742, 0.705] O_B 0.9436
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+R_o0_r12.5_11 stage 0 [0.985, 0.532, 0.742, 0.735] O_B 0.946
+B+W_o0_r12.5_22 stage 1 [0.907, 0.987, 0.517, 0.749] O_B 0.9609
+B+W_o0_r12.5_33 stage 1 [0.943, 0.995, 0.527, 0.812] O_B 0.9692
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_77 stage 0 [0.99, 0.51, 0.748, 0.749] O_B 0.9879
+B+W_o0_r12.5_110 stage 0 [0.99, 0.486, 0.743, 0.746] O_B 0.9622
+B+W_o0_r12.5_44 stage 1 [0.687, 0.96, 0.533, 0.797] O_B 0.9456
+B+W_o0_r12.5_11 stage 1 [0.654, 0.972, 0.502, 0.731] O_B 0.9331
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_88 stage 0 [0.994, 0.496, 0.717, 0.75] O_B 0.958
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W_o0_r12.5_99 stage 0 [0.992, 0.506, 0.728, 0.744] O_B 0.9592
+B_o0_r12.5_77 stage 3 [0.945, 0.994, 0.98, 0.994] O_B 0.778
+B_o0_r12.5_110 stage 2 [0.967, 0.985, 0.991, 0.73] O_B 0.9073
+B_o0_r12.5_99 stage 2 [0.978, 0.943, 0.991, 0.765] O_B 0.9141
+B_o0_r12.5_33 stage 3 [0.967, 0.965, 0.95, 0.989] O_B 0.8871
+B_o0_r12.5_88 stage 3 [0.988, 0.981, 0.93, 0.994] O_B 0.9472
+B_o0_r12.5_55 stage 3 [0.941, 0.849, 0.975, 0.982] O_B 0.7124
+B_o0_r12.5_66 stage 3 [0.995, 0.972, 0.986, 0.995] O_B 0.9092
+B_o0_r12.5_11 stage 3 [0.93, 0.923, 0.925, 0.999] O_B 0.8685
+B_o0_r12.5_22 stage 3 [0.98, 0.982, 0.989, 0.994] O_B 0.7476
+B_o0_r12.5_44 stage 3 [0.927, 0.729, 0.951, 0.994] O_B 0.882
+B+R_o0_r12.5_11 stage 1 [0.912, 0.993, 0.506, 0.806] O_B 0.9386
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+R_o0_r12.5_22 stage 0 [0.98, 0.478, 0.707, 0.718] O_B 0.972
+B+W_o0_r12.5_55 stage 1 [0.942, 0.985, 0.48, 0.777] O_B 0.9677
+B+W_o0_r12.5_22 stage 2 [0.97, 0.966, 0.995, 0.706] O_B 0.9406
+B+W_o0_r12.5_33 stage 2 [0.959, 0.969, 0.989, 0.768] O_B 0.9457
+B+W_o0_r12.5_110 stage 1 [0.897, 0.983, 0.5, 0.742] O_B 0.9276
+B+W_o0_r12.5_66 stage 1 [0.793, 0.987, 0.535, 0.738] O_B 0.9288
+B+W_o0_r12.5_77 stage 1 [0.77, 0.984, 0.515, 0.745] O_B 0.9774
+B+W_o0_r12.5_11 stage 2 [0.908, 0.753, 0.988, 0.725] O_B 0.9392
+B+W_o0_r12.5_44 stage 2 [0.94, 0.661, 0.982, 0.775] O_B 0.928
+B+W_o0_r12.5_99 stage 1 [0.928, 0.989, 0.509, 0.783] O_B 0.9249
+B+W_o0_r12.5_88 stage 1 [0.944, 0.984, 0.481, 0.597] O_B 0.9543
+B_o0_r12.5_110 stage 3 [0.984, 0.987, 0.989, 0.998] O_B 0.8891
+B_o0_r12.5_99 stage 3 [0.985, 0.965, 0.981, 0.995] O_B 0.9025
+B+R_o0_r12.5_33 stage 0 [0.993, 0.506, 0.743, 0.75] O_B 0.9481
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+R_o0_r12.5_44 stage 0 [0.993, 0.486, 0.725, 0.757] O_B 0.9575
+B+R_o0_r12.5_11 stage 2 [0.988, 0.955, 0.998, 0.723] O_B 0.9125
+B+R_o0_r12.5_22 stage 1 [0.72, 0.964, 0.516, 0.757] O_B 0.9119
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+R_o0_r12.5_55 stage 0 [0.977, 0.477, 0.729, 0.738] O_B 0.9691
+B+W_o0_r12.5_33 stage 3 [0.968, 0.962, 0.948, 0.993] O_B 0.9251
+B+W_o0_r12.5_66 stage 2 [0.851, 0.935, 0.985, 0.638] O_B 0.9258
+B+W_o0_r12.5_55 stage 2 [0.81, 0.949, 0.993, 0.755] O_B 0.9474
+B+W_o0_r12.5_22 stage 3 [0.974, 0.972, 0.986, 0.988] O_B 0.9246
+B+W_o0_r12.5_110 stage 2 [0.973, 0.961, 0.986, 0.736] O_B 0.9131
+B+W_o0_r12.5_88 stage 2 [0.968, 0.935, 0.989, 0.747] O_B 0.9365
+B+W_o0_r12.5_99 stage 2 [0.943, 0.74, 0.995, 0.76] O_B 0.9154
+B+W_o0_r12.5_44 stage 3 [0.942, 0.731, 0.959, 0.994] O_B 0.9108
+B+W_o0_r12.5_77 stage 2 [0.97, 0.896, 0.99, 0.75] O_B 0.9668
+B+W_o0_r12.5_11 stage 3 [0.859, 0.961, 0.956, 0.997] O_B 0.9149
+B+R_o0_r12.5_33 stage 1 [0.586, 0.974, 0.522, 0.713] O_B 0.9637
+B+R_o0_r12.5_66 stage 0 [0.988, 0.495, 0.756, 0.712] O_B 0.9474
+B+R_o0_r12.5_77 stage 0 [0.987, 0.529, 0.729, 0.737] O_B 0.9833
+B+R_o0_r12.5_88 stage 0 [0.993, 0.51, 0.714, 0.73] O_B 0.937
+B+R_o0_r12.5_110 stage 0 [0.989, 0.484, 0.73, 0.738] O_B 0.9573
+B+H_o0_r12.5_11 stage 0 [0.988, 0.521, 0.729, 0.722] O_B 0.9534
+B+R_o0_r12.5_44 stage 1 [0.703, 0.979, 0.526, 0.778] O_B 0.9414
+B+R_o0_r12.5_99 stage 0 [0.983, 0.514, 0.726, 0.749] O_B 0.9581
+B+R_o0_r12.5_22 stage 2 [0.968, 0.76, 0.993, 0.736] O_B 0.8228
+B+R_o0_r12.5_11 stage 3 [0.986, 0.991, 0.967, 1.0] O_B 0.8889
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+H_o0_r12.5_22 stage 0 [0.986, 0.468, 0.702, 0.701] O_B 0.9764
+B+R_o0_r12.5_55 stage 1 [0.614, 0.963, 0.486, 0.75] O_B 0.8764
+B+W_o0_r12.5_66 stage 3 [0.972, 0.986, 0.958, 0.995] O_B 0.9148
+B+W_o0_r12.5_110 stage 3 [0.986, 0.976, 0.987, 0.997] O_B 0.8995
+B+W_o0_r12.5_55 stage 3 [0.957, 0.979, 0.976, 0.984] O_B 0.9188
+B+W_o0_r12.5_99 stage 3 [0.977, 0.868, 0.947, 0.996] O_B 0.9013
+B+W_o0_r12.5_77 stage 3 [0.973, 0.985, 0.98, 0.996] O_B 0.9522
+B+W_o0_r12.5_88 stage 3 [0.98, 0.966, 0.943, 0.993] O_B 0.9304
+B+R_o0_r12.5_33 stage 2 [0.931, 0.784, 0.982, 0.75] O_B 0.9183
+B+H_o0_r12.5_33 stage 0 [0.992, 0.508, 0.737, 0.742] O_B 0.9436
+B+R_o0_r12.5_66 stage 1 [0.95, 0.991, 0.536, 0.727] O_B 0.9355
+B+R_o0_r12.5_88 stage 1 [0.92, 0.987, 0.479, 0.607] O_B 0.9381
+B+R_o0_r12.5_110 stage 1 [0.616, 0.979, 0.489, 0.714] O_B 0.9292
+B+R_o0_r12.5_77 stage 1 [0.61, 0.951, 0.533, 0.753] O_B 0.9599
+B+H_o0_r12.5_11 stage 1 [0.894, 0.985, 0.493, 0.702] O_B 0.9276
+B+R_o0_r12.5_44 stage 2 [0.949, 0.855, 0.985, 0.752] O_B 0.9246
+B+R_o0_r12.5_99 stage 1 [0.968, 0.992, 0.527, 0.852] O_B 0.9284
+B+R_o0_r12.5_22 stage 3 [0.956, 0.762, 0.968, 0.995] O_B 0.7687
+B+H_o0_r12.5_22 stage 1 [0.895, 0.985, 0.508, 0.746] O_B 0.9072
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+H_o0_r12.5_44 stage 0 [0.988, 0.494, 0.725, 0.758] O_B 0.9655
+B+R_o0_r12.5_55 stage 2 [0.925, 0.712, 0.99, 0.751] O_B 0.7572
+B+H_o0_r12.5_55 stage 0 [0.983, 0.461, 0.708, 0.731] O_B 0.9682
+B+H_o0_r12.5_77 stage 0 [0.991, 0.513, 0.733, 0.744] O_B 0.9865
+B+H_o0_r12.5_66 stage 0 [0.99, 0.503, 0.743, 0.71] O_B 0.9514
+B+R_o0_r12.5_33 stage 3 [0.712, 0.978, 0.767, 0.982] O_B 0.9447
+B+H_o0_r12.5_33 stage 1 [0.956, 0.986, 0.525, 0.725] O_B 0.9141
+B+R_o0_r12.5_88 stage 2 [0.982, 0.978, 0.996, 0.746] O_B 0.8977
+B+H_o0_r12.5_88 stage 0 [0.997, 0.508, 0.717, 0.731] O_B 0.9471
+B+R_o0_r12.5_66 stage 2 [0.99, 0.985, 0.998, 0.728] O_B 0.9159
+B+R_o0_r12.5_110 stage 2 [0.945, 0.974, 0.995, 0.725] O_B 0.9167
+B+R_o0_r12.5_77 stage 2 [0.943, 0.881, 0.988, 0.714] O_B 0.9476
+B+H_o0_r12.5_11 stage 2 [0.984, 0.928, 0.996, 0.717] O_B 0.8991
+B+R_o0_r12.5_44 stage 3 [0.961, 0.986, 0.977, 0.997] O_B 0.9166
+B+R_o0_r12.5_99 stage 2 [0.972, 0.954, 0.99, 0.777] O_B 0.8977
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+H_o0_r12.5_99 stage 0 [0.985, 0.509, 0.728, 0.744] O_B 0.9611
+B+H_o0_r12.5_110 stage 0 [0.989, 0.484, 0.736, 0.741] O_B 0.9637
+B+R_o0_r12.5_55 stage 3 [0.924, 0.912, 0.979, 0.979] O_B 0.7178
+B+H_o0_r12.5_22 stage 2 [0.958, 0.969, 0.988, 0.736] O_B 0.8244
+B+W+R_o0_r12.5_11 stage 0 [0.985, 0.53, 0.733, 0.731] O_B 0.9444
+B+H_o0_r12.5_44 stage 1 [0.7, 0.975, 0.518, 0.781] O_B 0.9505
+B+W+R_o0_r12.5_22 stage 0 [0.985, 0.475, 0.699, 0.704] O_B 0.9708
+B+H_o0_r12.5_77 stage 1 [0.883, 0.984, 0.545, 0.746] O_B 0.9493
+B+H_o0_r12.5_55 stage 1 [0.936, 0.984, 0.479, 0.776] O_B 0.8994
+B+H_o0_r12.5_66 stage 1 [0.95, 0.996, 0.53, 0.714] O_B 0.9479
+B+H_o0_r12.5_88 stage 1 [0.979, 0.987, 0.592, 0.648] O_B 0.9415
+B+W+R_o0_r12.5_33 stage 0 [0.994, 0.506, 0.728, 0.729] O_B 0.9462
+B+R_o0_r12.5_88 stage 3 [0.989, 0.98, 0.954, 0.994] O_B 0.8612
+B+R_o0_r12.5_66 stage 3 [0.991, 0.983, 0.982, 0.996] O_B 0.8925
+B+H_o0_r12.5_33 stage 2 [0.977, 0.982, 0.993, 0.755] O_B 0.9016
+B+R_o0_r12.5_110 stage 3 [0.942, 0.985, 0.987, 0.997] O_B 0.8805
+B+R_o0_r12.5_77 stage 3 [0.955, 0.973, 0.976, 0.99] O_B 0.9059
+B+H_o0_r12.5_11 stage 3 [0.98, 0.989, 0.932, 0.985] O_B 0.8745
+B+H_o0_r12.5_99 stage 1 [0.948, 0.991, 0.655, 0.929] O_B 0.9111
+B+R_o0_r12.5_99 stage 3 [0.981, 0.979, 0.977, 0.994] O_B 0.8889
+B+H_o0_r12.5_110 stage 1 [0.95, 0.994, 0.535, 0.774] O_B 0.9217
+B+H_o0_r12.5_22 stage 3 [0.982, 0.982, 0.988, 0.993] O_B 0.7542
+B+H_o0_r12.5_44 stage 2 [0.96, 0.562, 0.987, 0.759] O_B 0.9214
+B+W+R_o0_r12.5_11 stage 1 [0.789, 0.977, 0.499, 0.729] O_B 0.9202
+B+H_o0_r12.5_77 stage 2 [0.951, 0.961, 0.986, 0.726] O_B 0.8465
+B+H_o0_r12.5_55 stage 2 [0.971, 0.935, 0.992, 0.753] O_B 0.8293
+B+W+R_o0_r12.5_44 stage 0 [0.993, 0.49, 0.736, 0.759] O_B 0.9613
+B+H_o0_r12.5_66 stage 2 [0.988, 0.954, 0.999, 0.73] O_B 0.9304
+B+W+R_o0_r12.5_22 stage 1 [0.929, 0.988, 0.516, 0.758] O_B 0.9537
+B+W+R_o0_r12.5_55 stage 0 [0.98, 0.477, 0.742, 0.734] O_B 0.9728
+B+H_o0_r12.5_88 stage 2 [0.991, 0.982, 0.997, 0.756] O_B 0.8979
+B+H_o0_r12.5_33 stage 3 [0.985, 0.938, 0.956, 0.99] O_B 0.9006
+B+W+R_o0_r12.5_33 stage 1 [0.921, 0.996, 0.521, 0.746] O_B 0.9605
+B+W+R_o0_r12.5_66 stage 0 [0.987, 0.487, 0.748, 0.71] O_B 0.9375
+B+H_o0_r12.5_99 stage 2 [0.973, 0.939, 0.992, 0.757] O_B 0.8812
+B+W+R_o0_r12.5_77 stage 0 [0.989, 0.507, 0.756, 0.75] O_B 0.9921
+B+H_o0_r12.5_110 stage 2 [0.974, 0.984, 0.992, 0.738] O_B 0.9045
+B+W+R_o0_r12.5_88 stage 0 [0.992, 0.514, 0.722, 0.757] O_B 0.96
+B+H_o0_r12.5_44 stage 3 [0.94, 0.869, 0.956, 0.994] O_B 0.8888
+B+W+R_o0_r12.5_110 stage 0 [0.989, 0.484, 0.735, 0.741] O_B 0.9608
+B+W+R_o0_r12.5_99 stage 0 [0.99, 0.512, 0.729, 0.744] O_B 0.9572
+B+W+H_o0_r12.5_11 stage 0 [0.989, 0.528, 0.723, 0.724] O_B 0.9539
+B+H_o0_r12.5_77 stage 3 [0.944, 0.972, 0.969, 0.986] O_B 0.8007
+B+W+R_o0_r12.5_11 stage 2 [0.978, 0.799, 0.989, 0.72] O_B 0.9007
+B+H_o0_r12.5_55 stage 3 [0.972, 0.967, 0.971, 0.978] O_B 0.767
+B+H_o0_r12.5_66 stage 3 [0.992, 0.979, 0.982, 0.995] O_B 0.9149
+B+W+R_o0_r12.5_44 stage 1 [0.74, 0.981, 0.531, 0.776] O_B 0.9394
+B+W+R_o0_r12.5_22 stage 2 [0.972, 0.973, 0.991, 0.731] O_B 0.9299
+B+W+H_o0_r12.5_22 stage 0 [0.989, 0.467, 0.696, 0.7] O_B 0.9748
+B+W+R_o0_r12.5_55 stage 1 [0.923, 0.989, 0.536, 0.627] O_B 0.9527
+B+H_o0_r12.5_88 stage 3 [0.991, 0.984, 0.975, 0.997] O_B 0.883
+B+W+R_o0_r12.5_33 stage 2 [0.949, 0.954, 0.989, 0.779] O_B 0.9345
+B+H_o0_r12.5_99 stage 3 [0.981, 0.973, 0.972, 0.995] O_B 0.8681
+B+H_o0_r12.5_110 stage 3 [0.979, 0.986, 0.987, 0.998] O_B 0.8851
+B+W+H_o0_r12.5_33 stage 0 [0.986, 0.497, 0.722, 0.723] O_B 0.9492
+B+W+R_o0_r12.5_66 stage 1 [0.681, 0.98, 0.549, 0.744] O_B 0.929
+B+W+R_o0_r12.5_77 stage 1 [0.9, 0.982, 0.538, 0.765] O_B 0.982
+B+W+R_o0_r12.5_88 stage 1 [0.951, 0.98, 0.483, 0.612] O_B 0.9462
+B+W+R_o0_r12.5_99 stage 1 [0.943, 0.995, 0.495, 0.793] O_B 0.9314
+B+W+R_o0_r12.5_110 stage 1 [0.788, 0.983, 0.482, 0.731] O_B 0.9482
+B+W+H_o0_r12.5_11 stage 1 [0.691, 0.979, 0.491, 0.711] O_B 0.9317
+B+W+R_o0_r12.5_11 stage 3 [0.942, 0.978, 0.96, 0.998] O_B 0.8755
+B+W+H_o0_r12.5_44 stage 0 [0.989, 0.496, 0.738, 0.768] O_B 0.9694
+B+W+R_o0_r12.5_44 stage 2 [0.915, 0.952, 0.986, 0.753] O_B 0.9226
+B+W+R_o0_r12.5_22 stage 3 [0.987, 0.989, 0.986, 0.994] O_B 0.9094
+B+W+H_o0_r12.5_22 stage 1 [0.905, 0.99, 0.525, 0.758] O_B 0.9588
+B+W+R_o0_r12.5_55 stage 2 [0.982, 0.954, 0.994, 0.726] O_B 0.9189
+B+W+H_o0_r12.5_55 stage 0 [0.984, 0.457, 0.714, 0.727] O_B 0.9786
+B+W+R_o0_r12.5_33 stage 3 [0.938, 0.979, 0.949, 0.985] O_B 0.9127
+B+W+H_o0_r12.5_33 stage 1 [0.956, 0.996, 0.518, 0.766] O_B 0.959
+B+W+H_o0_r12.5_66 stage 0 [0.989, 0.497, 0.74, 0.705] O_B 0.9502
+B+W+R_o0_r12.5_77 stage 2 [0.896, 0.928, 0.99, 0.731] O_B 0.9857
+B+W+R_o0_r12.5_66 stage 2 [0.959, 0.758, 0.994, 0.733] O_B 0.9146
+B+W+R_o0_r12.5_99 stage 2 [0.963, 0.901, 0.99, 0.778] O_B 0.9262
+B+W+R_o0_r12.5_88 stage 2 [0.984, 0.943, 0.992, 0.75] O_B 0.9348
+B+W+R_o0_r12.5_110 stage 2 [0.951, 0.963, 0.99, 0.732] O_B 0.942
+B+W+H_o0_r12.5_77 stage 0 [0.989, 0.501, 0.748, 0.745] O_B 0.9893
+/mnt/d/betterNN/flow_mvp_v22/experiment.py:350: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  'D_B': float((Bcur - B0).norm() / (B0.norm() + 1e-12)),
+B+W+H_o0_r12.5_88 stage 0 [0.992, 0.5, 0.719, 0.75] O_B 0.9624
+B+R+H_o0_r12.5_11 stage 0 [0.988, 0.526, 0.744, 0.729] O_B 0.9559
+B+W+H_o0_r12.5_99 stage 0 [0.992, 0.507, 0.73, 0.746] O_B 0.9634
+B+W+H_o0_r12.5_11 stage 2 [0.936, 0.744, 0.989, 0.717] O_B 0.9128
+B+W+H_o0_r12.5_44 stage 1 [0.696, 0.984, 0.505, 0.775] O_B 0.939
+B+W+H_o0_r12.5_110 stage 0 [0.991, 0.487, 0.745, 0.752] O_B 0.9678
+B+W+R_o0_r12.5_44 stage 3 [0.948, 0.979, 0.956, 0.995] O_B 0.913
+B+W+H_o0_r12.5_22 stage 2 [0.963, 0.97, 0.99, 0.71] O_B 0.9327
+B+W+R_o0_r12.5_55 stage 3 [0.974, 0.976, 0.979, 0.987] O_B 0.8894
+B+R+H_o0_r12.5_22 stage 0 [0.987, 0.464, 0.696, 0.704] O_B 0.9663
+B+W+H_o0_r12.5_55 stage 1 [0.944, 0.991, 0.484, 0.764] O_B 0.9642
+B+R+H_o0_r12.5_33 stage 0 [0.992, 0.503, 0.743, 0.746] O_B 0.9612
+B+W+R_o0_r12.5_77 stage 3 [0.938, 0.984, 0.968, 0.994] O_B 0.9807
+B+W+H_o0_r12.5_66 stage 1 [0.928, 0.988, 0.552, 0.739] O_B 0.928
+B+W+H_o0_r12.5_33 stage 2 [0.955, 0.972, 0.993, 0.776] O_B 0.9394
+B+W+R_o0_r12.5_66 stage 3 [0.971, 0.795, 0.951, 0.992] O_B 0.8962
+B+W+R_o0_r12.5_99 stage 3 [0.974, 0.962, 0.947, 0.997] O_B 0.9159
+B+W+R_o0_r12.5_88 stage 3 [0.986, 0.978, 0.94, 0.994] O_B 0.9291
+B+W+R_o0_r12.5_110 stage 3 [0.907, 0.974, 0.981, 0.988] O_B 0.927
+B+W+H_o0_r12.5_77 stage 1 [0.87, 0.988, 0.521, 0.747] O_B 0.9771
+B+R+H_o0_r12.5_11 stage 1 [0.892, 0.992, 0.493, 0.709] O_B 0.9449
+B+W+H_o0_r12.5_88 stage 1 [0.946, 0.99, 0.509, 0.77] O_B 0.9522
+B+W+H_o0_r12.5_99 stage 1 [0.959, 0.994, 0.546, 0.812] O_B 0.9304
+B+W+H_o0_r12.5_44 stage 2 [0.956, 0.614, 0.98, 0.774] O_B 0.9193
+B+W+H_o0_r12.5_11 stage 3 [0.918, 0.965, 0.965, 0.997] O_B 0.8847
+B+W+H_o0_r12.5_110 stage 1 [0.95, 0.99, 0.487, 0.735] O_B 0.9418
+B+R+H_o0_r12.5_44 stage 0 [0.995, 0.491, 0.737, 0.76] O_B 0.9594
+B+W+H_o0_r12.5_22 stage 3 [0.976, 0.972, 0.99, 0.99] O_B 0.9132
+B+R+H_o0_r12.5_22 stage 1 [0.723, 0.975, 0.511, 0.755] O_B 0.9152
+B+R+H_o0_r12.5_55 stage 0 [0.98, 0.477, 0.723, 0.729] O_B 0.9641
+B+W+H_o0_r12.5_55 stage 2 [0.98, 0.956, 0.995, 0.751] O_B 0.9433
+B+R+H_o0_r12.5_33 stage 1 [0.759, 0.984, 0.528, 0.717] O_B 0.9802
+B+W+H_o0_r12.5_33 stage 3 [0.967, 0.976, 0.951, 0.996] O_B 0.918
+B+W+H_o0_r12.5_66 stage 2 [0.945, 0.945, 0.992, 0.681] O_B 0.936
+B+R+H_o0_r12.5_66 stage 0 [0.987, 0.503, 0.753, 0.715] O_B 0.9461
+B+R+H_o0_r12.5_11 stage 2 [0.989, 0.945, 0.997, 0.722] O_B 0.9103
+B+W+H_o0_r12.5_77 stage 2 [0.943, 0.977, 0.988, 0.746] O_B 0.9688
+B+R+H_o0_r12.5_77 stage 0 [0.988, 0.528, 0.73, 0.739] O_B 0.9856
+B+R+H_o0_r12.5_88 stage 0 [0.992, 0.517, 0.718, 0.729] O_B 0.9406
+B+W+H_o0_r12.5_88 stage 2 [0.968, 0.943, 0.988, 0.757] O_B 0.9294
+B+R+H_o0_r12.5_110 stage 0 [0.988, 0.487, 0.732, 0.739] O_B 0.9591
+B+R+H_o0_r12.5_99 stage 0 [0.986, 0.514, 0.734, 0.75] O_B 0.9574
+B+R+H_o0_r12.5_44 stage 1 [0.716, 0.967, 0.626, 0.774] O_B 0.9701
+B+W+H_o0_r12.5_99 stage 2 [0.972, 0.909, 0.991, 0.771] O_B 0.9268
+B+W+H_o0_r12.5_44 stage 3 [0.907, 0.977, 0.94, 0.994] O_B 0.9062
+All_o0_r12.5_11 stage 0 [0.986, 0.521, 0.739, 0.728] O_B 0.9535
+B+W+H_o0_r12.5_110 stage 2 [0.952, 0.958, 0.99, 0.733] O_B 0.9299
+B+R+H_o0_r12.5_22 stage 2 [0.971, 0.771, 0.994, 0.754] O_B 0.7748
+B+R+H_o0_r12.5_55 stage 1 [0.555, 0.971, 0.479, 0.731] O_B 0.8965
+All_o0_r12.5_22 stage 0 [0.981, 0.468, 0.694, 0.699] O_B 0.9697
+B+R+H_o0_r12.5_33 stage 2 [0.951, 0.726, 0.976, 0.669] O_B 0.9468
+B+W+H_o0_r12.5_55 stage 3 [0.959, 0.984, 0.97, 0.979] O_B 0.9143
+B+W+H_o0_r12.5_66 stage 3 [0.965, 0.977, 0.95, 0.995] O_B 0.9294
+B+R+H_o0_r12.5_66 stage 1 [0.948, 0.996, 0.535, 0.738] O_B 0.9378
+All_o0_r12.5_33 stage 0 [0.986, 0.494, 0.725, 0.719] O_B 0.9468
+B+R+H_o0_r12.5_11 stage 3 [0.986, 0.982, 0.961, 1.0] O_B 0.8812
+B+R+H_o0_r12.5_77 stage 1 [0.564, 0.967, 0.531, 0.743] O_B 0.9637
+B+R+H_o0_r12.5_88 stage 1 [0.972, 0.986, 0.476, 0.549] O_B 0.9268
+B+R+H_o0_r12.5_110 stage 1 [0.751, 0.968, 0.499, 0.772] O_B 0.9208
+B+R+H_o0_r12.5_99 stage 1 [0.967, 0.993, 0.615, 0.911] O_B 0.9136
+B+W+H_o0_r12.5_77 stage 3 [0.958, 0.982, 0.982, 0.996] O_B 0.9469
+B+W+H_o0_r12.5_88 stage 3 [0.983, 0.977, 0.963, 0.994] O_B 0.9207
+B+R+H_o0_r12.5_44 stage 2 [0.949, 0.903, 0.986, 0.754] O_B 0.9555
+B+W+H_o0_r12.5_99 stage 3 [0.975, 0.953, 0.943, 0.998] O_B 0.9173
+B+W+H_o0_r12.5_110 stage 3 [0.98, 0.972, 0.985, 0.994] O_B 0.915
+All_o0_r12.5_11 stage 1 [0.855, 0.984, 0.494, 0.682] O_B 0.9257
+B+R+H_o0_r12.5_22 stage 3 [0.977, 0.846, 0.987, 0.994] O_B 0.7298
+B+R+H_o0_r12.5_55 stage 2 [0.946, 0.784, 0.993, 0.754] O_B 0.7908
+B+R+H_o0_r12.5_33 stage 3 [0.746, 0.917, 0.781, 0.982] O_B 0.9588
+All_o0_r12.5_44 stage 0 [0.993, 0.49, 0.74, 0.765] O_B 0.9713
+All_o0_r12.5_22 stage 1 [0.918, 0.985, 0.525, 0.766] O_B 0.9513
+B+R+H_o0_r12.5_66 stage 2 [0.991, 0.982, 0.998, 0.73] O_B 0.9128
+B+R+H_o0_r12.5_77 stage 2 [0.953, 0.915, 0.992, 0.707] O_B 0.9604
+All_o0_r12.5_55 stage 0 [0.98, 0.47, 0.745, 0.729] O_B 0.9768
+B+R+H_o0_r12.5_88 stage 2 [0.989, 0.984, 0.997, 0.756] O_B 0.8636
+B+R+H_o0_r12.5_110 stage 2 [0.969, 0.971, 0.993, 0.76] O_B 0.8885
+All_o0_r12.5_33 stage 1 [0.736, 0.993, 0.516, 0.759] O_B 0.9627
+B+R+H_o0_r12.5_99 stage 2 [0.965, 0.946, 0.99, 0.774] O_B 0.8728
+B+R+H_o0_r12.5_44 stage 3 [0.926, 0.945, 0.953, 0.996] O_B 0.9511
+All_o0_r12.5_77 stage 0 [0.987, 0.501, 0.756, 0.748] O_B 0.9932
+All_o0_r12.5_66 stage 0 [0.989, 0.498, 0.751, 0.71] O_B 0.948
+All_o0_r12.5_88 stage 0 [0.992, 0.508, 0.72, 0.753] O_B 0.9624
+All_o0_r12.5_11 stage 2 [0.98, 0.889, 0.991, 0.717] O_B 0.8914
+All_o0_r12.5_99 stage 0 [0.987, 0.517, 0.729, 0.759] O_B 0.9606
+All_o0_r12.5_110 stage 0 [0.992, 0.484, 0.736, 0.742] O_B 0.9652
+B+R+H_o0_r12.5_55 stage 3 [0.946, 0.938, 0.984, 0.985] O_B 0.7201
+All_o0_r12.5_44 stage 1 [0.733, 0.984, 0.521, 0.779] O_B 0.9463
+All_o0_r12.5_22 stage 2 [0.975, 0.982, 0.993, 0.737] O_B 0.9297
+B+R+H_o0_r12.5_66 stage 3 [0.991, 0.985, 0.982, 0.995] O_B 0.8968
+B+R+H_o0_r12.5_77 stage 3 [0.961, 0.975, 0.977, 0.992] O_B 0.9113
+B+R+H_o0_r12.5_88 stage 3 [0.994, 0.993, 0.976, 0.999] O_B 0.8446
+B+R+H_o0_r12.5_110 stage 3 [0.966, 0.985, 0.994, 0.997] O_B 0.838
+B+R+H_o0_r12.5_99 stage 3 [0.977, 0.978, 0.97, 0.994] O_B 0.8617
+All_o0_r12.5_55 stage 1 [0.934, 0.99, 0.527, 0.64] O_B 0.9508
+All_o0_r12.5_33 stage 2 [0.945, 0.792, 0.987, 0.766] O_B 0.9191
+All_o0_r12.5_77 stage 1 [0.913, 0.984, 0.536, 0.771] O_B 0.9758
+All_o0_r12.5_66 stage 1 [0.685, 0.988, 0.553, 0.742] O_B 0.9349
+All_o0_r12.5_88 stage 1 [0.976, 0.985, 0.489, 0.671] O_B 0.9458
+All_o0_r12.5_11 stage 3 [0.954, 0.979, 0.943, 1.0] O_B 0.8687
+All_o0_r12.5_99 stage 1 [0.957, 0.992, 0.564, 0.851] O_B 0.9332
+All_o0_r12.5_110 stage 1 [0.877, 0.982, 0.508, 0.765] O_B 0.9397
+All_o0_r12.5_44 stage 2 [0.943, 0.966, 0.985, 0.75] O_B 0.9353
+All_o0_r12.5_22 stage 3 [0.991, 0.984, 0.989, 0.994] O_B 0.9084
+All_o0_r12.5_55 stage 2 [0.982, 0.948, 0.993, 0.725] O_B 0.9197
+All_o0_r12.5_33 stage 3 [0.944, 0.964, 0.954, 0.991] O_B 0.8981
+All_o0_r12.5_77 stage 2 [0.925, 0.938, 0.986, 0.811] O_B 0.9791
+All_o0_r12.5_66 stage 2 [0.958, 0.931, 0.995, 0.683] O_B 0.9218
+All_o0_r12.5_88 stage 2 [0.979, 0.957, 0.984, 0.749] O_B 0.9289
+All_o0_r12.5_99 stage 2 [0.966, 0.92, 0.991, 0.771] O_B 0.9241
+All_o0_r12.5_110 stage 2 [0.971, 0.963, 0.989, 0.741] O_B 0.9323
+All_o0_r12.5_44 stage 3 [0.944, 0.985, 0.959, 0.995] O_B 0.9198
+All_o0_r12.5_55 stage 3 [0.979, 0.979, 0.984, 0.989] O_B 0.8833
+All_o0_r12.5_77 stage 3 [0.927, 0.982, 0.961, 0.994] O_B 0.9741
+All_o0_r12.5_66 stage 3 [0.974, 0.951, 0.952, 0.995] O_B 0.9058
+All_o0_r12.5_88 stage 3 [0.985, 0.97, 0.961, 0.996] O_B 0.9098
+All_o0_r12.5_99 stage 3 [0.971, 0.968, 0.943, 0.996] O_B 0.9172
+All_o0_r12.5_110 stage 3 [0.981, 0.984, 0.988, 0.997] O_B 0.9211
+all 240 jobs in 1988.3 s

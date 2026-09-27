@@ -1,8 +1,8 @@
-# 二十一轮实验与结论
+# 二十二轮实验与结论
 
 [返回项目首页](../README.md)
 
-本文按研究问题整理归档结果。第 1～7 轮数值来自已有报告和结果文件；第 8、9 轮在 WSL GPU 运行，第 10～18 轮在 CPU 运行。各轮任务、输入、预算和架构会变化，以下是研究脉络，不是跨轮排行榜。
+本文按研究问题整理归档结果。第 1～7 轮数值来自已有报告和结果文件；第 8、9 轮在 WSL GPU 运行，第 10 轮起在 CPU 并行运行。各轮任务、输入、预算和架构会变化，以下是研究脉络，不是跨轮排行榜。
 
 ## 1. 研究演进
 
@@ -29,6 +29,7 @@
 | [第19轮](../flow_mvp_v19/REPORT.md) | 可压缩性能否变成真实加速？ | 解析块 Jacobian 结构全量扫描 + GPU solver 基准（无训练） | 结构成立（rank≤4/块≤4L、scan tree 秩饱和~12、r=16 无损）；eager 实现无加速、长乘积溢出、PreRoute 长 T 发散 → 并行线冻结 |
 | [第20轮](../flow_mvp_v20/REPORT.md) | 水从哪里进入、入口如何与动力学交互？ | 等输入能量下的 B 拓扑主族 / shared-pool overlap / `s_W` 扫描（5 seeds × 3 orders × r∈{0,12.5%}） | 任务侧无差异（H1 否、s_W 零结果）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突且 replay 下变差 |
 | [第21轮](../flow_mvp_v21/REPORT.md) | B 能否学会把不同信息写进不同状态子空间？ | hybrid 信用分配（core 截断 / B 全 BPTT）+ 可训练 B + orth/overlap penalty + H3 机制链 + Full-BPTT 敏感性 | 5 步截断下 ∇B≡0；自发解耦弱、overlap penalty 强解耦但 hybrid 下不降遗忘；Full BPTT 下解耦消除 overlap 代价 |
+| [第22轮](../flow_mvp_v22/REPORT.md) | 长程信用到底应该给谁：W、Route 还是 Hold？ | 8 arms 的 2³ 因子（`{W,Route,Hold}` 哪些拿 20 步 Full 信用，B 恒 Full）；逐组双通道梯度 + 10 seeds × 3 顺序 + 逐组 credit audit | **匹配口径下归因是零结果**（G=0.17pp，ME≤0.36pp，H1/H3/H4/H5 未通过）；V21 的 hybrid→Full gap 主要是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 负控无效应；审计显示 W 的 5 步梯度与 20 步严重失配（cos≈0.33）但不转化功能差异 |
 
 ## 2. 关键证据
 
@@ -442,7 +443,34 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 
 数据位置：[REPORT.md](../flow_mvp_v21/REPORT.md)、[results/](../flow_mvp_v21/results/)、[decoupling.png](../flow_mvp_v21/decoupling.png)、[fullbptt_sensitivity.png](../flow_mvp_v21/fullbptt_sensitivity.png)。
 
-## 18. 已保存的内容
+## 18. 第二十二轮：Long-range Credit Attribution
+
+不改架构、不动 B 的初始化/正则，只把 20 步完整信用**逐组**发给 `{W, Route, Hold}` 的 2³ 子集（B 恒可训练恒 Full）。每个 step 在同一参数快照上跑两条通道：截断通道（period=5）给 T 组、完整通道（20 步）给 Full 组，按组拼装梯度；双 optimizer、分别 clip，其余与 V21 hybrid 一致。协议：A'B'C'D'、10 seeds（11…110）、r=12.5% 跑 o0/o1/o2、r=0 跑 o0。臂：`B`（=V21 hybrid）、`B+W`、`B+R`、`B+H`、`B+W+R`、`B+W+H`、`B+R+H`、`All`。
+
+### 协议核验
+
+- `B` 臂与 V21A hybrid **逐位一致**（max|Δmatrix|=0，5 流）；首 batch 上完整通道 `autograd.grad` 与 V21D `backward` 梯度逐位相同。
+- `All` 对 V21D 矩阵差 0.038（V21D 联合 clip vs V22 分别 clip，训练中 clip 会生效 max pre-clip norm≈1.9–2.5，1040 步放大的轨迹差），但遗忘均值 o0/5 seeds = 1.95 vs 1.83pp，结论层面等价。
+- credit audit：min core `cos(g5,g20)` = 0.309（hold@init）<0.9，窗口确实改变信用方向。
+
+### 判定结果（r=12.5%，3 顺序 × 10 seeds）
+
+| arm | 遗忘 | | arm | 遗忘 |
+|---|---:|---|---|---:|
+| B (hybrid) | 5.40pp | | B+W+R | 5.00pp |
+| B+W | 7.06pp | | B+W+H | 5.31pp |
+| B+R | 5.58pp | | B+R+H | 6.42pp |
+| B+H | 4.64pp | | All | 5.22pp |
+
+- **归因零结果**：G=F(B)−F(All)=**0.17pp**；主效应 ME_W=−0.14、ME_R=+0.05、ME_H=+0.36pp（同向 5/10、4/10、5/10）；H1/H3/H4/H5 未通过，H2 以 |ME_W|≤1pp 通过（G≈0 时 closure 不可解释）。
+- **V21 gap 重审**：V21 原口径 6.63pp（3 顺序）vs 1.83pp（仅 o0）= 表面 4.80pp；匹配同 5 seeds/3 顺序 = 1.11pp，10 seeds/3 顺序 = 0.17pp；分顺序 B−All = +1.08（o0，5/10）、+1.39（o1，6/10）、−1.94（o2，4/10）。**V21D 的“Full BPTT 消除 overlap 代价”不能外推到 3 顺序。**
+- **r=0 负控干净**：所有 arm 24–25pp，|ME|≤0.4pp（H-neg 通过）——信用窗口只在 replay 下才有微弱作用。
+- **credit audit**：训练后 `cos(g5,g20)`：W≈0.33（模长 6–10%）、hold≈0.50–0.65、route≈0.74–0.84、readout=1、B=0；窗口损失真实存在，但不转化为遗忘差异。
+- o0 是唯一有弱信号的顺序（Hold ME +0.79pp、9/10；B−All +1.08pp），o1 同向不显著、o2 反转，说明是顺序×种子噪声主导。
+
+数据位置：[REPORT.md](../flow_mvp_v22/REPORT.md)、[results/](../flow_mvp_v22/results/)、[attribution.png](../flow_mvp_v22/attribution.png)、[credit_audit.png](../flow_mvp_v22/credit_audit.png)。
+
+## 19. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -467,16 +495,18 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 | 19 | 4 | 0 | 诊断：结构扫描 + GPU 基准，无训练、无检查点 |
 | 20 | 4 | 2084 | 3 阶段 × 5 seeds：CL 逐阶段检查点 + 单任务最终模型 |
 | 21 | 4 | 1144 | V21A/B/C/D + fixed 回归：CL 逐阶段检查点 + 单任务模型 |
+| 22 | 4 | 488 | 2³ 信用归因：80 条 o0/r=12.5% 流逐阶段检查点 + 160 单任务模型 + 8 条回归流；credit audit 只读 V21 检查点 |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 19. 当前研究状态
+## 20. 当前研究状态
 
-第二十一轮把“输入解耦”推进到可训练 B：先发现并修复了 **5 步截断下 `∇B≡0`** 的结构性问题（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT，core 梯度与 V20 逐位一致）得到干净干预。结论：
+第二十一轮发现 `∇B≡0` 并用 hybrid 信用分配（core 截断 / B 全 BPTT）训练 B，当时的结论是“Full joint 长程信用几乎消除 overlap 代价（6.63→1.83pp）”。**第二十二轮用匹配协议（同 10 seeds × 3 顺序）重审并修正了这个结论**：
 
-- 固定解耦（H1）在 r=12.5% 复现通过（−3.39pp）；B 的任务梯度自发解耦较弱（0.83–0.91）；
-- overlap penalty 可以把 O_B 压到 ~0，但在 hybrid 信用下**不转化为遗忘改善**；
-- Full-BPTT 敏感性中，learnable/penalty 臂把 overlap 代价从 4.66pp 压到 1.83/1.86pp（达到 fixed-disjoint 水平）。
+- V21 的 gap 主要是**聚合错配**：6.63pp 是 3 顺序 hybrid、1.83pp 是仅 o0 的 Full；匹配后 5 seeds/3 顺序 gap 只有 1.11pp，10 seeds/3 顺序 0.17pp，分顺序符号翻转（o2 Full 反而更差）。V21D 的 o0-only 结论不可外推。
+- 预注册的 2³ 归因是**零结果**：给 `{W,Route,Hold}` 的任何子集（含 All）打开 20 步信用，r=12.5% 遗忘都无稳定变化（G=0.17pp、|ME|≤0.36pp）；r=0 负控同样无效应。
+- credit audit 说明“梯度看不远”是真的（训练后 W 的 cos(g5,g20)≈0.33、模长只剩 6–10%），但**不构成这些任务的遗忘瓶颈**：B 可以把长程信息写进状态，core 只需在尾部窗口完成读出。
+- 唯一稳健的长程信用需求仍是 **B 的完整信用**（V21：截断下 `∇B≡0`，B 完全学不到），hybrid 的双通道已经用很便宜的方式解决。
 
-因此当前主瓶颈是 **B 的长程信用分配**：V22/Flow-v3 若要做 Adaptive Input Router，需要局部/在线的长程学习信号（eligibility trace、局部预测目标、slow-controller credit 等），而不是把全序列 BPTT 带回训练循环。并行/solver 线继续冻结（见 [HANDOVER §9](../HANDOVER.md)）。
+因此 Flow-v3 的方向需要修正：**不要直接把 eligibility trace / synthetic gradient 等局部长程信用机制加到 core 上**，因为当前 benchmark 无法证明 core 需要它们。若要做 local/online 长程信用，先用能暴露窗口缺陷的协议（更长序列、多事件、部分可观测）把 core 窗口效应复现出来，再以该协议为验收标准。并行/solver 线继续冻结（见 [HANDOVER §9](../HANDOVER.md)）。

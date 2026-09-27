@@ -476,7 +476,7 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python plot.py
 
 核验：analyze 会重载 stage3 检查点复算测试矩阵（要求与训练记录逐值一致）并输出 H1/H2/H3 判定；`results/B/h3.json` 供 `overlap_gradient.png` 使用。
 
-## 18. 第二十一轮：自适应输入解耦（hybrid 信用分配，最新）
+## 18. 第二十一轮：自适应输入解耦（hybrid 信用分配）
 
 工作目录：`flow_mvp_v21/`。先跑 Phase 0 credit check（证明 hybrid 只改 B 的信用分配），再分阶段训练。
 
@@ -499,7 +499,33 @@ FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python analyze.py && python plot.py
 
 fixed 臂直接复用 V20；`fixed_reg` 用于一致性核验（应逐流矩阵差 0）。`--b-grad hybrid|full|trunc` 控制 B 的信用分配。
 
-## 19. 原归档校验与打包
+## 19. 第二十二轮：长程信用归因（2³ 因子，最新）
+
+工作目录：`flow_mvp_v22/`。先跑 Phase 0 协议核验（`B` 臂逐位回归 V21A hybrid、`All` 臂对 V21D、V21 检查点上的逐组 credit audit），再跑 2³ 因子主实验。
+
+```bash
+cd flow_mvp_v22
+# Phase 0：B/All 两臂单流回归（结果在 results/reg）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --arms B All --seeds 11 --epochs 65 \
+    --orders o0 --ratios .125 --out results/reg --no-single
+# Phase 0：逐组信用审计（读 V21 检查点，输出 results/credit_audit.json）
+FLOW_THREADS=2 /mnt/d/betterNN/.venv/bin/python experiment.py --credit-audit --seeds 11 22 33 44 55 --out results
+# 主运行：8 arms × 10 seeds × r=12.5%（o0 带检查点；o1/o2 不带）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --seeds 11 22 33 44 55 66 77 88 99 110 \
+    --orders o0 --ratios .125 --jobs 28 --out results/A                 # 含 160 个单任务模型
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --seeds 11 22 33 44 55 66 77 88 99 110 \
+    --orders o1 o2 --ratios .125 --no-ckpt --no-single --jobs 5 --out results/A
+# r=0 负控（o0）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --seeds 11 22 33 44 55 66 77 88 99 110 \
+    --orders o0 --ratios 0 --no-ckpt --no-single --jobs 5 --out results/A
+# 汇总 + 协议核验
+/mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
+/mnt/d/betterNN/.venv/bin/python verify_protocol.py | tee -a verification.txt
+```
+
+臂名即 Full 信用集合：`B`、`B+W`、`B+R`、`B+H`、`B+W+R`、`B+W+H`、`B+R+H`、`All`。注意 `B` 臂应与 V21A `learnable` 逐位一致（`verify_protocol.py` 会检查）。约 5GB 内存的机器建议 `--jobs ≤ 10`，28 进程会触发 swap 抖动。
+
+## 20. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -519,7 +545,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 20. 常见问题
+## 21. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

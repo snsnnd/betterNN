@@ -1,0 +1,9 @@
+audit seed 11 done
+audit seed 22 done
+audit seed 33 done
+audit seed 44 done
+audit seed 55 done
+cl_r0 {'W': 0.333, 'route': 0.836, 'hold': 0.65, 'readout': 1.0, 'B': 0.0} ratio5 {'W': 0.087, 'route': 0.241, 'hold': 0.176, 'readout': 1.0, 'B': 0.0}
+cl_r12.5 {'W': 0.358, 'route': 0.735, 'hold': 0.526, 'readout': 1.0, 'B': 0.0} ratio5 {'W': 0.101, 'route': 0.243, 'hold': 0.152, 'readout': 1.0, 'B': 0.0}
+init {'W': 0.98, 'route': 0.982, 'hold': 0.309, 'readout': 1.0, 'B': 0.0} ratio5 {'W': 0.278, 'route': 0.294, 'hold': 0.423, 'readout': 1.0, 'B': 0.0}
+single {'W': 0.334, 'route': 0.829, 'hold': 0.5, 'readout': 1.0, 'B': 0.0} ratio5 {'W': 0.057, 'route': 0.151, 'hold': 0.094, 'readout': 1.0, 'B': 0.0}

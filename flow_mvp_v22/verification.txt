@@ -1,0 +1,26 @@
+B bitwise maxdiff: 0.000e+00 over 5
+All vs V21D maxdiff: 3.809e-02 over 5
+G (B-All): 0.17pp
+closure B+R+H: nan
+{
+ "reg": {
+  "B": {
+   "maxdiff": 0.0,
+   "forget_v22": 5.240885416666666,
+   "forget_v21": 5.240885416666666
+  },
+  "All": {
+   "maxdiff": 0.0380859375,
+   "forget_v22": 2.864583333333333,
+   "forget_v21": 2.9296875
+  }
+ },
+ "grad_equivalence": {
+  "loss_bitwise_equal": true,
+  "grad_maxdiff": 0.0
+ },
+ "clip": {
+  "max_preclip_core_norm": 1.8558017015457153,
+  "clip_binds": true
+ }
+}

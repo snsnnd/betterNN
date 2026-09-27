@@ -2,7 +2,7 @@
 
 这是一个基于 **Python / PyTorch 的神经网络研究实验集**，研究能否通过小型控制网络调节循环网络中的信息写入、内部传递和状态保持，以及这些机制对泛化、短窗口训练和持续学习的影响。
 
-项目包含第 1～21 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘；**Full-BPTT 敏感性中解耦把 overlap 代价从 4.66pp 压到 1.83pp**，说明瓶颈是 B 的长程信用分配（见 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)）。
+项目包含第 1～22 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘。第 22 轮用 2³ 因子做**长程信用归因**（`{W,Route,Hold}` 谁拿 20 步 Full 信用）：**匹配口径下归因是零结果**（G=F(B)−F(All)=0.17pp，|ME|≤0.36pp），并重审出第 21 轮的 hybrid→Full gap 主要是“3 顺序 vs 仅 o0”的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）——**core 的 5 步窗口足够，真正的长程信用需求仍在 B**（见 [flow_mvp_v22/REPORT.md](flow_mvp_v22/REPORT.md)）。
 
 ## 项目在做什么
 
@@ -25,9 +25,10 @@
 | [项目交接文档](HANDOVER.md) | 给后续 agent：累计结论、架构规格、协议、坑与下一步候选 |
 | [框架设计原理与改进方案](docs/FRAMEWORK_DESIGN.md) | 调制器如何作用于底层、梯度与记忆机制、理论性质和待验证的新设计 |
 | [架构与代码说明](docs/ARCHITECTURE.md) | 模型组件、数据流、第七轮实现、指标含义和代码入口 |
-| [十八轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
+| [二十二轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
 | [运行与复现指南](docs/REPRODUCING.md) | 环境依赖、各轮命令、输出文件、续跑及现有脚本注意事项 |
 | [原始归档说明](README_START_HERE.md) | 原交付包说明、历史文件和校验信息 |
+| [第二十二轮：长程信用归因报告](flow_mvp_v22/REPORT.md) | 2³ 信用窗口因子、V21 gap 重审、逐组 credit audit |
 | [第二十一轮：自适应输入解耦报告](flow_mvp_v21/REPORT.md) | hybrid 信用分配、B 解耦、Full-BPTT 敏感性 |
 | [第二十轮：B 拓扑 × 动力学报告](flow_mvp_v20/REPORT.md) | 等能量拓扑/overlap/s_W 的任务与动力学结果 |
 | [第二十轮计划：B 拓扑 × 动力学](flow_mvp_v20/PLAN.md) | 输入拓扑主族/overlap 族/动力学轴与预注册假设 |
@@ -70,6 +71,7 @@ betterNN/
 ├── flow_mvp_v19/         # 第19轮：并行求解器可行性（结构扫描+GPU基准，无训练）
 ├── flow_mvp_v20/         # 第20轮：B 输入拓扑 × 动力学（3 阶段已完成，含检查点）
 ├── flow_mvp_v21/         # 第21轮：自适应输入解耦（hybrid 信用分配，含检查点）
+├── flow_mvp_v22/         # 第22轮：长程信用归因（2³ 因子 + credit audit，含检查点）
 ├── historical_deliveries/# 第1～6轮历史ZIP交付件
 ├── docs/                # 本次整理的项目级文档
 ├── .venv/               # WSL/Linux GPU环境（uv创建，Python 3.11 + torch 2.14.0+cu130）
@@ -105,13 +107,16 @@ betterNN/
 - **overlap 的代价在 W/Hold**：第 20 轮 shared-pool 族 α=0.5/1 使 Δcos(W)=−0.22/−0.17、Δcos(Hold)=−0.11/−0.11，r=12.5% 下 final 0.94/0.91/0.92 低于主族 0.97–0.99；`s_W∈{0.7,0.9,1.1}` 无差异（零结果）。
 - **5 步截断下 B 的梯度恒为 0**：第 21 轮发现输入在 t=0/1 而 detach 在 t=5/10/15，`∇B≡0`（与 v13 Write 同源）；hybrid 信用分配（core 截断 / B 全 BPTT，双 optimizer、分别 clip）可在 core 梯度与 V20 逐位一致（diff=0）的条件下训练 B。
 - **自适应解耦：自发弱、正则强、收益取决于信用分配**：第 21 轮 learnable (λ=0) 自发把 O_B 降到 init 的 0.83–0.91；overlap penalty 可压到 ~0 但 hybrid 下遗忘仅 ±0.6pp；Full-BPTT 敏感性中解耦把 r=12.5% overlap 代价从 4.66pp 降到 1.83pp（fixed-disjoint 1.95）。**瓶颈是 B 的长程信用，而不是解耦本身。**
+- **长程信用归因（匹配协议）是零结果**：第 22 轮把 `{W,Route,Hold}` 的 Full/T trunc 做成 2³ 因子（B 恒 Full，10 seeds × 3 顺序）：G=F(B)−F(All)=**0.17pp**，ME_W/R/H=−0.14/+0.05/+0.36pp（同向 ≤5/10），H1/H3/H4/H5 未通过；r=0 负控所有 arm 24–25pp、|ME|≤0.4pp。
+- **V21 的 hybrid→Full gap 主要是聚合错配**：原口径 6.63pp（3 顺序）vs 1.83pp（仅 o0）= 表面 4.80pp；匹配同 seeds/3 顺序后 1.11pp（5 seeds）、0.17pp（10 seeds）；分顺序 B−All = +1.08（o0）/ +1.39（o1）/ −1.94（o2），**V21D 的 o0-only 结论不可外推**。
+- **信用审计：窗口损失真实但不构成瓶颈**：第 22 轮在 V21 检查点上实测训练后 `cos(g5,g20)`：W≈0.33（模长仅 6–10%）、hold≈0.50–0.65、route≈0.74–0.84；但打开 Full 信用并不改变遗忘——**梯度几何失配不是功能重要性的可靠代理**。
 
 上述数字属于不同任务和训练协议，不能拼成跨轮性能提升曲线。所有数据均为合成数据；Top-K 当前仍执行稠密计算，尚无真实稀疏加速、真实数据泛化或通用智能的验证。
 
 ## 从哪里开始
 
 - **理解项目**：先读本页，再读[设计原理](docs/FRAMEWORK_DESIGN.md)、[架构](docs/ARCHITECTURE.md)和[实验总结](docs/EXPERIMENTS.md)。
-- **看最新结果**：打开 [flow_mvp_v18/REPORT.md](flow_mvp_v18/REPORT.md)、[compressibility.png](flow_mvp_v18/compressibility.png)、[flow_mvp_v17/REPORT.md](flow_mvp_v17/REPORT.md) 与 [flow_mvp_v16/REPORT.md](flow_mvp_v16/REPORT.md)，无需训练。
+- **看最新结果**：打开 [flow_mvp_v22/REPORT.md](flow_mvp_v22/REPORT.md)、[attribution.png](flow_mvp_v22/attribution.png)、[credit_audit.png](flow_mvp_v22/credit_audit.png) 与 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)，无需训练。
 - **运行已有模型**：在 `flow_mvp/` 中安装该轮依赖，执行 `python predict.py`；完整步骤见[复现指南](docs/REPRODUCING.md)。
 
 本次整理基于现有源码与归档结果；原归档已通过 SHA-256 校验。第八、九轮使用项目根目录 `.venv`（uv 创建，Python 3.11 + torch 2.14.0+cu130）在 RTX 4060 上运行；第十、十一轮按轻量实验改用 CPU 并行。第一～七轮未在本环境重新训练，其核验记录属于原实验运行记录。
