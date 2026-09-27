@@ -1,0 +1,6 @@
+seed 11: K5 acc=0.750 (y0 0.750) → rescue Full 0.689 (y0 0.689) [233s]
+seed 22: K5 acc=0.724 (y0 0.724) → rescue Full 0.701 (y0 0.701) [232s]
+seed 33: K5 acc=0.779 (y0 0.779) → rescue Full 0.750 (y0 0.750) [236s]
+seed 44: K5 acc=0.755 (y0 0.755) → rescue Full 0.742 (y0 0.742) [207s]
+seed 55: K5 acc=0.740 (y0 0.740) → rescue Full 0.784 (y0 0.784) [207s]
+mean K5 0.749609375 mean rescue 0.7333984375

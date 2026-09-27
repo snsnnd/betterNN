@@ -1,0 +1,11 @@
+jobs 9 out /mnt/d/betterNN/flow_mvp_v23/results/scale
+transient_xor_T160_K5_11: acc=0.935 (y0 0.935/y1 1.000) 599s
+transient_xor_T160_K5_22: acc=0.376 (y0 0.729/y1 0.500) 604s
+transient_xor_T160_K5_33: acc=1.000 (y0 1.000/y1 1.000) 605s
+transient_xor_T160_K20_11: acc=0.743 (y0 0.743/y1 1.000) 934s
+transient_xor_T160_K20_33: acc=1.000 (y0 1.000/y1 1.000) 942s
+transient_xor_T160_K20_22: acc=0.998 (y0 1.000/y1 0.998) 944s
+transient_xor_T160_Kfull_11: acc=0.999 (y0 1.000/y1 0.999) 841s
+transient_xor_T160_Kfull_33: acc=0.819 (y0 0.819/y1 1.000) 831s
+transient_xor_T160_Kfull_22: acc=0.989 (y0 0.989/y1 1.000) 834s
+all 9 jobs in 2382.5 s

@@ -1,4 +1,4 @@
-# 二十二轮实验与结论
+# 二十三轮实验与结论
 
 [返回项目首页](../README.md)
 
@@ -30,6 +30,7 @@
 | [第20轮](../flow_mvp_v20/REPORT.md) | 水从哪里进入、入口如何与动力学交互？ | 等输入能量下的 B 拓扑主族 / shared-pool overlap / `s_W` 扫描（5 seeds × 3 orders × r∈{0,12.5%}） | 任务侧无差异（H1 否、s_W 零结果）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突且 replay 下变差 |
 | [第21轮](../flow_mvp_v21/REPORT.md) | B 能否学会把不同信息写进不同状态子空间？ | hybrid 信用分配（core 截断 / B 全 BPTT）+ 可训练 B + orth/overlap penalty + H3 机制链 + Full-BPTT 敏感性 | 5 步截断下 ∇B≡0；自发解耦弱、overlap penalty 强解耦但 hybrid 下不降遗忘；Full BPTT 下解耦消除 overlap 代价 |
 | [第22轮](../flow_mvp_v22/REPORT.md) | 长程信用到底应该给谁：W、Route 还是 Hold？ | 8 arms 的 2³ 因子（`{W,Route,Hold}` 哪些拿 20 步 Full 信用，B 恒 Full）；逐组双通道梯度 + 10 seeds × 3 顺序 + 逐组 credit audit | **匹配口径下归因是零结果**（G=0.17pp，ME≤0.36pp，H1/H3/H4/H5 未通过）；V21 的 hybrid→Full gap 主要是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 负控无效应；审计显示 W 的 5 步梯度与 20 步严重失配（cos≈0.33）但不转化功能差异 |
+| [第23轮](../flow_mvp_v23/REPORT.md) | 造一个真正需要 core 长程信用的任务，还是证明不存在？ | Chain-select 压力任务（瞬态脉冲 + 长间隔 + 干扰 + 条件选择）× T{20,40,80,160} × core 窗口 K{5,10,20,Full} + sustained 对照 + 救援诊断（不改模型） | **没有找到长程硬案例**：T≥40 时 K=5 可达性 ≥ Full（T=80 xor 4/5 vs 3/5；T=160 2/3 vs 2/3）；唯一窗口效应是短 T 时序对齐（xor T20 K5 0/5）；主失败是"软选择平台/振荡"（Full 也不稳），K5 坏盆无法被 Full 微调救回（0.750→0.733） |
 
 ## 2. 关键证据
 
@@ -470,7 +471,22 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 
 数据位置：[REPORT.md](../flow_mvp_v22/REPORT.md)、[results/](../flow_mvp_v22/results/)、[attribution.png](../flow_mvp_v22/attribution.png)、[credit_audit.png](../flow_mvp_v22/credit_audit.png)。
 
-## 19. 已保存的内容
+## 19. 第二十三轮：Credit-Stress Benchmark
+
+V22 在 A'B'C'D' 上没找到 core 长程信用需求，但旧任务允许最后窗口完成全部计算。V23 **不改模型、只造任务**：Chain-select——A@.05T、c1@.21T、distractor@.39T、B@.58T、c2@.76T 全部为瞬态脉冲，最后一步读出；任务为 `selected = A if c1==c2 else B`（`xor`）及其镜像（`xorsw`），两个输出全对才算对。B 恒可训练恒 Full，core `{W,route,hold}` 窗口 `K∈{5,10,20,Full}`。网格：transient 两任务 × T{20,40,80} × 4 K × 5 seeds + T=160（xor、3 seeds、K{5,20,Full}）+ sustained 对照（T=80，c1/c2 持续在 meta）。
+
+### 判定结果
+
+- **H0 校准通过**：Full 在 T=20/80 两任务均 ≥0.90（xor 0.955/0.912，xorsw 1.000/1.000）。
+- **H1 未通过（无 T=80 硬案例）**：xor Full 0.912 vs K5 0.777（+13.5pp，但同向仅 2/5）；xorsw Full 1.000 vs K5 0.913（+8.6pp，3/5）。可达性（best-val≥0.9）xor：K5 **4/5** vs Full 3/5。
+- **H2/H3/H4/H5 未通过**：T=20 的 gap（+20.5pp）反而大于 T=80（+13.5pp）；sustained 也没有让 K5 变好（Full 5/5 可达 vs K5 2/5 xor、4/5 xorsw）；T=160 Full 2/3 可达、K5 2/3、K20 3/3。
+- **唯一干净的窗口效应在短 T 的时序对齐**：xor T=20 时 K5 可达 0/5（y0 卡 ~0.75）、K10 5/5、Full 4/5；K=5 末窗 [15..19] 只含 c2@15、缺 B@12。
+- **主失败模式是"软选择平台/周期振荡"**：y0≈0.75–0.94，Full 同样中招（T=40/80 可达 3/5；T=160 出现 val 1.0→final 0.38 崩溃），所以 final 的 K 差异不能归因于 credit horizon。
+- **救援诊断**：T=20 xor 的 K=5 失败流续训 Full 100 epochs 无一条被救回（0.750→0.733）——坏盆是吸引子；失败是轨迹/盆地选择，不是表示能力或信用不足。
+
+数据位置：[REPORT.md](../flow_mvp_v23/REPORT.md)、[results/](../flow_mvp_v23/results/)、[credit_stress.png](../flow_mvp_v23/credit_stress.png)。
+
+## 20. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -496,11 +512,12 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 | 20 | 4 | 2084 | 3 阶段 × 5 seeds：CL 逐阶段检查点 + 单任务最终模型 |
 | 21 | 4 | 1144 | V21A/B/C/D + fixed 回归：CL 逐阶段检查点 + 单任务模型 |
 | 22 | 4 | 488 | 2³ 信用归因：80 条 o0/r=12.5% 流逐阶段检查点 + 160 单任务模型 + 8 条回归流；credit audit 只读 V21 检查点 |
+| 23 | 5 | 0 | 信用压力任务：149 条单任务流 + 救援诊断，无检查点（只存 JSON） |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 20. 当前研究状态
+## 21. 当前研究状态
 
 第二十一轮发现 `∇B≡0` 并用 hybrid 信用分配（core 截断 / B 全 BPTT）训练 B，当时的结论是“Full joint 长程信用几乎消除 overlap 代价（6.63→1.83pp）”。**第二十二轮用匹配协议（同 10 seeds × 3 顺序）重审并修正了这个结论**：
 
@@ -509,4 +526,11 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 - credit audit 说明“梯度看不远”是真的（训练后 W 的 cos(g5,g20)≈0.33、模长只剩 6–10%），但**不构成这些任务的遗忘瓶颈**：B 可以把长程信息写进状态，core 只需在尾部窗口完成读出。
 - 唯一稳健的长程信用需求仍是 **B 的完整信用**（V21：截断下 `∇B≡0`，B 完全学不到），hybrid 的双通道已经用很便宜的方式解决。
 
-因此 Flow-v3 的方向需要修正：**不要直接把 eligibility trace / synthetic gradient 等局部长程信用机制加到 core 上**，因为当前 benchmark 无法证明 core 需要它们。若要做 local/online 长程信用，先用能暴露窗口缺陷的协议（更长序列、多事件、部分可观测）把 core 窗口效应复现出来，再以该协议为验收标准。并行/solver 线继续冻结（见 [HANDOVER §9](../HANDOVER.md)）。
+**第二十三轮按 V22 的建议造了 Credit-Stress Benchmark（Chain-select：瞬态脉冲 + 长间隔 + 干扰 + 条件选择，T 到 160）来主动寻找 core 窗口的硬案例，结果仍未找到**：
+
+- T≥40 时 K=5 的可达性 ≥ Full（T=40：5/5 vs 3/5；T=80 xor：4/5 vs 3/5；T=160：2/3 vs 2/3）；
+- 唯一干净的窗口效应是**短 T 的脉冲-边界对齐**（xor T=20：K5 0/5、K10 5/5），不是 horizon；
+- 主失败模式是“软选择平台/周期振荡”，Full 同样不稳定；K5 的坏盆无法被 Full 微调救回（救援诊断 0.750→0.733）；
+- sustained 对照（指令持续可见）方向不一致，说明瓶颈不是命令可见性。
+
+因此 Flow-v3 的方向维持 V22 的判断并加强：**不要为 core 设计 eligibility trace / synthetic gradient 等长程信用机制**；core 用 5 步窗口即可，唯一需要跨窗口信用的是 B（输入写入），hybrid 双通道已解决。并行/solver 线继续冻结（见 [HANDOVER §9](../HANDOVER.md)）。

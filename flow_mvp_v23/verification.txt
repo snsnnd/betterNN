@@ -1,0 +1,7 @@
+H0: PASS — transient Full 校准（xor/T20=0.955、xor/T80=0.912、xorsw/T20=1.000、xorsw/T80=1.000）≥0.90
+H1: FAIL — T=80 breakpoint（xor: Full=0.912, gap=+13.5pp, 2/5；xorsw: Full=1.000, gap=+8.6pp, 3/5）
+H2: FAIL — T=80: mean(K20−K5)=+12.8pp ≥15 且 mean(K10−K5)=+7.4pp ≤5
+H3: FAIL — xor: gap(T80)=+13.5pp ≥ gap(T20)=+20.5pp + 10
+H4: FAIL — T=80: transient gap=+11.1pp（应≥15），sustained gap=+7.3pp（应≤5）
+H5: FAIL — T=160: Full=0.936≥0.90；gap(K5)=+16.6pp、gap(K20)=+2.2pp（K20 应≥15）
+H6: info — T=80 K=5 的 y0/y1（xor: y0=0.835, y1=0.930；xorsw: y0=0.981, y1=0.932）——预期 y1 高、y0 低

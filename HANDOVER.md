@@ -3,11 +3,11 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 22 轮**（commit `18438b1`，Long-range Credit Attribution，见 [flow_mvp_v22/REPORT.md](flow_mvp_v22/REPORT.md)）
+- 最新轮次：**第 23 轮**（Credit-Stress Benchmark，见 [flow_mvp_v23/REPORT.md](flow_mvp_v23/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数；B 固定）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
-- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 完成可训练 B 的解耦实验；V22 完成长程信用归因
-- V21 的方法学约定：**hybrid 信用分配**（core 5 步截断 / B 全 BPTT，双 optimizer、分别 clip）；当前已确认的必要杠杆是 **B 的完整信用**，而 core 的 5 步窗口在 A'B'C'D' 上足够（V22）
+- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 可训练 B 解耦；V22 长程信用归因；V23 主动构造压力任务
+- 信用分配结论（已定）：**core 用 5 步窗口足够**（V22 匹配口径零结果；V23 压力任务也未找到反例）；唯一需要跨窗口信用的是 **B**，用 hybrid 双通道（core 截断 / B 全 BPTT）解决
 
 ---
 
@@ -51,6 +51,9 @@
 15. **长程信用归因是零结果（v22）**：把 `{W,Route,Hold}` 的 Full/T 信用做成 2³ 因子（B 恒 Full；10 seeds × 3 顺序）：G=F(B)−F(All)=**0.17pp**，主效应 ME_W/R/H=−0.14/+0.05/+0.36pp（同向 5/10、4/10、5/10）；没有单一子集（含 All）能稳定降低 r=12.5% 遗忘；r=0 负控所有 arm 24–25pp、|ME|≤0.4pp。
 16. **V21 的 hybrid→Full gap 主要是聚合错配（v22）**：6.63pp（3 顺序 hybrid）vs 1.83pp（仅 o0 Full）= 表面 4.80pp；匹配同 5 seeds/3 顺序后 1.11pp、10 seeds/3 顺序 0.17pp；分顺序 B−All = +1.08（o0，5/10）、+1.39（o1，6/10）、−1.94（o2，4/10）。固定-overlap/解耦的结论（H1）不受影响（V20/V21 都是 3 顺序口径）。
 17. **信用窗口损失真实存在但不构成遗忘瓶颈（v22）**：训练后 5 步梯度相对 20 步：W cos≈0.33（模长 6–10%）、hold≈0.50–0.65、route≈0.74–0.84；打开 Full 信用仍不改变遗忘——梯度几何失配不是功能重要性的可靠代理。
+18. **主动构造压力任务仍未找到 core 长程信用硬案例（v23）**：Chain-select（瞬态脉冲 A/c1/distractor/B/c2、T∈{20,40,80,160}、条件选择输出）上，T≥40 时 K=5 的可达性 ≥ Full（T=40 5/5 vs 3/5；T=80 xor 4/5 vs 3/5；T=160 2/3 vs 2/3）。唯一干净的窗口效应是短 T 的脉冲-边界对齐（xor T=20：K5 可达 0/5、K10 5/5）。
+19. **失败模式是"软选择平台/周期振荡"而非信用不足（v23）**：y0≈0.75–0.94，Full 同样不稳定（T=40/80 可达 3/5；T=160 出现 val 1.0→final 0.38 崩溃）；K=5 坏盆续训 Full 100 epochs 无法救回（0.750→0.733）。
+20. **sustained 对照方向不一致（v23）**：把 c1/c2 持续放进 meta（命令在最后一步可见）后，Full 5/5 可达而 K5 只有 2/5（xor）/4/5（xorsw）；与 transient 方向相反，说明瓶颈不是"命令可见性"，而是选择计算的优化盆地。
 
 ### 已被否定/削弱
 
@@ -75,6 +78,10 @@
 | core 的 5 步窗口是遗忘瓶颈 | 否（2³ 因子匹配口径无效应，r=0 同样无） | v22 |
 | V21D 的 o0 Full-BPTT 优势可外推到 3 顺序 | 否（o1 +1.39、o2 −1.94；10 seeds 聚合 0.17pp） | v22 |
 | `cos(g5,g20)` 等梯度窗口失配可预测遗忘 | 否（W cos≈0.33 但 Full 无收益） | v22 |
+| 长 T（到 160）下 5 步 core 窗口系统失败 | 否（T≥40 可达性 K5≥Full） | v23 |
+| 指令持续可见（sustained）能消除 K5 失败 | 否（Full 5/5 vs K5 2/5，方向反了） | v23 |
+| Full core credit 更稳定/更高可达 | 否（T=40/80 Full 可达仅 3/5，T=160 有崩溃） | v23 |
+| K5 失败是缺长程信用 | 否（续训 Full 100ep 救不回，是吸引盆） | v23 |
 
 ---
 
@@ -148,6 +155,7 @@
 | v20 | B 输入拓扑 × 动力学 | H1 否（任务侧等能量无关）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突、replay 下变差；s_W 零结果 | [flow_mvp_v20](flow_mvp_v20/) |
 | v21 | Adaptive Input Decoupling | 5 步截断下 ∇B≡0；hybrid（core 截断/B 全 BPTT）core 梯度与 V20 逐位一致；H2a 否、overlap penalty 强解耦但 hybrid 下不降遗忘；Full-BPTT 敏感性中解耦消除 overlap 代价（4.66→1.83pp） | [flow_mvp_v21](flow_mvp_v21/) |
 | v22 | Long-range Credit Attribution | `{W,Route,Hold}` 的 2³ Full/T 信用因子：匹配口径下归因零结果（G=0.17pp、|ME|≤0.36pp）；V21 的 hybrid→Full gap 是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 无效应；credit audit 显示窗口损失真实但不预测遗忘 | [flow_mvp_v22](flow_mvp_v22/) |
+| v23 | Credit-Stress Benchmark | Chain-select 压力任务（瞬态脉冲 + T 到 160）主动找 core 窗口硬案例：未找到（T≥40 K5 可达性 ≥ Full）；唯一窗口效应是短 T 脉冲对齐；主失败是"软选择平台/振荡"且 Full 也中招、坏盆救不回（0.750→0.733） | [flow_mvp_v23](flow_mvp_v23/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -164,7 +172,7 @@ betterNN/
 │   ├── ARCHITECTURE.md       # 模型/代码结构/指标定义
 │   ├── FRAMEWORK_DESIGN.md   # 设计原理、梯度路径、改进方向
 │   └── REPRODUCING.md        # 环境与逐轮命令
-├── flow_mvp/ … flow_mvp_v22/ # 每轮独立目录（代码+结果+报告）
+├── flow_mvp/ … flow_mvp_v23/ # 每轮独立目录（代码+结果+报告）
 ├── historical_deliveries/    # 第1～6轮历史 ZIP
 ├── .venv/                    # 运行环境（未入库；见 §7）
 └── SHA256SUMS.txt / MANIFEST.json / COUNTS.json  # 原归档校验（只覆盖第1～7轮）
@@ -190,7 +198,7 @@ betterNN/
 - 单轮完整复现：见 [docs/REPRODUCING.md](docs/REPRODUCING.md)。
 - 部分运行用 `--out smoke`（会写自己的 summary/report，不覆盖主结果）。
 - 大批量扫描按方法/种子拆成多个后台进程：用 `setsid ... > logs/X.log 2>&1 < /dev/null &` 启动（避免用 `pkill -f` 清进程——模式会匹配到当前 shell 自身）；完成后跑 `analyze.py`。
-- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟；v22 = 320 条 r=12.5% 流 + 80 条 r=0 + 160 单任务，28 进程约 33 分钟（内存吃紧，`--jobs 10` 更稳）。
+- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟；v22 = 320 条 r=12.5% 流 + 80 条 r=0 + 160 单任务，28 进程约 33 分钟（内存吃紧，`--jobs 10` 更稳）；v23 = 149 条单任务流（T 到 160），T=160 单流 20–45 min、RSS≈1.1GB（并发 ≤4，其余 T 用 6 进程）。
 
 ---
 
@@ -214,6 +222,8 @@ betterNN/
 16. **逐组信用窗口实现**：V22 在同一参数快照跑两条通道（period=5 + 20 步），按组拼装梯度；`B` 臂与 V21 hybrid 逐位一致（`verify_protocol.py` 固化）；`All` 与 V21D 矩阵差 0.038（V21D 联合 clip vs V22 分别 clip；实测 clip 会生效 max pre-clip norm≈1.9–2.5），但遗忘均值一致（1.95 vs 1.83）。
 17. **内存/并行**：本机 5GB，`--jobs 28` 在 9p 缓存+子进程下会 thrash（约 230s/流）；`--jobs 10` 稳定（约 100s/流）。重负载前先 `free -g`。
 18. **r=0 别带全 orders**：`--orders o0 o1 o2 --ratios 0 .125` 会把 r=0 跑满 3 顺序（预注册只要 o0，多一倍开销）；负控用 `--orders o0 --ratios 0`。
+19. **固定最后 epoch 在震荡任务上会误判（V23 教训）**：Chain-select 存在"软选择平台/周期振荡"，部分流 val 0.99 → final 0.5；报表必须同时给 `best-val reach`（只用验证集，非测试集选模）以区分**可达性**与**稳定性**，否则会把优化问题读成信用问题。
+20. **T=160 资源与并发（V23）**：单流 500 epochs ≈20–45 min、RSS≈1.1GB；并发 ≤4，否则 9p 缓存 + 子进程会 swap。T≤80 单流 RSS≈0.3–0.6GB，可 6 进程。
 
 ---
 
@@ -221,34 +231,35 @@ betterNN/
 
 按优先级：
 
-1. **V22 已完成（Long-range Credit Attribution）**：把 `{W,Route,Hold}` 的 Full/T 信用做成 2³ 因子（B 恒 Full；10 seeds × 3 顺序 × r=12.5%，r=0 负控）。结论：匹配口径下**归因零结果**（G=0.17pp、|ME|≤0.36pp）；V21 的 hybrid→Full gap 主要是“3 顺序 vs o0-only”的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 全部 arm 24–25pp；credit audit 显示训练后 W 的 cos(g5,g20)≈0.33（模长 6–10%）但打开 Full 无收益。**core 的 5 步窗口在 A'B'C'D' 上足够；不要为 core 设计 eligibility trace/synthetic gradient。** 下一步候选：
-   - **先造出能暴露 core 窗口缺陷的协议**：更长序列（T≥40）、多事件/多次写入、部分可观测、需要跨事件组合规则；验收标准 = core 窗口（5 vs 20）在 3 顺序下有 ≥2pp 且方向一致的遗忘差，再谈局部信用机制。
-   - **B 的局部/在线长程信用**：B 的完整信用是唯一稳健的长程需求（V21）；研究能否用 eligibility trace / 延迟输入信用近似 hybrid 的双通道，去掉完整图的内存/串行成本。
-   - **解释顺序敏感性**：o0 有弱信号（Hold ME +0.79pp、9/10；B−All +1.08pp）而 o2 反转（−1.94pp），需查任务顺序 × replay 分布 × B 初始化/mask 的交互。
-   - V20 遗留：可达性度量重做（随机 probe 退化）；任务协议需能体现动力学差异（更长序列/多事件/部分可观测）。
+1. **V23 已完成（Credit-Stress Benchmark）**：不改模型，只造 Chain-select（瞬态脉冲 A/c1/distractor/B/c2 + 条件选择，T 到 160），扫描 K{5,10,20,Full}。结论：**没有找到"5 步系统失败、Full 系统成功"的长程硬案例**；T≥40 时 K=5 可达性 ≥ Full；唯一窗口效应是短 T 脉冲-边界对齐；失败由"软选择平台/振荡"主导，K5 坏盆续训 Full 也救不回。**core 长程信用这条线可以关闭。** 下一步候选：
+   - **B 的跨窗口信用（唯一剩下的 credit 问题）**：hybrid 已用双通道解决，但 full 通道仍需完整图；研究 eligibility trace / 延迟输入信用 / slow-controller 近似，验收 = 在 A'B'C'D' 与 Chain-select 上匹配 hybrid 的结果且不需要全序列图。
+   - **Flow-v3 Adaptive Input Router**：按"core 5 步窗口 + B 全信用"设计，重点转向推理并行化与 B 的在线信用；不要再为 core 做 eligibility trace/synthetic gradient。
+   - **遗忘机制本身**：replay 为何如此有效（V22/V23 都指向优化/盆地而非梯度窗口）；可选 state replay 蒸馏（v16 遗留）。
+   - V20 遗留：可达性度量重做；能真正利用动力学差异的任务协议（V23 的长序列仍未利用）。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 3. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
 4. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。
 5. 更远期：结构生长/修剪、频率/脉冲/相位调制（都要求先固定平均参数或信息预算）。
 
-当前不建议：继续加新门、扩大规模（N≥512）、为 core 加长程信用机制，或在未解决“为什么 replay 这么有效”之前做复杂 consolidation；把 B 的可训练版直接塞回 5 步截断协议仍然不可行（它拿不到梯度，必须走 hybrid 或等价的双通道）。
+当前不建议：继续加新门、扩大规模（N≥512）、为 core 加长程信用机制，或把 core 的 Full credit 当默认（V23 显示它并不更稳）；把 B 的可训练版直接塞回纯 5 步截断协议仍不可行（∇B≡0，必须走 hybrid 或等价双通道）。
 
 ---
 
 ## 10. 新 agent 第一小时清单
 
 1. 读本文件 + [README.md](README.md) + [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
-2. 读五份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）、[v22](flow_mvp_v22/REPORT.md)（长程信用归因与 V21 gap 重审）。
+2. 读六份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）、[v22](flow_mvp_v22/REPORT.md)（长程信用归因与 V21 gap 重审）、[v23](flow_mvp_v23/REPORT.md)（Credit-Stress Benchmark 与救援诊断）。
 3. 检查环境与一致性：
    ```bash
    git status -sb && git ls-remote origin | head -2
    sha256sum --quiet -c SHA256SUMS.txt
    .venv/bin/python -c "import torch; print(torch.__version__)"
-   cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3    # 读缓存指标，约 5 秒
+   cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3    # V22 缓存指标，约 5 秒
    cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python verify_protocol.py     # B 逐位回归 + 梯度等价 + clip 生效
+   cd flow_mvp_v23 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -8    # V23 假设判定（读缓存 JSON）
    ```
 4. 复核当前最佳配方（可选）：v15 smoke `--epochs 2 --seeds 11 --out smoke` 或 v11 `--ratios 0 .125` 小规模。
-5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v23/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
+5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v24/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
 
 ---
 

@@ -1,0 +1,24 @@
+{
+  "name": "transient_xor_T20_Kfull_11",
+  "task": "xor",
+  "variant": "transient",
+  "T": 20,
+  "K": "full",
+  "seed": 11,
+  "final": 0.5390625,
+  "y0": 0.6337890625,
+  "y1": 0.8125,
+  "curve": [
+    {
+      "epoch": 1,
+      "acc": 0.328125,
+      "y0": 0.51953125,
+      "y1": 0.68359375
+    }
+  ],
+  "epochs_to_90": null,
+  "seconds": 1.1293280919926474,
+  "epochs": 3,
+  "lr": 0.003,
+  "params": 66418
+}

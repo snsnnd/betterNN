@@ -1,0 +1,30 @@
+{
+  "H0": {
+    "text": "transient Full \u6821\u51c6\uff08xor/T20=0.955\u3001xor/T80=0.912\u3001xorsw/T20=1.000\u3001xorsw/T80=1.000\uff09\u22650.90",
+    "ok": true
+  },
+  "H1": {
+    "text": "T=80 breakpoint\uff08xor: Full=0.912, gap=+13.5pp, 2/5\uff1bxorsw: Full=1.000, gap=+8.6pp, 3/5\uff09",
+    "ok": false
+  },
+  "H2": {
+    "text": "T=80: mean(K20\u2212K5)=+12.8pp \u226515 \u4e14 mean(K10\u2212K5)=+7.4pp \u22645",
+    "ok": false
+  },
+  "H3": {
+    "text": "xor: gap(T80)=+13.5pp \u2265 gap(T20)=+20.5pp + 10",
+    "ok": false
+  },
+  "H4": {
+    "text": "T=80: transient gap=+11.1pp\uff08\u5e94\u226515\uff09\uff0csustained gap=+7.3pp\uff08\u5e94\u22645\uff09",
+    "ok": false
+  },
+  "H5": {
+    "text": "T=160: Full=0.936\u22650.90\uff1bgap(K5)=+16.6pp\u3001gap(K20)=+2.2pp\uff08K20 \u5e94\u226515\uff09",
+    "ok": false
+  },
+  "H6": {
+    "text": "T=80 K=5 \u7684 y0/y1\uff08xor: y0=0.835, y1=0.930\uff1bxorsw: y0=0.981, y1=0.932\uff09\u2014\u2014\u9884\u671f y1 \u9ad8\u3001y0 \u4f4e",
+    "ok": null
+  }
+}

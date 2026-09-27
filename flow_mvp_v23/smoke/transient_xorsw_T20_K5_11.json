@@ -1,0 +1,24 @@
+{
+  "name": "transient_xorsw_T20_K5_11",
+  "task": "xorsw",
+  "variant": "transient",
+  "T": 20,
+  "K": "5",
+  "seed": 11,
+  "final": 0.43359375,
+  "y0": 0.6337890625,
+  "y1": 0.732421875,
+  "curve": [
+    {
+      "epoch": 1,
+      "acc": 0.296875,
+      "y0": 0.52734375,
+      "y1": 0.56640625
+    }
+  ],
+  "epochs_to_90": null,
+  "seconds": 0.7994486620009411,
+  "epochs": 3,
+  "lr": 0.003,
+  "params": 66418
+}

@@ -499,7 +499,7 @@ FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python analyze.py && python plot.py
 
 fixed 臂直接复用 V20；`fixed_reg` 用于一致性核验（应逐流矩阵差 0）。`--b-grad hybrid|full|trunc` 控制 B 的信用分配。
 
-## 19. 第二十二轮：长程信用归因（2³ 因子，最新）
+## 19. 第二十二轮：长程信用归因（2³ 因子）
 
 工作目录：`flow_mvp_v22/`。先跑 Phase 0 协议核验（`B` 臂逐位回归 V21A hybrid、`All` 臂对 V21D、V21 检查点上的逐组 credit audit），再跑 2³ 因子主实验。
 
@@ -525,7 +525,30 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --seeds 11 22 33 4
 
 臂名即 Full 信用集合：`B`、`B+W`、`B+R`、`B+H`、`B+W+R`、`B+W+H`、`B+R+H`、`All`。注意 `B` 臂应与 V21A `learnable` 逐位一致（`verify_protocol.py` 会检查）。约 5GB 内存的机器建议 `--jobs ≤ 10`，28 进程会触发 swap 抖动。
 
-## 20. 原归档校验与打包
+## 20. 第二十三轮：Credit-Stress Benchmark（Chain-select，最新）
+
+工作目录：`flow_mvp_v23/`。不改模型、只换任务生成器：瞬态脉冲事件 + T 到 160，比较 B Full + core 窗口 K。先跑主网格，再跑 sustained 对照、T=160 缩放与救援诊断。
+
+```bash
+cd flow_mvp_v23
+# 主网格：transient × {xor,xorsw} × T{20,40,80} × K{5,10,20,full} × 5 seeds
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --variants transient --tasks xor xorsw \
+    --Ts 20 40 80 --Ks 5 10 20 full --seeds 11 22 33 44 55 --epochs 500 --jobs 6 --out results/main
+# sustained 对照（c1/c2 持续在 meta）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --variants sustained --tasks xor xorsw \
+    --Ts 80 --Ks 5 20 full --seeds 11 22 33 44 55 --epochs 500 --jobs 3 --out results/control
+# T=160 缩放（xor、3 seeds）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --variants transient --tasks xor \
+    --Ts 160 --Ks 5 20 full --seeds 11 22 33 --epochs 500 --jobs 3 --out results/scale
+# 救援诊断（K=5 失败流 → Full 微调 100 epochs）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python probe_rescue.py 11 22 33 44 55
+# 汇总
+/mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
+```
+
+注意：T=160 单流约 20–45 min、RSS≈1.1GB（并行度 ≤4）；主网格的 xor 任务有"软选择平台/周期振荡"，final accuracy 需配合 `best-val reach`（REPORT 已给）一起读。
+
+## 21. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -545,7 +568,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 21. 常见问题
+## 22. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

@@ -1,0 +1,24 @@
+{
+  "name": "sustained_xor_T80_K5_11",
+  "task": "xor",
+  "variant": "sustained",
+  "T": 80,
+  "K": "5",
+  "seed": 11,
+  "final": 0.4375,
+  "y0": 0.64453125,
+  "y1": 0.59375,
+  "curve": [
+    {
+      "epoch": 1,
+      "acc": 0.25,
+      "y0": 0.51953125,
+      "y1": 0.49609375
+    }
+  ],
+  "epochs_to_90": null,
+  "seconds": 4.25055844700546,
+  "epochs": 3,
+  "lr": 0.003,
+  "params": 66418
+}
