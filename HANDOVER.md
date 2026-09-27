@@ -3,9 +3,10 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 18 轮**（commit `3bb2583`）
+- 最新轮次：**第 20 轮**（B 输入拓扑 × 动力学，见 [flow_mvp_v20/REPORT.md](flow_mvp_v20/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
+- **并行/solver 线已冻结在 V19**（结构结论保留，GPU 加速负结果）；V20 完成 B 拓扑 × 动力学主扫描
 
 ---
 
@@ -37,6 +38,10 @@
 5. **梯度冲突是真实的**：r=0 时 Hold 的新旧任务梯度 cosine −0.63，replay 后 +0.30 等（v13）；但并非所有组件都转正。
 6. **块仿射可压缩性（诊断）**：以 PreRoute 轨迹为并行预测器，2 次迭代重线性化、有效深度 12～15 可把 40 步外推恢复到 99.3～99.6%（Flow 99.82%）（v18）。
 7. **可扫描性数学成立**：仿射块组合的顺序 vs Hillis–Steele 扫描误差 2.2e-9（v17）。
+8. **块 Jacobian 有精确结构（v19）**：`J_t = S_t + C_t`，C 来自 `pooled(h)→Route`（rank ≤4）；块修正 `rank(J−S) ≤ 4L` × 5 seeds × 4 tasks 全量验证，**scan tree 秩逐层饱和在 ~12**，截断 r=16 相对误差 ~9e-6（近无损）。
+9. **结构化 solver 与 V18 GS-JVP 数值等价（v19）**：同中心下 acc 完全一致；与 v18 存储 JSON（batch 256）max|Δacc|=0。
+10. **输入拓扑只改动力学、不改任务表现（v20）**：等输入能量 `‖B_c‖₂=5.6` 下，single-random→distributed 的单任务 final 全 ≥0.994、r=0 遗忘均 ≈28–29pp（H1 Δ≤1pp）；但 `ρ_eff` 1.40→1.12、`G_max` 1.58→0.88、24 步衰减率 −0.029→+0.095（single-random 扰动净放大且 τ½ 截尾，distributed τ½≈6.6）。
+11. **overlap 的代价集中在 W/Hold（v20）**：α=0.5/1 时 Δcos(W)=−0.22/−0.17、Δcos(Hold)=−0.11/−0.11；r=12.5% 下 overlap 族 final 0.94/0.91/0.92，低于主族 0.97–0.99。
 
 ### 已被否定/削弱
 
@@ -49,6 +54,11 @@
 | Route/Hold 策略锚点可替代样本 replay | 否（0.7～23KB 遗忘几乎不变；λ=50 也不改善） | v16 |
 | 完全并行化不损失能力 | 部分（CL 接近，40 步外推 −8.8pp） | v17 |
 | 两遍全局迭代可补回外推 | 否（更差：73.7 vs 90.4） | v17 |
+| 结构化 affine scan 带 actual GPU 加速 | 否（eager 下慢 2~35×；跨块 Jacobian 乘积 fp32 溢出） | v19 |
+| PreRoute 可作长序列 predictor | 否（T=128 max\|h\|=2e10、T=512 NaN） | v19 |
+| multi-separate 降低无 replay 遗忘 | 否（multi8 −1.01pp、multi16 +0.02pp，门槛 −3pp） | v20 |
+| distributed 提高可达性 | 否（随机输入 probe 全拓扑 r_eff≈1.1–1.2，0/5） | v20 |
+| 初始谱尺度 s_W 影响训练后行为 | 否（0.7/0.9/1.1 任务与动力学均无差异） | v20 |
 
 ---
 
@@ -118,6 +128,8 @@
 | v16 | 策略锚点 vs 样本 replay | 策略锚点无用（0.7～23KB 平线）；11.8KB 样本达 ≤3pp | [flow_mvp_v16](flow_mvp_v16/) |
 | v17 | 可并行动力学 | 预计算 Route CL 接近、外推 −8.8pp；tanh 承重 | [flow_mvp_v17](flow_mvp_v17/) |
 | v18 | 块仿射可压缩性（诊断） | 预测器+2 次重线性化深度 12～15 恢复外推 | [flow_mvp_v18](flow_mvp_v18/) |
+| v19 | 并行求解器可行性 | 结构：rank≤4/块≤4L、scan tree 秩饱和~12、r=16 无损；0C：eager 无加速、scan 溢出、PreRoute 长 T 发散 → 并行线冻结 | [flow_mvp_v19](flow_mvp_v19/) |
+| v20 | B 输入拓扑 × 动力学 | H1 否（任务侧等能量无关）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突、replay 下变差；s_W 零结果 | [flow_mvp_v20](flow_mvp_v20/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -185,12 +197,10 @@ betterNN/
 
 按优先级：
 
-1. **方向 2：可微 block-affine 训练**（v18 已证明值得投入）
-   - 训练时约束块变换局部可线性化：`L = L_task + λ·L_linearizability`（对块 Jacobian 条件数/线性化误差加罚）。
-   - 或先做 **boundary predictor**：单独预测块入口状态，替代 PreRoute 预热，降低重线性化遍数。
-   - 目标：让"N 步闭环 + K 次扫描"成为可训练的原生架构，而不是事后近似。
-2. **B 输入拓扑**：固定 `‖Bx‖₂` 的输入预算，比较 single-random / single-central / multi-disjoint / multi-overlap / distributed 对精度、长度外推、遗忘、状态扩散与梯度冲突的影响。
-3. **B × W 动力学区域**：`ρ(W) ∈ {0.5,0.7,0.9,1.0,1.1}` × 输入拓扑；测记忆半衰期、扰动衰减、稳定-响应权衡。
+1. **V20 已完成（B 输入拓扑 × 动力学）**：任务侧等能量无关（H1 否、s_W 零结果），动力学侧强效应（单点输入放大扰动、分布式快速衰减）；overlap 增 W/Hold 梯度冲突并在 replay 下变差。下一步候选：
+   - **可达性度量需要重做**：当前随机输入 probe 全部退化为 `r_eff≈1.1–1.2`（被主导方向支配）；可改输入—状态增益谱、闭环频率响应或多点脉冲探针后再谈 H2。
+   - **任务侧瓶颈不在输入入口**：等能量拓扑不改变单任务/CL，说明要体现动力学差异需要改任务协议（更长序列、多事件写入、部分可观测）或转向记忆设计（多时间尺度、快慢状态）。
+2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 4. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
 5. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。
 6. 更远期：结构生长/修剪、频率/脉冲/相位调制（都要求先固定平均参数或信息预算）。
@@ -202,15 +212,15 @@ betterNN/
 ## 10. 新 agent 第一小时清单
 
 1. 读本文件 + [README.md](README.md) + [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
-2. 读三份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v18](flow_mvp_v18/REPORT.md)（可压缩性）。
+2. 读三份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）。
 3. 检查环境与一致性：
    ```bash
    git status -sb && git ls-remote origin | head -2
    sha256sum --quiet -c SHA256SUMS.txt
    .venv/bin/python -c "import torch; print(torch.__version__)"
-   cd flow_mvp_v18 && /mnt/d/betterNN/.venv/bin/python analyze.py | head -20
+   cd flow_mvp_v20 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3
    ```
-   （v18 分析是纯诊断、秒级，可用作环境冒烟。）
+   （v20 analyze 依赖已缓存指标，约 15 秒，可用作环境冒烟。）
 4. 复核当前最佳配方（可选）：v15 smoke `--epochs 2 --seeds 11 --out smoke` 或 v11 `--ratios 0 .125` 小规模。
 5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v19/`，先写 `PLAN.md`（含判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md` 并 push。
 

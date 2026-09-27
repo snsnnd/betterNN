@@ -1,4 +1,4 @@
-# 十八轮实验与结论
+# 二十轮实验与结论
 
 [返回项目首页](../README.md)
 
@@ -26,6 +26,8 @@
 | [第16轮](../flow_mvp_v16/REPORT.md) | 策略能否作为压缩的长期记忆？ | 固定带宽、扫描存储字节：样本 vs Route/Hold 锚点 | 策略锚点不能替代样本；遗忘瓶颈是数据锚定 |
 | [第17轮](../flow_mvp_v17/REPORT.md) | 能力是否依赖严格时间递归？ | 预计算/迭代 Route 的四种接线 + 扫描验证 | CL 可并行化，长度外推依赖反馈闭环 |
 | [第18轮](../flow_mvp_v18/REPORT.md) | 非线性闭环能压缩到什么程度？ | 块仿射 + 迭代重线性化（诊断，无训练） | 有预测器时深度 12～15 可恢复 Flow 外推 |
+| [第19轮](../flow_mvp_v19/REPORT.md) | 可压缩性能否变成真实加速？ | 解析块 Jacobian 结构全量扫描 + GPU solver 基准（无训练） | 结构成立（rank≤4/块≤4L、scan tree 秩饱和~12、r=16 无损）；eager 实现无加速、长乘积溢出、PreRoute 长 T 发散 → 并行线冻结 |
+| [第20轮](../flow_mvp_v20/REPORT.md) | 水从哪里进入、入口如何与动力学交互？ | 等输入能量下的 B 拓扑主族 / shared-pool overlap / `s_W` 扫描（5 seeds × 3 orders × r∈{0,12.5%}） | 任务侧无差异（H1 否、s_W 零结果）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突且 replay 下变差 |
 
 ## 2. 关键证据
 
@@ -354,7 +356,64 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 
 数据位置：[REPORT.md](../flow_mvp_v18/REPORT.md)、[summary.json](../flow_mvp_v18/summary.json)、[compressibility.png](../flow_mvp_v18/compressibility.png)。
 
-## 15. 已保存的内容
+## 15. 第十九轮：并行求解器可行性（结构 + 0C 负结果）
+
+不训练：5 seeds × 4 tasks × {20,40} 步 × L∈{1,2,4,5,10}，每配置 4 样本，先做解析算子结构全量扫描，再做 GPU solver 基准（T∈{40,128,512} × batch∈{1,8,32}，L=4，K∈{0,1}，zero 与 PreRoute 中心）。
+
+### 结构结论
+
+- 解析分解 `J_t = S_t + C_t`（C 来自 `pooled(h)→Route`，rank ≤4）与 autograd 一致到 float32 噪声底（单步 2e-8、块 1.7e-7）；S 保持 8/16 角色块支撑。
+- 块修正秩均值 6.7～8.6（L=4，理论界 16）、8.6（L=10，界 40）；**scan tree 显著秩逐层饱和在 ~12**，未向 256 膨胀；截断 r=16 相对误差 ~9e-6（近无损），r=4 明显变差（~2e-2）。
+- 回归：structured solver 与 v18 GS-JVP 在同一中心下 acc 完全一致；与 v18 存储 JSON（batch 256）max|Δacc|=0。
+
+### GPU 基准（RTX 4060 Laptop，fp32，eager）
+
+- **latency 未通过**：serial 本身 launch-bound（T=512: ~260–390ms）；GS-JVP 慢 6～13×；structured scan 慢 2～35× 且在 B≥32 时因跨块 Jacobian 乘积溢出 fp32 而失败；structured 顺序 apply 仅在 T≥128/batch=1 超过 serial（72ms vs 308ms），batch 8/32 被反超。
+- **数值边界**：精确 affine scan 需要 `M_B···M_1` 长乘积，即使 zero 中心下也随块数增长溢出；**low rank ≠ well-conditioned**。
+- **PreRoute 不能做长序列 predictor**：其状态 max|h| 在 T=40/128/512 = 1.3e3 / 2.1e10 / NaN（无 tanh 的线性动态长期不稳定）。
+- 判定：未达 PLAN 预注册的 0C 门槛（latency≤serial、显存不炸、acc 达标），不进入 Phase 3；并行线冻结。复杂度核算表明 exact affine scan 的组合代价约为单步的 ~240 倍，在 N=256 规模下不划算。
+
+数据位置：[REPORT.md](../flow_mvp_v19/REPORT.md)、[flow_mvp_v19/README.md](../flow_mvp_v19/README.md)、[results/summary.json](../flow_mvp_v19/results/summary.json)、[results/solver_bench.json](../flow_mvp_v19/results/solver_bench.json)、[results/solver_bench_zero.json](../flow_mvp_v19/results/solver_bench_zero.json)、[operator_structure.png](../flow_mvp_v19/operator_structure.png)、[solver_pareto.png](../flow_mvp_v19/solver_pareto.png)。
+
+## 16. 第二十轮：B 输入拓扑 × 底网动力学
+
+不改 Flow-v2 架构，只改 B 的支撑/符号/归一化与 W 初始尺度。统一协议：A'B'C'D'、5 seeds、65 轮/阶段、orders o0/o1/o2、r∈{0,12.5%}；每通道固定 `‖B_c‖₂=β=0.7√64=5.6`，`|B_ci|=β/√k`，固定种子 Rademacher 符号；先按 v15 正常构建模型再用独立 RNG 覆盖 B（RNG 流不串）。共 700 条流，完整性/矩阵复算误差 0。
+
+### Phase A：主族 topology（single-random / single-central / multi8 / multi16 / distributed）
+
+任务侧：单任务 final 全部 ≥0.994；CL r=0 遗忘全部 28–29pp，multi8 − single-random = **−1.01pp**、multi16 = **+0.02pp**（预注册门槛 −3pp 且 ≥4/5 → 未通过）；r=12.5% 主族 final 0.97–0.99。
+
+动力学侧（单任务模型，任务×种子聚合）：
+
+| 拓扑 | ρ_eff | γ4 | γ8 | 24 步衰减率 | ratio_end | G_max |
+|---|---:|---:|---:|---:|---:|---:|
+| single-random | 1.404 | 0.379 | 0.350 | −0.029 | 1.50 | 1.58 |
+| single-central | 1.386 | 0.369 | 0.340 | −0.026 | 1.57 | 1.67 |
+| multi8 | 1.271 | 0.230 | 0.195 | +0.058 | 0.56 | 0.92 |
+| multi16 | 1.219 | 0.177 | 0.147 | +0.071 | 0.52 | 0.96 |
+| distributed | 1.120 | 0.096 | 0.074 | +0.095 | 0.36 | 0.88 |
+
+→ 输入越分散，扰动越不被放大、衰减越快（single-random 净放大且 τ½ 被 24 步窗口截尾；distributed τ½≈6.6 步）。**等能量拓扑只改变“河床动力学”，不改变任务表现。**
+
+### Phase B：shared-pool overlap（两通道均可写 role0∪role1，每通道 8+8，α=0/0.5/1）
+
+- 梯度冲突（stage0、o0、r=0，相对 α=0）：W **−0.219/−0.169**、Hold **−0.116/−0.111**（α=0.5/1，均 ≤−0.10），route 非单调（α=1 为 +0.136）→ H3 部分通过（2/3 组）。
+- 功能面：r=0 遗忘 α=1 时 +2pp（未达 +3pp 辅助门槛）；r=12.5% 时 overlap 族 final **0.94/0.91/0.92**，明显低于主族 0.97–0.99。
+- 寿命剂量效应：α=0/0.5/1 的 24 步衰减率 +0.056/+0.038/+0.016（共享越多，扰动越久）。
+
+### Phase C：s_W = ‖W₀‖₂ ∈ {0.7, 0.9, 1.1} × {single-random, distributed}
+
+任务与动力学指标全部无差异（干净零结果；训练把初始谱尺度洗掉）。
+
+### 判定
+
+- H1（multi-separate 降低 r=0 遗忘）：**未通过**（Δ≤1pp）。
+- H2（distributed：可达性 ↑≥10%、τ½ ↓≥20%）：**可达性未通过**（随机输入 probe 全拓扑 r_eff≈1.1–1.2，不敏感）；**寿命方向支持**（基线 decay≤0，distributed +0.095）。
+- H3（overlap→梯度冲突）：**部分通过**（W/Hold 通过，route 相反）。
+
+数据位置：[REPORT.md](../flow_mvp_v20/REPORT.md)、[results/](../flow_mvp_v20/results/)、[input_topology.png](../flow_mvp_v20/input_topology.png)、[overlap_gradient.png](../flow_mvp_v20/overlap_gradient.png)、[sW_interaction.png](../flow_mvp_v20/sW_interaction.png)。
+
+## 17. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -376,10 +435,14 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 | 16 | 3 | 1360 | 330条流×4阶段＋λ稳健性检查 |
 | 17 | 4 | 480 | 120条流×4阶段（40步外推与 scan 验证为附加产物） |
 | 18 | 4 | 0 | 诊断：无训练，仅 JSON 结果与图 |
+| 19 | 4 | 0 | 诊断：结构扫描 + GPU 基准，无训练、无检查点 |
+| 20 | 4 | 2084 | 3 阶段 × 5 seeds：CL 逐阶段检查点 + 单任务最终模型 |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 16. 当前研究状态
+## 18. 当前研究状态
 
-第十八轮把"块并行"从猜想推进为可量化结论：**块仿射 + 迭代重线性化在有并行预测器（PreRoute）时，L=4～5、2 次重线性化即可恢复 Flow 的 40 步外推（99.3～99.6% vs 99.82%），有效深度 12～15**；无预测器需深度 20～40。按照预先约定的判定（L≈4～8、K≤2 能接近 Flow），下一步应评估**方向 2：可微 block-affine 训练**——把块变换在训练时就约束为局部可线性化（例如 `L = L_task + λ L_linearizability`），或单独训练 block boundary predictor，然后再决定是否回到 B topology 与动力学区域。
+并行/solver 线冻结在第十九轮（结构可压缩成立、eager GPU 无加速、长乘积溢出）。第二十轮把主线拉回“水从哪里进入”：在固定输入能量下扫描 B 拓扑、shared-pool overlap 与 `s_W`。结论是**任务侧不敏感、动力学侧敏感**——5 种拓扑、3 档 `s_W` 的单任务与 CL 表现几乎完全一致，但 `ρ_eff`、有限时间放大 `G_max` 与扰动寿命随输入分散度系统性变化；overlap 提高 W/Hold 的梯度冲突并在 replay 下降低 final。
+
+下一步候选（见 [HANDOVER §9](../HANDOVER.md)）：重做可达性度量（当前随机 probe 退化为单方向）；若要体现动力学差异需改任务协议（更长序列、多事件写入、部分可观测）或转入记忆/多时间尺度设计；并行线若要重开需 coarse+fine 与融合实现。

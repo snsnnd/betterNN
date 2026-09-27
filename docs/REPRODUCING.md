@@ -421,7 +421,7 @@ wait
 
 实测：4 进程并行约 50 分钟（iter 为瓶颈）；核验约 5 分钟；flowv2 与第十五轮逐位一致 10/10。
 
-## 15. 第十八轮：block-affine 可压缩性（最新）
+## 15. 第十八轮：block-affine 可压缩性
 
 工作目录：`flow_mvp_v18/`。纯诊断：复用 v15 Flow 与 v17 PreRoute 检查点，无需训练；5 个种子可并行，每进程约 1 分钟。
 
@@ -436,7 +436,47 @@ wait
 /mnt/d/betterNN/.venv/bin/python plot.py
 ```
 
-## 16. 原归档校验与打包
+## 16. 第十九轮：并行求解器可行性（无训练）
+
+工作目录：`flow_mvp_v19/`。阶段：结构全量扫描（Phase 0B）与 GPU solver 基准（Phase 0C）；只需 v15/v17 检查点。
+
+```bash
+cd flow_mvp_v19
+# Phase 0B：结构扫描（约 7 分钟，12 进程）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --jobs 12 --out results/raw
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python analyze.py    # 聚合 + 回归 + 写 REPORT.md
+/mnt/d/betterNN/.venv/bin/python plot.py
+# Phase 0C：GPU 基准（约 10 分钟/组；zero 与 preroute 两组）
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python solver_bench.py --check
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python solver_bench.py --steps 40 128 512 --batch 1 8 32 \
+    --ks 0 1 --init zero --out results/solver_bench_zero.json
+```
+
+`analyze.py` 的回归结果缓存在 `results/regression.json`（`--refresh-reg` 强制重算）。0C 在 RTX 4060 上运行；CPU 也可跑但无法代表并行结论。
+
+## 17. 第二十轮：B 输入拓扑 × 动力学（最新）
+
+工作目录：`flow_mvp_v20/`。先用少量 epoch 验证 B 构造，再跑全量（A 约 45 分钟/12 进程，B/C 更短；可并发）。
+
+```bash
+cd flow_mvp_v20
+# B 构造自检（能量/支撑/overlap/正交/RNG 隔离）
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python - <<'PY'
+import experiment as E
+m = E.build(11); E.make_B(m, 11, 'overlap', .5); print(m.B.norm(dim=1))
+PY
+# 全量训练（每行一个后台进程）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase A --jobs 12 --out results/A
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase B --jobs 6  --out results/B
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase C --jobs 8  --out results/C
+# 汇总（单任务指标会缓存 results/*/metrics_singles.json，首次约 10 分钟）
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python analyze.py
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python plot.py
+```
+
+核验：analyze 会重载 stage3 检查点复算测试矩阵（要求与训练记录逐值一致）并输出 H1/H2/H3 判定；`results/B/h3.json` 供 `overlap_gradient.png` 使用。
+
+## 18. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -456,7 +496,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 17. 常见问题
+## 19. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|
