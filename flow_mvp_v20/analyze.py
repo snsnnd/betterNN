@@ -100,8 +100,8 @@ def write_report(single, rows, ver, h1, h2, h3):
     ap('')
     ap('## 2. 单任务可学性（final，均值±sd，任务/种子聚合）')
     ap('')
-    ap('| label | final | r_PR | probe r_eff | probe σmax | ρ_eff | γ4 | γ8 | decay24 | ratio_end | G_max |')
-    ap('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
+    ap('| label | final | r_PR | probe r_eff | probe σmax | ρ_eff | γ4 | γ8 | fz decay24 | fz ratio_end | fz G_max | cl G_max |')
+    ap('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
     for lab in sorted({s['label'] for s in single}):
         it = [s for s in single if s['label'] == lab]
         f = agg_vals(it, 'final')
@@ -111,13 +111,15 @@ def write_report(single, rows, ver, h1, h2, h3):
         re = agg_vals(it, 'rho_eff')
         g4 = agg_vals(it, 'gamma4')
         g8 = agg_vals(it, 'gamma8')
-        dc = agg_vals(it, 'decay_rate')
-        rn = agg_vals(it, 'ratio_end')
-        gm = agg_vals(it, 'G_max')
+        dc = agg_vals(it, 'fz_decay')
+        rn = agg_vals(it, 'fz_ratio_end')
+        gm = agg_vals(it, 'fz_Gmax')
+        gcl = agg_vals(it, 'cl_Gmax')
         ap(f"| {lab} | {f[0]:.3f}±{f[1]:.3f} | {rp[0]:.1f} | {pe[0]:.1f} | {ps[0]:.2f} | "
-           f"{re[0]:.3f} | {g4[0]:.3f} | {g8[0]:.3f} | {dc[0]:+.3f} | {rn[0]:.2f} | {gm[0]:.2f} |")
+           f"{re[0]:.3f} | {g4[0]:.3f} | {g8[0]:.3f} | {dc[0]:+.3f} | {rn[0]:.2f} | {gm[0]:.2f} | {gcl[0]:.2f} |")
     ap('')
-    ap('（τ½ 在 single-random/central 上被 24 步窗口截尾，故用 24 步对数衰减率与 ratio_end 代替。）')
+    ap('（lifetime 分两口径：`fz` = 预注册的 frozen Route/Hold（拆出底网稳定性）；`cl` = 扰动重新进入 Route 的闭环对照。'
+       'single-random/central 的 τ½ 在 24 步窗口内被截尾，故用 24 步对数衰减率与 ratio_end 代替。）')
     ap('')
     ap('## 3. CL 汇总（r=0 / r=12.5%，合并 3 顺序）')
     ap('')
@@ -149,10 +151,12 @@ def write_report(single, rows, ver, h1, h2, h3):
     ap(f"- 可达性：mean Δ={rr if rr is None else round(rr*100,1)}%，≥10% 的 seeds "
        f"{h2.get('reach_seeds_ge10', 0)}/5 → {'通过' if ok2r else '未通过'}")
     if 'decay_base_mean' in h2:
-        ap(f"- 寿命：baseline decay={h2['decay_base_mean']:+.3f}（≤0，扰动不衰减甚至放大，τ½ 截尾），"
-           f"distributed decay={h2['decay_dist_mean']:+.3f}（τ½≈6.6 步）→ "
+        ap(f"- 寿命（frozen，预注册口径）：baseline decay={h2['decay_base_mean']:+.3f}，"
+           f"distributed decay={h2['decay_dist_mean']:+.3f} → "
            f"{'方向支持' if h2['decay_qual_ok'] else '方向不支持'}；"
            f"预注册的“τ½ ↓≥20%”因基线被截尾不可直接计算。")
+        ap(f"- 闭环对照：baseline decay={h2.get('cl_decay_base', float('nan')):+.3f}，"
+           f"distributed decay={h2.get('cl_decay_dist', float('nan')):+.3f}（同向）。")
     ap('')
     ap('### H3：overlap α↑ → 梯度冲突↑（cos ≤ −0.10 且 ≥2 组）')
     ap('')
@@ -173,14 +177,16 @@ def write_report(single, rows, ver, h1, h2, h3):
     ap(f"1. **任务侧无差异**：单任务 final 全部 ≥0.994；r=0 遗忘 {fog_a0['single-random'][0]*100:.1f}pp (single-random) "
        f"vs {fog_a0['distributed'][0]*100:.1f}pp (distributed)；H1 Δ≤1pp；r=12.5% 主族 final "
        f"{fin_r12['single-random'][0]:.2f}~{fin_r12['distributed'][0]:.2f}。s_W∈{{0.7,0.9,1.1}} 也无差异。")
-    ap(f"2. **动力学被强烈改变**：ρ_eff {lm('single-random','rho_eff'):.2f}→{lm('distributed','rho_eff'):.2f}、"
-       f"G_max {lm('single-random','G_max'):.2f}→{lm('distributed','G_max'):.2f}、"
-       f"decay24 {lm('single-random','decay_rate'):+.3f}→{lm('distributed','decay_rate'):+.3f} "
-       f"（single-random 扰动净放大且 τ½ 截尾，distributed τ½≈6.6）。")
-    ap(f"3. **overlap 剂量效应**：α=0/0.5/1 的 decay24 "
-       f"{lm('overlap_a0','decay_rate'):+.3f}/{lm('overlap_a0.5','decay_rate'):+.3f}/{lm('overlap_a1','decay_rate'):+.3f}，"
+    ap(f"2. **动力学被强烈改变（frozen 口径）**：ρ_eff {lm('single-random','rho_eff'):.2f}→{lm('distributed','rho_eff'):.2f}、"
+       f"G_max {lm('single-random','fz_Gmax'):.2f}→{lm('distributed','fz_Gmax'):.2f}、"
+       f"decay24 {lm('single-random','fz_decay'):+.3f}→{lm('distributed','fz_decay'):+.3f}"
+       f"（single-random 扰动净放大且 τ½ 截尾，distributed τ½≈6.6；闭环 cl G_max "
+       f"{lm('single-random','cl_Gmax'):.2f}→{lm('distributed','cl_Gmax'):.2f} 同向）。")
+    ap(f"3. **overlap 非单调但确实有害**：α=0/0.5/1 的 fz decay24 "
+       f"{lm('overlap_a0','fz_decay'):+.3f}/{lm('overlap_a0.5','fz_decay'):+.3f}/{lm('overlap_a1','fz_decay'):+.3f}，"
        f"r=12.5% final {fin_r12['overlap_a0'][0]:.2f}/{fin_r12['overlap_a0.5'][0]:.2f}/{fin_r12['overlap_a1'][0]:.2f}，"
-       f"梯度冲突集中在 W/Hold（α=0.5 时 Δcos W={h3['alpha=0.5']['W']:.2f}）。")
+       f"梯度冲突集中在 W/Hold（α=0.5 时 Δcos W={h3['alpha=0.5']['W']:.2f}）；α=0.5 并不比 α=1 轻，"
+       f"因此只能说 overlap 有害，不能说伤害随 α 严格单调。")
     ap("4. **可达性 probe 不敏感**：所有拓扑 probe r_eff 均在 1.1~1.2（随机小输入在 20 步闭环后被压缩到单一方向），"
        "H2 的可达性预测未得到支持；寿命方向则明确支持。")
     ap('')
@@ -204,13 +210,19 @@ def h2_judgment(single):
         rel = [(dist[s] - base[s]) / (base[s] + 1e-12) for s in seeds]
         out['reach_rel_mean'] = float(np.mean(rel))
         out['reach_seeds_ge10'] = int(sum(r >= .10 for r in rel))
-    tb = get('single-random', 'decay_rate', set(range(0, 100)))
-    td = get('distributed', 'decay_rate', set(range(0, 100)))
+    tb = get('single-random', 'fz_decay', set(range(0, 100)))
+    td = get('distributed', 'fz_decay', set(range(0, 100)))
     seeds2 = sorted(set(tb) & set(td))
     if seeds2:
         out['decay_base_mean'] = float(np.mean([tb[s] for s in seeds2]))
         out['decay_dist_mean'] = float(np.mean([td[s] for s in seeds2]))
         out['decay_qual_ok'] = bool(out['decay_dist_mean'] > 0 and out['decay_base_mean'] <= 0)
+    tb2 = get('single-random', 'cl_decay', set(range(0, 100)))
+    td2 = get('distributed', 'cl_decay', set(range(0, 100)))
+    seeds3 = sorted(set(tb2) & set(td2))
+    if seeds3:
+        out['cl_decay_base'] = float(np.mean([tb2[s] for s in seeds3]))
+        out['cl_decay_dist'] = float(np.mean([td2[s] for s in seeds3]))
     return out
 
 

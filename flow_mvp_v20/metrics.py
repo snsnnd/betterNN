@@ -115,8 +115,8 @@ def _gamma(Js, i, H):
 
 
 @torch.no_grad()
-def lifetime_metrics(m, x, meta, t_star=8, horizon=24, eps=1e-3, samples=16):
-    """参考轨迹用同一 forward；扰动轨迹用相同输入，比较状态差。"""
+def closed_loop_lifetime(m, x, meta, t_star=8, horizon=24, eps=1e-3, samples=16):
+    """闭环扰动稳定性：扰动后的状态会重新进入 Route（非预注册的 frozen 版）。"""
     x, meta = x[:samples], meta[:samples]
     b = len(x)
     with torch.no_grad():
@@ -130,6 +130,45 @@ def lifetime_metrics(m, x, meta, t_star=8, horizon=24, eps=1e-3, samples=16):
         t = t_star + k
         h_pert, _, _, _ = step_map(m, h_pert, x[:, t], meta[:, t])
         ratios.append(float((h_pert - ref[k]).norm(dim=(1, 2)).mean()))
+    return _lifetime_summary(ratios, delta0)
+
+
+@torch.no_grad()
+def frozen_lifetime(m, x, meta, t_star=8, horizon=24, eps=1e-3, samples=16):
+    """预注册口径：固定 operating point 的 Route/Hold（a_t*, g_t*），只留底网+输入的闭环。"""
+    x, meta = x[:samples], meta[:samples]
+    horizon = min(horizon, x.shape[1] - 1 - t_star)
+    b = len(x)
+    w = (m.W * m.mask).reshape(4, M, 4, M)
+    h = torch.zeros(b, 4, M)
+    h_star = None
+    a_tr, g_tr, h_tr = [], [], []
+    for t in range(t_star + horizon):
+        ctl = meta[:, t]
+        a = .2 * m.hold(ctl).sigmoid()
+        gate = m.route(torch.cat([ctl, h.sum(-1) / M], 1)).sigmoid().reshape(-1, 4, 4)
+        if t == t_star:
+            h_star = h
+        if t >= t_star:
+            a_tr.append(a)
+            g_tr.append(gate)
+        rec = (torch.einsum('bsi,sidj->bsdj', h, w) * gate[:, :, :, None]).sum(1)
+        cand = torch.tanh(rec + (x[:, t] @ m.B).reshape(-1, 4, M))
+        h = (1 - a[:, :, None]) * h + a[:, :, None] * cand
+        if t >= t_star:
+            h_tr.append(h)
+    delta0 = torch.randn(b, 4, M) * eps
+    hp = h_star + delta0
+    ratios = []
+    for k in range(horizon):
+        rec = (torch.einsum('bsi,sidj->bsdj', hp, w) * g_tr[k][:, :, :, None]).sum(1)
+        cand = torch.tanh(rec + (x[:, t_star + k] @ m.B).reshape(-1, 4, M))
+        hp = (1 - a_tr[k][:, :, None]) * hp + a_tr[k][:, :, None] * cand
+        ratios.append(float((hp - h_tr[k]).norm(dim=(1, 2)).mean()))
+    return _lifetime_summary(ratios, delta0)
+
+
+def _lifetime_summary(ratios, delta0):
     ratios = np.array(ratios) / (float(delta0.norm(dim=(1, 2)).mean()) + 1e-12)
     tau = next((k + 1 for k in range(len(ratios)) if ratios[k] <= .5), None)
     ratio_end = float(ratios[-1]) if len(ratios) else float('nan')
@@ -231,15 +270,18 @@ def config_metrics(path, task=0, n=256):
     x, meta, y = E.data(ck['seed'] * 10000 + task * 100 + 10, n, task)
     with torch.no_grad():
         dyn = jacobians(m, x, meta, samples=2)
-        life = lifetime_metrics(m, x, meta, samples=16)
+        life = closed_loop_lifetime(m, x, meta, samples=16)
+        frozen = frozen_lifetime(m, x, meta, samples=16)
         reach_t = reachability_task(m, x, meta)
         probe = reachability_probe(m, seed=ck['seed'], task=task)
     return {'ckpt': str(path), 'topo': ck['topo'], 'alpha': ck.get('alpha'), 'sw': ck.get('sw', .9),
             'seed': ck['seed'], 'task': task,
             'rho_eff': float(np.nanmean(dyn['rho'])), 'sigma_eff': float(np.nanmean(dyn['sigma'])),
             'gamma4': float(np.nanmean(dyn['gamma4'])), 'gamma8': float(np.nanmean(dyn['gamma8'])),
-            'tau_half': life['tau_half'], 'G_max': life['G_max'],
-            'decay_rate': life['decay_rate'], 'ratio_end': life['ratio_end'],
+            'cl_tau': life['tau_half'], 'cl_Gmax': life['G_max'],
+            'cl_decay': life['decay_rate'], 'cl_ratio_end': life['ratio_end'],
+            'fz_tau': frozen['tau_half'], 'fz_Gmax': frozen['G_max'],
+            'fz_decay': frozen['decay_rate'], 'fz_ratio_end': frozen['ratio_end'],
             'r_PR': reach_t['r_eff'], 'probe_r_eff': probe['r_eff'],
             'probe_sigma_max': probe['sigma_max'], 'probe_gain': probe['gain'],
             'dynamics': dyn}
