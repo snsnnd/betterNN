@@ -3,10 +3,11 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 21 轮**（Adaptive Input Decoupling，见 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)）
-- 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数）
+- 最新轮次：**第 21 轮**（commit `e375489`，Adaptive Input Decoupling，见 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)）
+- 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数；B 固定）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
-- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 完成可训练 B 的解耦实验（hybrid 信用分配）
+- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 完成可训练 B 的解耦实验
+- V21 的关键方法学约定：**hybrid 信用分配**（core 5 步截断 / B 全 BPTT，双 optimizer、分别 clip）；当前瓶颈是 B 的长程信用，而非解耦本身
 
 ---
 
@@ -18,12 +19,14 @@
 
 | 问题 | 组件 |
 |---|---|
-| 从哪里进入？ | `B`（固定输入投影） |
+| 从哪里进入？ | `B`（输入投影；V21 研究了可训练版本，见 §5/§9） |
 | 往哪里传播？ | `Route`（块/门控路由）+ `W`（可塑循环矩阵） |
 | 保留多久？ | `Hold`（更新率 a∈(0,0.2)） |
 | 从哪里读答案？ | `Readout`（只读目的角色 h[:,2] / h[:,3]） |
 
-**Write 门已在第 14/15 轮被实验淘汰并从代码删除**（细节见 §8）。
+**Write 门已在第 14/15 轮被实验淘汰并从代码删除**（细节见 §8）。V21 把输入问题重新打开：B 可以学习，但 5 步截断下它拿不到任何梯度（§8）。
+
+近期主线：V19 冻结并行/solver 线 → V20 发现“B 拓扑只改动力学不改任务表现” → V21 发现“B 解耦的收益取决于长程信用分配”。
 
 ---
 
@@ -75,7 +78,7 @@
 - `N=256`，4 个角色（来源 A/B、目的 X/Y），每角色 64 节点。
 - `mask`：块结构 `[[1,0,1,1],[0,1,1,1],[0,0,1,0],[0,0,0,1]]`，块内/允许边再随机保留 30%；固定 buffer。
 - `W`：256×256 可训练，初始化谱范数 0.9，训练中不约束。
-- `B`：固定 buffer，`[2,256]`；通道 0 只写来源 A，通道 1 只写来源 B。
+- `B`：固定 buffer，`[2,256]`；通道 0 只写来源 A，通道 1 只写来源 B（正式架构中 B 固定；V21 的实验性可训练版本见 flow_mvp_v21，不改变本规格）。
 - `hold`：Linear(7→4)，`a = 0.2·sigmoid(hold(meta_t))`（初始化输出 0.1）。
 - `route`：MLP 11→16→16，输入 `q_t = [meta_t(7), pooled(h_t)(4)]`，输出 4×4 门 `g`。
 - 更新：`cand = tanh(Σ_s (h⊙g) W + x_t B)`，`h ← (1−a)h + a·cand`。
@@ -149,11 +152,11 @@ betterNN/
 ├── README.md                 # 项目总览与入口（先读）
 ├── HANDOVER.md               # 本文件
 ├── docs/
-│   ├── EXPERIMENTS.md        # 18 轮索引 + 关键结果表
+│   ├── EXPERIMENTS.md        # 21 轮索引 + 关键结果表
 │   ├── ARCHITECTURE.md       # 模型/代码结构/指标定义
 │   ├── FRAMEWORK_DESIGN.md   # 设计原理、梯度路径、改进方向
 │   └── REPRODUCING.md        # 环境与逐轮命令
-├── flow_mvp/ … flow_mvp_v18/ # 每轮独立目录（代码+结果+报告）
+├── flow_mvp/ … flow_mvp_v21/ # 每轮独立目录（代码+结果+报告）
 ├── historical_deliveries/    # 第1～6轮历史 ZIP
 ├── .venv/                    # 运行环境（未入库；见 §7）
 └── SHA256SUMS.txt / MANIFEST.json / COUNTS.json  # 原归档校验（只覆盖第1～7轮）
@@ -171,21 +174,21 @@ betterNN/
 - `.venv`：uv 创建，Python 3.11.15，**torch 2.14.0+cu130**、numpy 2.4.6、matplotlib 3.11.2。
   安装：`uv venv .venv --python 3.11 && uv pip install --python .venv/bin/python torch==2.14.0 numpy matplotlib`
 - GPU：RTX 4060 Laptop（8G，WSL CUDA 可用）。**N=256 时 CPU 更快**（内核启动开销占主导）；N≥512 或需要大规模时才用 GPU。
-- CPU：32 核。轻量实验每进程单线程（`FLOW_THREADS=1`），按**配置并行**（3～6 进程）已足够快。
+- CPU：32 核。轻量实验每进程单线程（`FLOW_THREADS=1`），按**配置并行**（常规 8～30 进程）。
 - 确定性：所有脚本 `torch.use_deterministic_algorithms(True)` + `CUBLAS_WORKSPACE_CONFIG=:4096:8`；row 里记录 `threads/device`。线程数不同不保证逐位一致。
 
 ### 典型运行模式
 
 - 单轮完整复现：见 [docs/REPRODUCING.md](docs/REPRODUCING.md)。
 - 部分运行用 `--out smoke`（会写自己的 summary/report，不覆盖主结果）。
-- 大批量扫描（如 v16 的 330 条流）按方法/种子拆成多个后台进程，最后 `wait`，再跑 `analyze.py`。
-- 重负载参考：v16 = 1320 个阶段、6 进程约 1 小时；v17 因 iter 两遍 rollout 约 50 分钟。
+- 大批量扫描按方法/种子拆成多个后台进程：用 `setsid ... > logs/X.log 2>&1 < /dev/null &` 启动（避免用 `pkill -f` 清进程——模式会匹配到当前 shell 自身）；完成后跑 `analyze.py`。
+- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟。
 
 ---
 
 ## 8. 已知坑与经验（务必先读）
 
-1. **Write 已删除，但历史解释仍受影响**：v7～v13 的 Write 从未被训练（5 步截断切断了 t=0/1 的梯度路径）。阅读旧报告时把 Write 当作"随机固定调制"。
+1. **t=0/1 注入的模块在 5 步截断下梯度恒为 0**：v7～v13 的 Write 从未被训练（v13 发现）；v21 实测 B 同样 `∇B≡0`（5 seeds），因为 detach 在 t=5/10/15。阅读旧报告时把 Write 当作“随机固定调制”；要让 B/Write 学习必须给它们全 BPTT 信用（v21 的 hybrid：core 截断 / B 全 BPTT，双 optimizer、分别 clip）。
 2. **v4 有两套研究分支**（routing.py/salience.py 与 experiments.py 系列），指标格式不同，不能混成一个排行榜。
 3. **RNG 对齐**：增删模块会改变后续模块初始化；用 `_rng_pad` 手法保持流一致，否则与旧结果不可逐位比较。
 4. **新代码的强制回归**：任何声称等价的路径都要与旧基线逐位比对（如 v17 的 flowv2 对 v15、v16 的 none 对 v15、v18 的 oracle 恒等）。
@@ -196,7 +199,9 @@ betterNN/
 9. **9p 磁盘慢**：每阶段写检查点会显著拖慢墙钟；能少存就少存，或写到 `~/`（ext4）再归档。
 10. **v7 diagnostics 的 `h[:,4:]` 是时间维**（trace 带时间轴），不是角色维；读旧代码注意。
 11. **`torch.func.jvp`/`vjp` 需要 eval 模式且函数纯**（v18 用法可直接参考）。
-12. **推送**：仓库含大量 `.pt`（现约 2.7GB），一次 push 可能 30 秒～3 分钟；用长超时，不要中途打断（中断后重推即可）。
+12. **推送**：仓库含大量 `.pt`（现约 5GB+），v20/v21 单次 push 约 600MB～1GB；用长超时（30 分钟），不要中途打断（中断后重推即可）。
+13. **可训练模块 + 参数级诊断**：v21 中 learnable B 的 `eff_B` 用 cat 拼接而非原地赋值（原地写入不进计算图）；A/B 通道指标用 `O_B`（幅度重叠，符号无关）而不是支撑交集（dense 参数下无信息）；drift 用 `B_eff` 相对量，raw 范数只作诊断。
+14. **后台进程管理**：启动用 `setsid ... < /dev/null &`；清理时按 PID（`pgrep` + `kill`），不要 `pkill -f 'results/B'` 这类会匹配到当前 shell 命令自身的模式。
 
 ---
 
@@ -209,28 +214,28 @@ betterNN/
    - **区分“初始 B 更优”与“学到解耦”**：V21 中 learnable-random 在 r=12.5% 最好（4.75pp）但 O_B 几乎不变，需要用同初始 O_B 的对照拆开。
    - V20 遗留：可达性度量重做（随机 probe 退化）；任务协议需能体现动力学差异（更长序列/多事件/部分可观测）。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
-4. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
-5. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。
-6. 更远期：结构生长/修剪、频率/脉冲/相位调制（都要求先固定平均参数或信息预算）。
+3. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
+4. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。
+5. 更远期：结构生长/修剪、频率/脉冲/相位调制（都要求先固定平均参数或信息预算）。
 
-当前不建议：继续加新门、扩大规模（N≥512）或在未解决"为什么 replay 这么有效"之前做复杂 consolidation。
+当前不建议：继续加新门、扩大规模（N≥512）或在未解决“为什么 replay 这么有效”之前做复杂 consolidation；也不建议在没有局部/在线信用方案之前把 B 的可训练版直接塞回 5 步截断协议（它拿不到梯度）。
 
 ---
 
 ## 10. 新 agent 第一小时清单
 
 1. 读本文件 + [README.md](README.md) + [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
-2. 读三份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）。
+2. 读四份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）。
 3. 检查环境与一致性：
    ```bash
    git status -sb && git ls-remote origin | head -2
    sha256sum --quiet -c SHA256SUMS.txt
    .venv/bin/python -c "import torch; print(torch.__version__)"
-   cd flow_mvp_v20 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3
+   cd flow_mvp_v21 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3   # 读缓存指标，约 15 秒
+   cd flow_mvp_v21 && /mnt/d/betterNN/.venv/bin/python experiment.py --credit-check --seeds 11   # Phase 0 机制抽查
    ```
-   （v20 analyze 依赖已缓存指标，约 15 秒，可用作环境冒烟。）
 4. 复核当前最佳配方（可选）：v15 smoke `--epochs 2 --seeds 11 --out smoke` 或 v11 `--ratios 0 .125` 小规模。
-5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v19/`，先写 `PLAN.md`（含判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md` 并 push。
+5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v22/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
 
 ---
 
@@ -250,4 +255,5 @@ betterNN/
   print('links OK')
   PY
   ```
-- 提交信息包含轮次与关键发现，例如：`第十九轮：<问题>（<关键数字>）`。
+- 提交信息包含轮次与关键发现，例如：`第二十二轮：<问题>（<关键数字>）`。
+- HANDOVER 每轮同步：头部轮次/commit、§2 结论与否定表、§5 索引、§6 目录、§8 坑、§9 下一步、§10 清单。
