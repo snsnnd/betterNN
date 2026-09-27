@@ -1,0 +1,3 @@
+fixed regression maxdiff: 0.000e+00 over 12 streams
+h1 r12.5 mean: -3.39pp
+h2a n<=0.75: 0/5

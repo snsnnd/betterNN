@@ -177,7 +177,7 @@ def make_model(seed, arm, sw=.9):
 
 
 def b_metrics(B):
-    b = B[:, :WRITE]
+    b = B[:, :WRITE].detach()
     a, c = b[0], b[1]
     na, nc = a.norm() + 1e-12, c.norm() + 1e-12
     o_l1 = float((a * c).abs().sum() / (na * nc))

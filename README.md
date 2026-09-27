@@ -2,7 +2,7 @@
 
 这是一个基于 **Python / PyTorch 的神经网络研究实验集**，研究能否通过小型控制网络调节循环网络中的信息写入、内部传递和状态保持，以及这些机制对泛化、短窗口训练和持续学习的影响。
 
-项目包含第 1～20 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 18 轮做**块仿射可压缩性诊断**：以第十七轮 PreRoute 为并行预测器，2 次迭代重线性化可在有效深度 12～15 内把 40 步外推恢复到 99.3～99.6%（Flow 99.82%）。第 19 轮把这条线推到真实执行：**块 Jacobian 的 `S + 低秩修正` 结构成立**（单步 rank≤4、块 rank≤4L、scan tree 秩饱和约 12、截断到 r=16 近无损），但在 RTX 4060 / N=256 / eager PyTorch 下 **structured affine scan 没有 wall-clock 收益**——**并行/solver 线冻结在 V19**。第 20 轮回到“水从哪里进入”：固定每通道输入能量 `‖B_c‖₂=5.6`，扫描 B 拓扑（single→distributed）、shared-pool overlap（α=0/0.5/1）与 `s_W=‖W₀‖₂`。结果是**任务侧不敏感、动力学侧敏感**：单任务与 CL 表现几乎完全一致（H1 否、s_W 零结果），但 `ρ_eff` 1.40→1.12、`G_max` 1.58→0.88、扰动寿命 τ½ 从截尾到 ≈6.6 步；overlap 提高 W/Hold 梯度冲突并在 replay 下降低 final（见 [flow_mvp_v20/REPORT.md](flow_mvp_v20/REPORT.md)）。
+项目包含第 1～21 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘；**Full-BPTT 敏感性中解耦把 overlap 代价从 4.66pp 压到 1.83pp**，说明瓶颈是 B 的长程信用分配（见 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)）。
 
 ## 项目在做什么
 
@@ -28,6 +28,7 @@
 | [十八轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
 | [运行与复现指南](docs/REPRODUCING.md) | 环境依赖、各轮命令、输出文件、续跑及现有脚本注意事项 |
 | [原始归档说明](README_START_HERE.md) | 原交付包说明、历史文件和校验信息 |
+| [第二十一轮：自适应输入解耦报告](flow_mvp_v21/REPORT.md) | hybrid 信用分配、B 解耦、Full-BPTT 敏感性 |
 | [第二十轮：B 拓扑 × 动力学报告](flow_mvp_v20/REPORT.md) | 等能量拓扑/overlap/s_W 的任务与动力学结果 |
 | [第二十轮计划：B 拓扑 × 动力学](flow_mvp_v20/PLAN.md) | 输入拓扑主族/overlap 族/动力学轴与预注册假设 |
 | [第十九轮：并行求解器可行性](flow_mvp_v19/README.md) | 结构扫描、GPU 基准与负工程结论 |
@@ -68,6 +69,7 @@ betterNN/
 ├── flow_mvp_v18/         # 第18轮：block-affine 可压缩性（诊断，无训练）
 ├── flow_mvp_v19/         # 第19轮：并行求解器可行性（结构扫描+GPU基准，无训练）
 ├── flow_mvp_v20/         # 第20轮：B 输入拓扑 × 动力学（3 阶段已完成，含检查点）
+├── flow_mvp_v21/         # 第21轮：自适应输入解耦（hybrid 信用分配，含检查点）
 ├── historical_deliveries/# 第1～6轮历史ZIP交付件
 ├── docs/                # 本次整理的项目级文档
 ├── .venv/               # WSL/Linux GPU环境（uv创建，Python 3.11 + torch 2.14.0+cu130）
@@ -101,6 +103,8 @@ betterNN/
 - **结构可压缩 ≠ 实际加速（负工程结果）**：第 19 轮 GPU 基准显示 eager PyTorch 下 structured scan 慢于串行 2～35×，跨块 Jacobian 长乘积溢出 fp32（B≥32），PreRoute 在 T=128/512 发散（2e10/NaN）；exact affine scan 的组合代价约为单步的 240 倍。**并行线冻结在 V19**。
 - **输入拓扑只改动力学、不改任务表现**：第 20 轮在等输入能量下，5 种 B 拓扑单任务 final 全 ≥0.994、r=0 遗忘均 28–29pp（H1 Δ≤1pp 未过）；但 single-random→distributed 使 ρ_eff 1.40→1.12、G_max 1.58→0.88、24 步衰减率 −0.029→+0.095（扰动由净放大变为快速衰减）。
 - **overlap 的代价在 W/Hold**：第 20 轮 shared-pool 族 α=0.5/1 使 Δcos(W)=−0.22/−0.17、Δcos(Hold)=−0.11/−0.11，r=12.5% 下 final 0.94/0.91/0.92 低于主族 0.97–0.99；`s_W∈{0.7,0.9,1.1}` 无差异（零结果）。
+- **5 步截断下 B 的梯度恒为 0**：第 21 轮发现输入在 t=0/1 而 detach 在 t=5/10/15，`∇B≡0`（与 v13 Write 同源）；hybrid 信用分配（core 截断 / B 全 BPTT，双 optimizer、分别 clip）可在 core 梯度与 V20 逐位一致（diff=0）的条件下训练 B。
+- **自适应解耦：自发弱、正则强、收益取决于信用分配**：第 21 轮 learnable (λ=0) 自发把 O_B 降到 init 的 0.83–0.91；overlap penalty 可压到 ~0 但 hybrid 下遗忘仅 ±0.6pp；Full-BPTT 敏感性中解耦把 r=12.5% overlap 代价从 4.66pp 降到 1.83pp（fixed-disjoint 1.95）。**瓶颈是 B 的长程信用，而不是解耦本身。**
 
 上述数字属于不同任务和训练协议，不能拼成跨轮性能提升曲线。所有数据均为合成数据；Top-K 当前仍执行稠密计算，尚无真实稀疏加速、真实数据泛化或通用智能的验证。
 

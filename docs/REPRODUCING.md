@@ -454,7 +454,7 @@ FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python solver_bench.py --steps 40 128 5
 
 `analyze.py` 的回归结果缓存在 `results/regression.json`（`--refresh-reg` 强制重算）。0C 在 RTX 4060 上运行；CPU 也可跑但无法代表并行结论。
 
-## 17. 第二十轮：B 输入拓扑 × 动力学（最新）
+## 17. 第二十轮：B 输入拓扑 × 动力学
 
 工作目录：`flow_mvp_v20/`。先用少量 epoch 验证 B 构造，再跑全量（A 约 45 分钟/12 进程，B/C 更短；可并发）。
 
@@ -476,7 +476,30 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python plot.py
 
 核验：analyze 会重载 stage3 检查点复算测试矩阵（要求与训练记录逐值一致）并输出 H1/H2/H3 判定；`results/B/h3.json` 供 `overlap_gradient.png` 使用。
 
-## 18. 原归档校验与打包
+## 18. 第二十一轮：自适应输入解耦（hybrid 信用分配，最新）
+
+工作目录：`flow_mvp_v21/`。先跑 Phase 0 credit check（证明 hybrid 只改 B 的信用分配），再分阶段训练。
+
+```bash
+cd flow_mvp_v21
+# Phase 0：trunc |∇B|=0 / hybrid |∇B|>0 / core 梯度与 V20 逐位一致
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python experiment.py --credit-check --seeds 11 22 33 44 55
+# V21A（hybrid 主实验，3 个 learnable arms）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --arms learnable learnable+orth0.1 learnable+overlap0.1 --jobs 8 --out results/A
+# V21B（λ=1 robustness）/ V21C（random-init）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --arms learnable+orth1 learnable+overlap1 --jobs 9 --out results/B
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --arms learnable-random --jobs 4 --out results/C
+# V21D（40 流 Full-BPTT 敏感性）与 fixed 回归
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --arms fixed-overlap fixed-disjoint learnable learnable+overlap0.1 \
+    --seeds 11 22 33 44 55 --orders o0 --ratios 0 .125 --jobs 4 --out results/D --b-grad full
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --arms fixed-overlap fixed-disjoint --seeds 11 --jobs 2 --out results/fixed_reg
+# 汇总
+FLOW_THREADS=8 /mnt/d/betterNN/.venv/bin/python analyze.py && python plot.py
+```
+
+fixed 臂直接复用 V20；`fixed_reg` 用于一致性核验（应逐流矩阵差 0）。`--b-grad hybrid|full|trunc` 控制 B 的信用分配。
+
+## 19. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -496,7 +519,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 19. 常见问题
+## 20. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

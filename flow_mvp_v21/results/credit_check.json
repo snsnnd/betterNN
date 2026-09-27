@@ -1,0 +1,37 @@
+[
+  {
+    "seed": 11,
+    "B_eff_maxdiff": 0.0,
+    "core_grad_maxdiff": 0.0,
+    "gradB_trunc": 0.0,
+    "gradB_hybrid": 0.0029180371202528477
+  },
+  {
+    "seed": 22,
+    "B_eff_maxdiff": 0.0,
+    "core_grad_maxdiff": 0.0,
+    "gradB_trunc": 0.0,
+    "gradB_hybrid": 0.003063162788748741
+  },
+  {
+    "seed": 33,
+    "B_eff_maxdiff": 0.0,
+    "core_grad_maxdiff": 0.0,
+    "gradB_trunc": 0.0,
+    "gradB_hybrid": 0.0022509286645799875
+  },
+  {
+    "seed": 44,
+    "B_eff_maxdiff": 0.0,
+    "core_grad_maxdiff": 0.0,
+    "gradB_trunc": 0.0,
+    "gradB_hybrid": 0.0031215206254273653
+  },
+  {
+    "seed": 55,
+    "B_eff_maxdiff": 0.0,
+    "core_grad_maxdiff": 0.0,
+    "gradB_trunc": 0.0,
+    "gradB_hybrid": 0.00400035222992301
+  }
+]

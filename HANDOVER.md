@@ -3,10 +3,10 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 20 轮**（B 输入拓扑 × 动力学，见 [flow_mvp_v20/REPORT.md](flow_mvp_v20/REPORT.md)）
+- 最新轮次：**第 21 轮**（Adaptive Input Decoupling，见 [flow_mvp_v21/REPORT.md](flow_mvp_v21/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
-- **并行/solver 线已冻结在 V19**（结构结论保留，GPU 加速负结果）；V20 完成 B 拓扑 × 动力学主扫描
+- **并行/solver 线已冻结在 V19**；V20 完成 B 拓扑 × 动力学；V21 完成可训练 B 的解耦实验（hybrid 信用分配）
 
 ---
 
@@ -42,6 +42,9 @@
 9. **结构化 solver 与 V18 GS-JVP 数值等价（v19）**：同中心下 acc 完全一致；与 v18 存储 JSON（batch 256）max|Δacc|=0。
 10. **输入拓扑只改动力学、不改任务表现（v20）**：等输入能量 `‖B_c‖₂=5.6` 下，single-random→distributed 的单任务 final 全 ≥0.994、r=0 遗忘均 ≈28–29pp（H1 Δ≤1pp）；但 `ρ_eff` 1.40→1.12、`G_max` 1.58→0.88、24 步衰减率 −0.029→+0.095（single-random 扰动净放大且 τ½ 截尾，distributed τ½≈6.6）。
 11. **overlap 的代价集中在 W/Hold（v20）**：α=0.5/1 时 Δcos(W)=−0.22/−0.17、Δcos(Hold)=−0.11/−0.11；r=12.5% 下 overlap 族 final 0.94/0.91/0.92，低于主族 0.97–0.99。
+12. **5 步截断下 B 的梯度恒为 0（v21）**：输入在 t=0/1 而 detach 在 t=5/10/15，`∇B≡0`（与 v13 Write 同源）；hybrid 协议（core 截断 / B 全 BPTT、双 optimizer、分别 clip）可在不改变 core 学习规则（梯度逐位相同）的前提下训练 B。
+13. **B 自发解耦存在但不足以达标（v21）**：learnable (λ=0) 把 O_B 从 1.0 降到 init 的 0.83–0.91（0/5 ≤0.75）；overlap penalty 可强解耦（O_B→0.12/0.001）但 hybrid 下遗忘仅变 ±0.6pp。
+14. **B 的完整长程信用才是瓶颈（v21）**：Full-BPTT 敏感性（40 流）中，r=12.5% fixed-overlap 遗忘 4.66pp → learnable/overlap0.1 **1.83/1.86pp**（达到 fixed-disjoint 1.95 水平）；r=0 各臂 ≈24pp 无差异。
 
 ### 已被否定/削弱
 
@@ -59,6 +62,9 @@
 | multi-separate 降低无 replay 遗忘 | 否（multi8 −1.01pp、multi16 +0.02pp，门槛 −3pp） | v20 |
 | distributed 提高可达性 | 否（随机输入 probe 全拓扑 r_eff≈1.1–1.2，0/5） | v20 |
 | 初始谱尺度 s_W 影响训练后行为 | 否（0.7/0.9/1.1 任务与动力学均无差异） | v20 |
+| B 任务梯度能自发强解耦（≤0.75·O_B^init） | 否（0.83–0.91，0/5） | v21 |
+| hybrid 下显式解耦正则降低遗忘 | 否（Δforget ≤0.6pp，虽然 O_B→0.001） | v21 |
+| orth penalty 有额外价值 | 否（init 已 |cos|≈0，ΔO_B≈−0.01） | v21 |
 
 ---
 
@@ -130,6 +136,7 @@
 | v18 | 块仿射可压缩性（诊断） | 预测器+2 次重线性化深度 12～15 恢复外推 | [flow_mvp_v18](flow_mvp_v18/) |
 | v19 | 并行求解器可行性 | 结构：rank≤4/块≤4L、scan tree 秩饱和~12、r=16 无损；0C：eager 无加速、scan 溢出、PreRoute 长 T 发散 → 并行线冻结 | [flow_mvp_v19](flow_mvp_v19/) |
 | v20 | B 输入拓扑 × 动力学 | H1 否（任务侧等能量无关）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突、replay 下变差；s_W 零结果 | [flow_mvp_v20](flow_mvp_v20/) |
+| v21 | Adaptive Input Decoupling | 5 步截断下 ∇B≡0；hybrid（core 截断/B 全 BPTT）core 梯度与 V20 逐位一致；H2a 否、overlap penalty 强解耦但 hybrid 下不降遗忘；Full-BPTT 敏感性中解耦消除 overlap 代价（4.66→1.83pp） | [flow_mvp_v21](flow_mvp_v21/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -197,9 +204,10 @@ betterNN/
 
 按优先级：
 
-1. **V20 已完成（B 输入拓扑 × 动力学）**：任务侧等能量无关（H1 否、s_W 零结果），动力学侧强效应（单点输入放大扰动、分布式快速衰减）；overlap 增 W/Hold 梯度冲突并在 replay 下变差。下一步候选：
-   - **可达性度量需要重做**：当前随机输入 probe 全部退化为 `r_eff≈1.1–1.2`（被主导方向支配）；可改输入—状态增益谱、闭环频率响应或多点脉冲探针后再谈 H2。
-   - **任务侧瓶颈不在输入入口**：等能量拓扑不改变单任务/CL，说明要体现动力学差异需要改任务协议（更长序列、多事件写入、部分可观测）或转向记忆设计（多时间尺度、快慢状态）。
+1. **V21 已完成（Adaptive Input Decoupling）**：5 步截断下 `∇B≡0`（v13 Write 同源）；hybrid 协议（core 截断 / B 全 BPTT，双 optimizer、分别 clip）可在 core 梯度与 V20 逐位一致（diff=0）的前提下训练 B。结果：H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→init 的 0.83–0.91）；overlap penalty 强解耦（O_B→0.001）但 hybrid 下遗忘仅 ±0.6pp；Full-BPTT 敏感性显示解耦能消除 overlap 代价（4.66→1.83pp）。**瓶颈是 B 的长程信用，而不是解耦本身。** 下一步候选：
+   - **给 B 的局部/在线长程信用**：eligibility trace、局部预测目标、synthetic gradient、slow-controller credit；前提是不把全序列 BPTT 的串行/显存代价带回 Flow-v3。
+   - **区分“初始 B 更优”与“学到解耦”**：V21 中 learnable-random 在 r=12.5% 最好（4.75pp）但 O_B 几乎不变，需要用同初始 O_B 的对照拆开。
+   - V20 遗留：可达性度量重做（随机 probe 退化）；任务协议需能体现动力学差异（更长序列/多事件/部分可观测）。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 4. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
 5. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。

@@ -1,4 +1,4 @@
-# 二十轮实验与结论
+# 二十一轮实验与结论
 
 [返回项目首页](../README.md)
 
@@ -28,6 +28,7 @@
 | [第18轮](../flow_mvp_v18/REPORT.md) | 非线性闭环能压缩到什么程度？ | 块仿射 + 迭代重线性化（诊断，无训练） | 有预测器时深度 12～15 可恢复 Flow 外推 |
 | [第19轮](../flow_mvp_v19/REPORT.md) | 可压缩性能否变成真实加速？ | 解析块 Jacobian 结构全量扫描 + GPU solver 基准（无训练） | 结构成立（rank≤4/块≤4L、scan tree 秩饱和~12、r=16 无损）；eager 实现无加速、长乘积溢出、PreRoute 长 T 发散 → 并行线冻结 |
 | [第20轮](../flow_mvp_v20/REPORT.md) | 水从哪里进入、入口如何与动力学交互？ | 等输入能量下的 B 拓扑主族 / shared-pool overlap / `s_W` 扫描（5 seeds × 3 orders × r∈{0,12.5%}） | 任务侧无差异（H1 否、s_W 零结果）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突且 replay 下变差 |
+| [第21轮](../flow_mvp_v21/REPORT.md) | B 能否学会把不同信息写进不同状态子空间？ | hybrid 信用分配（core 截断 / B 全 BPTT）+ 可训练 B + orth/overlap penalty + H3 机制链 + Full-BPTT 敏感性 | 5 步截断下 ∇B≡0；自发解耦弱、overlap penalty 强解耦但 hybrid 下不降遗忘；Full BPTT 下解耦消除 overlap 代价 |
 
 ## 2. 关键证据
 
@@ -413,7 +414,35 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 
 数据位置：[REPORT.md](../flow_mvp_v20/REPORT.md)、[results/](../flow_mvp_v20/results/)、[input_topology.png](../flow_mvp_v20/input_topology.png)、[overlap_gradient.png](../flow_mvp_v20/overlap_gradient.png)、[sW_interaction.png](../flow_mvp_v20/sW_interaction.png)。
 
-## 17. 已保存的内容
+## 17. 第二十一轮：Adaptive Input Decoupling
+
+不改架构，只把 B 变成可训练参数（写入域仅 role0∪role1，`‖B_eff‖₂=5.6`），研究输入解耦与持续学习的关系。协议：A'B'C'D'、5 seeds、o0/o1/o2、r∈{0,12.5%}；共 150 主实验流 + 100 robustness + 50 init 对照 + 120 Full-BPTT 敏感性 + fixed 回归。
+
+### 两个方法学发现
+
+- **5 步截断下 B 的梯度恒为 0**：输入在 t=0/1，而训练在 t=5/10/15 `detach()`，`∇B≡0`（与 v13 的 Write 同源；trunc 负控 5 seeds 实测 `|∇B|=0.0`）。
+- **hybrid 信用分配**：core（W/Route/Hold/Readout）保持 5 步截断，B 单独用全 BPTT 梯度；同一参数快照、双 optimizer、分别 clip。Phase 0 硬检查：`max|g_core^hybrid − g_core^V20| = 0`、`|∇B|_hybrid≈3e-3`。fixed 臂与 V20 逐流矩阵差 = 0（12 条）。
+
+### 判定结果（hybrid 主实验，3 顺序合并）
+
+| arm | O_B init→final | r=12.5% 遗忘 | r=0 遗忘 |
+|---|---|---|---|
+| fixed-overlap | 1.00→1.00 | 9.04pp | 31.64pp |
+| fixed-disjoint | 0→0 | 5.65pp | 29.81pp |
+| learnable (λ=0) | 1.00→0.89 | 6.63pp | 30.78pp |
+| learnable+overlap0.1 | 1.00→0.14 | 6.71pp | 30.01pp |
+| learnable+overlap1 | 1.00→0.001 | 6.17pp | 29.64pp |
+| learnable-random | 0.60→0.59 | 4.75pp | 31.39pp |
+
+- **H1 复现通过（主条件）**：r=12.5% Δ=−3.39pp、4/5 负向；r=0 仅 −1.84pp。
+- **H2a 未通过**：任务梯度自发降 O_B 到 init 的 0.83–0.91（0/5 ≤0.75）。
+- **H2b 部分通过**：overlap penalty 强解耦（ΔO_B=−0.73/−0.86，两档方向一致）；orth 无作用；但解耦未带来显著遗忘下降（≤0.6pp）。
+- **H3 机制链部分**：ρ(O_h,C∇)=0.59 达标，ρ(O_B,F)=0.41 边际，ρ(O_B,O_h)=0.21、ρ(C∇,F)=0.09 未达标。
+- **V21D Full-BPTT 敏感性（40 流）**：r=12.5% 时 fixed-overlap 4.66pp → learnable/overlap0.1 **1.83/1.86pp**（fixed-disjoint 1.95）；r=0 各臂 ≈24pp。**B 拿到完整长程信用时，自适应解耦能消除 overlap 代价；hybrid 下不能——瓶颈是信用分配。**
+
+数据位置：[REPORT.md](../flow_mvp_v21/REPORT.md)、[results/](../flow_mvp_v21/results/)、[decoupling.png](../flow_mvp_v21/decoupling.png)、[fullbptt_sensitivity.png](../flow_mvp_v21/fullbptt_sensitivity.png)。
+
+## 18. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -437,12 +466,17 @@ Flow-v2、固定每步旧信息带宽 16 条（12.5%）、3 顺序 × 5 种子�
 | 18 | 4 | 0 | 诊断：无训练，仅 JSON 结果与图 |
 | 19 | 4 | 0 | 诊断：结构扫描 + GPU 基准，无训练、无检查点 |
 | 20 | 4 | 2084 | 3 阶段 × 5 seeds：CL 逐阶段检查点 + 单任务最终模型 |
+| 21 | 4 | 1144 | V21A/B/C/D + fixed 回归：CL 逐阶段检查点 + 单任务模型 |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 18. 当前研究状态
+## 19. 当前研究状态
 
-并行/solver 线冻结在第十九轮（结构可压缩成立、eager GPU 无加速、长乘积溢出）。第二十轮把主线拉回“水从哪里进入”：在固定输入能量下扫描 B 拓扑、shared-pool overlap 与 `s_W`。结论是**任务侧不敏感、动力学侧敏感**——5 种拓扑、3 档 `s_W` 的单任务与 CL 表现几乎完全一致，但 `ρ_eff`、有限时间放大 `G_max` 与扰动寿命随输入分散度系统性变化；overlap 提高 W/Hold 的梯度冲突并在 replay 下降低 final。
+第二十一轮把“输入解耦”推进到可训练 B：先发现并修复了 **5 步截断下 `∇B≡0`** 的结构性问题（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT，core 梯度与 V20 逐位一致）得到干净干预。结论：
 
-下一步候选（见 [HANDOVER §9](../HANDOVER.md)）：重做可达性度量（当前随机 probe 退化为单方向）；若要体现动力学差异需改任务协议（更长序列、多事件写入、部分可观测）或转入记忆/多时间尺度设计；并行线若要重开需 coarse+fine 与融合实现。
+- 固定解耦（H1）在 r=12.5% 复现通过（−3.39pp）；B 的任务梯度自发解耦较弱（0.83–0.91）；
+- overlap penalty 可以把 O_B 压到 ~0，但在 hybrid 信用下**不转化为遗忘改善**；
+- Full-BPTT 敏感性中，learnable/penalty 臂把 overlap 代价从 4.66pp 压到 1.83/1.86pp（达到 fixed-disjoint 水平）。
+
+因此当前主瓶颈是 **B 的长程信用分配**：V22/Flow-v3 若要做 Adaptive Input Router，需要局部/在线的长程学习信号（eligibility trace、局部预测目标、slow-controller credit 等），而不是把全序列 BPTT 带回训练循环。并行/solver 线继续冻结（见 [HANDOVER §9](../HANDOVER.md)）。
