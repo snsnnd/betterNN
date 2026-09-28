@@ -256,7 +256,7 @@ betterNN/
    - **V24B 已完成（标量 write gate，负结果）**：`w_t=2σ(MLP(x_t,meta_t))`（不看 h、初始 w≡1、hybrid 全信用）既没有超过每任务最优固定 kernel（xor 0.946 vs 0.971），也没有一条流学会相对抑制 distractor（0/30）。机制：符号任务对正标量缩放不敏感（内部增益可补偿），加法写入没有“写重了挤占别的信息”的竞争 → 相对重要性没有梯度。**结论：标量 input gate 是错误的自由度，不要再调它的容量/结构。**
    - **V24C 已完成（Adaptive Temporal Compression, kernel bank selector，结果 A + 例外）**：`α=softmax(MLP(x,meta))` 在 5 kernel 上选择、逐事件等能量、无 w_t；Chain T=80 上 xor 0.998（超 fixed burst5 0.971）、xorsw 1.000，自动学到“全铺开 vs 只给 c2 长 kernel”两种策略（HC1/HC2 通过）；但同质延迟任务上 α 停在 single（HC3 未过）。
    - **V24D（下一步）：连续 `λ_t` + 探索/退火**：`a_{t,τ}=c(λ_t)λ_t^τ` 等能量归一化；重点解决“初始化 single 是强局部最优、selector 不移动”的问题（延迟任务 +16pp 留给固定 kernel）；先只回答“连续 λ 是否比离散 bank 更能发现收益”。
-   - **三个自由度按序验证**：Where（已答）→ When/How much（V24A 固定 kernel 有效 / V24B 标量 gate 无效）→ How long（V24C）；最后才是 Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
+   - **三个自由度按序验证**：Where（V20/V21 已答）→ When/How much（V24A 固定 kernel 有效 / V24B 标量 gate 无效 / V24C kernel bank 在事件结构化任务上有效、同质延迟任务上不移动）→ How long（V24D 连续 `λ_t` + 探索/退火）；最后才是 Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
    - 机制补充：末端可解码性（probe T−1）比扰动幅度更能解释收益；新方法都应用 probe 而非 ||Δh|| 做机制指标。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 3. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
