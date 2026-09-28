@@ -129,6 +129,49 @@
 | burst5 fixed | 0.777 | 0.943 | 2/3 |
 | burst5+sched | 0.743 | 0.794 | 0/3 |
 
+## 3.6 Phase D（V24C）：Adaptive Temporal Compression（kernel bank selector）
+
+结构：`α_t=softmax(MLP(x_t,meta_t))`（9→16→5，bias 初始 [4,0,0,0,0]）；`ã_t=α_tK/‖α_tK‖`（Σa²=1）；`z_{t+τ} += ã_{t,τ}B x_t`；无 w_t；core 仍 K=5、B/scheduler 走 hybrid full。
+
+### Chain-select T=80：adaptive vs fixed
+
+| task | adaptive final | best | reach | fixed best（kernel） | probe T/2 | probe T−1 |
+|---|---:|---:|---:|---|---:|---:|
+| xor | 0.998 | 0.971 | 5/5 | burst5 | 0.882 | 0.996 |
+| xorsw | 1.000 | 0.999 | 5/5 | decay-slow | 0.620 | 0.997 |
+
+### 事件级 α 与有效时间长度 `L_eff=Σ τ ã_τ²`
+
+| task | 事件 | α(single,burst3,burst5,dfast,dslow) | L_eff |
+|---|---|---|---:|
+| xor | A | 0.46,0.06,0.30,0.03,0.15 | 0.80 |
+| xor | c1 | 0.11,0.06,0.54,0.03,0.26 | 1.43 |
+| xor | distractor | 0.02,0.04,0.61,0.02,0.31 | 1.66 |
+| xor | B | 0.00,0.03,0.62,0.02,0.33 | 1.70 |
+| xor | c2 | 0.23,0.05,0.51,0.03,0.18 | 1.28 |
+| xorsw | A | 0.91,0.01,0.04,0.01,0.03 | 0.03 |
+| xorsw | c1 | 0.87,0.02,0.06,0.01,0.04 | 0.07 |
+| xorsw | distractor | 0.80,0.02,0.09,0.01,0.07 | 0.18 |
+| xorsw | B | 0.74,0.03,0.13,0.01,0.10 | 0.30 |
+| xorsw | c2 | 0.14,0.05,0.56,0.01,0.24 | 1.41 |
+
+### 延迟任务：adaptive vs fixed（含 probe t=T/2 / T−1）
+
+| T | adaptive final | best fixed（kernel） | single | adaptive probe T/2 | adaptive probe T−1 | single probe T−1 |（全部 task0）
+|---|---:|---|---:|---:|---:|---:|
+| 40 | 0.973 | 0.987（burst5） | 0.966 | 0.865 | 0.887 | nan |
+| 80 | 0.734 | 0.898（decay-slow） | 0.790 | 0.815 | 0.823 | 0.791 |
+| 160 | 0.572 | 0.606（burst5） | 0.571 | 0.775 | 0.684 | 0.663 |
+
+| T | 事件 | α(single,burst3,burst5,dfast,dslow) | L_eff |
+|---|---|---|---:|
+| 40 | A | 0.96,0.01,0.01,0.01,0.01 | 0.00 |
+| 40 | B | 0.96,0.01,0.01,0.01,0.01 | 0.00 |
+| 80 | A | 0.98,0.00,0.00,0.00,0.00 | 0.00 |
+| 80 | B | 0.98,0.00,0.00,0.00,0.00 | 0.00 |
+| 160 | A | 0.64,0.24,0.06,0.02,0.05 | 0.30 |
+| 160 | B | 0.69,0.22,0.04,0.02,0.03 | 0.25 |
+
 ## 4. 预注册判定
 
 - **H1**：写入时间结构有效（T=80：Δacc≥+5pp 或 retention≥+20%）：T=80: best=burst5 Δacc=+3.5pp Δret_half=-34.9%；T=160: best=burst5 Δacc=+5.3pp Δret_half=-28.7% → 未通过
@@ -139,6 +182,10 @@
 - **H5**：T=80 同一 scheduler（kernel=decay-slow）：xor=0.946（Δ+17.0pp）、xorsw=0.999（Δ+8.5pp），两任务 ≥0.95 且 Δ≥+5pp → 未通过
 - **H6**：distractor 抑制（≥2 cells 满足 E[w|d]≤E[w|imp]−0.2）：xor/burst5: 0/5 seeds, w_all=1.45；xor/decay-slow: 0/5 seeds, w_all=1.56；xor/single: 0/5 seeds, w_all=1.03；xorsw/burst5: 0/5 seeds, w_all=0.97；xorsw/decay-slow: 0/5 seeds, w_all=0.69；xorsw/single: 0/5 seeds, w_all=0.52 → 未通过
 - **H7**：T=160 xor：burst5+sched=0.743 vs burst5 fixed=0.777（需≥−2pp）、vs single=0.770（需≥+5pp） → 未通过
+- **HC1**：Chain T=80 性能：xor: adaptive=0.998 vs best fixed=0.971（需≥−2pp）；xorsw: adaptive=1.000 vs best fixed=0.999（需≥−2pp） → **通过**
+- **HC2**：时间选择（≥1 任务：L_imp≥1.2L_d 且 ≥4/5 seeds 且 ‖Δα‖₁>0.2）：xor: L_imp/L_d=0.78（0/5 seeds>1.2）、‖Δα‖₁=0.40；xorsw: L_imp/L_d=2.51（4/5 seeds>1.2）、‖Δα‖₁=0.31 → **通过**
+- **HC3**：延迟任务 task0 长 T（T=160 需≥best fixed−2pp；T160 只跑 task0）：T40/task0: adaptive=0.973 vs best fixed=0.987（5 seeds）；T80/task0: adaptive=0.734 vs best fixed=0.898（5 seeds）；T160/task0: adaptive=0.572 vs best fixed=0.606（5 seeds） → 未通过
+- **HC-verdict**：结果分类 A：自适应时间压缩成立 → V24D 连续 λ（HC1=True, HC2=True, HC3=False） → info
 
 ## 5. 边界
 

@@ -26,6 +26,15 @@
 
 结论：标量 input gate 是错误的第一自由度；V24C 应转向动态 `λ_t`/带预算的 scheduler，而不是继续调 `w_t`。
 
+## Phase D（V24C）：Adaptive Temporal Compression（kernel bank selector）—— Chain-select 上成立
+
+结构：`α_t=softmax(MLP(x_t,meta_t))`（9→16→5，bias 初始 [4,0,0,0,0] ≈ single）；`ã_t=α_tK/‖α_tK‖`（**逐事件 Σa²=1 等能量**）；`z_{t+τ} += ã_{t,τ}B x_t`；**无 w_t**；core 仍 K=5、B/scheduler 走 hybrid full。Phase 0 验证：base 参数逐位一致、初始 forward≈fixed single、等能量 rel diff=1.3e-7、∇α 在 hybrid 下非零。
+
+- **HC1 通过（性能）**：Chain T=80：xor adaptive **0.998**（5/5 可达，**超过** best fixed burst5 0.971）；xorsw adaptive **1.000**（=best fixed decay-slow 0.999）。
+- **HC2 通过（时间选择）**：xorsw 上 `L_imp/L_d=2.51`（4/5 seeds >1.2）、`‖Δα‖₁=0.31`——scheduler 只给 c2 长 kernel（α≈[0.14,0.05,0.56,…,0.24]），其余事件（含 distractor）保持 single。xor 则是“全事件铺开”（burst5/decay-slow 型），distractor 不抑制（比值 0.78）——两种任务自动得到不同策略。
+- **HC3 未通过（长 T 延迟任务）**：adaptive 停在 single（α≈[0.96,0.01,…]），T80 task0 0.734 vs best fixed 0.898、T160 0.572 vs best fixed 0.606；scheduler 没有发现固定 kernel 的长 T 收益。
+- 总结（结果分类 A + 一个明确的例外）：**在有事件角色的任务上自适应时间压缩成立**（同一 scheduler 自动复现两类最优 kernel 策略并超过固定基线）；**在事件同质、无干扰的延迟任务上不成立**（初始化 single 是强局部最优，α 不动）。下一步 V24D：连续 `λ_t` 或给 selector 加探索/退火，重点解决延迟任务上的不移动问题。
+
 ## 运行
 
 ```bash
@@ -40,8 +49,14 @@ FLOW_THREADS=1 python scheduler.py --kernels single burst5 decay-slow --tasks xo
     --Ts 80 --seeds 11 22 33 44 55 --epochs 500 --jobs 6 --out results/sched_chain
 FLOW_THREADS=1 python scheduler.py --kernels burst5 --tasks xor \
     --Ts 160 --seeds 11 22 33 --epochs 500 --jobs 1 --out results/sched_chain
-python analyze.py && python plot.py     # REPORT.md / write_dynamics.png / chain_kernels.png / scheduler.png
-python verify_sched.py                  # 初始化等价 + w≡1 + hybrid 梯度检查
+# Phase D（V24C）：kernel bank selector
+FLOW_THREADS=1 python bank.py --phase chain --tasks xor xorsw \
+    --Ts 80 --seeds 11 22 33 44 55 --epochs 500 --jobs 3 --out results/bank_chain
+FLOW_THREADS=1 python bank.py --phase delay \
+    --Ts 40 80 160 --tasks 0 1 2 3 --seeds 11 22 33 44 55 --epochs 65 --jobs 3 --out results/bank_delay
+python analyze.py && python plot.py     # REPORT.md 及四张图
+python verify_sched.py                  # w_t 版：初始化等价 + w≡1 + hybrid 梯度检查
+python verify_bank.py                   # bank 版：base 等价 + 初始≈single + 等能量 + ∇α 检查
 ```
 
-kernel 定义：`single=[1]`、`burst3/5` 均匀、`decay-fast/slow ∝ 0.5^k / 0.85^k`（L2 归一）。Phase A 固定 B、核心按 V20 协议训练；Phase B 用 hybrid（B full / core K=5），`single` 为 V23 回归锚点。
+kernel 定义：`single=[1]`、`burst3/5` 均匀、`decay-fast/slow ∝ 0.5^k / 0.85^k`（L2 归一）。Phase A 固定 B、核心按 V20 协议训练；Phase B 用 hybrid（B full / core K=5），`single` 为 V23 回归锚点。Phase D 的 selector 只看 `(x_t, meta_t)`、逐事件等能量、固定 `a_k`，`w≡1`。

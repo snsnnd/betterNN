@@ -1,0 +1,25 @@
+bank delay jobs 60 out /mnt/d/betterNN/flow_mvp_v24/results/bank_delay
+bank_delay_T80_t1_11: acc=0.918 L_A=0.00 L_B=0.00 188s
+bank_delay_T80_t1_33: acc=0.948 L_A=0.00 L_B=0.00 191s
+bank_delay_T80_t1_22: acc=0.772 L_A=0.00 L_B=0.00 193s
+bank_delay_T80_t1_55: acc=0.911 L_A=0.00 L_B=0.00 182s
+bank_delay_T80_t1_44: acc=0.933 L_A=0.00 L_B=0.00 185s
+bank_delay_T80_t2_11: acc=0.935 L_A=0.00 L_B=0.00 184s
+bank_delay_T80_t2_22: acc=0.939 L_A=0.00 L_B=0.00 183s
+bank_delay_T80_t2_33: acc=0.978 L_A=0.00 L_B=0.00 190s
+bank_delay_T80_t2_44: acc=0.983 L_A=0.03 L_B=0.04 189s
+bank_delay_T80_t2_55: acc=0.934 L_A=0.00 L_B=0.02 181s
+bank_delay_T80_t3_11: acc=0.953 L_A=0.00 L_B=0.00 177s
+bank_delay_T80_t3_22: acc=0.852 L_A=0.00 L_B=0.00 184s
+bank_delay_T80_t3_33: acc=0.960 L_A=0.00 L_B=0.00 196s
+bank_delay_T80_t3_44: acc=0.990 L_A=0.00 L_B=0.00 195s
+bank_delay_T80_t3_55: acc=0.976 L_A=0.00 L_B=0.00 200s
+bank_delay_T160_t0_11: acc=0.523 L_A=0.76 L_B=0.62 758s
+bank_delay_T160_t0_22: acc=0.615 L_A=0.01 L_B=0.01 765s
+bank_delay_T160_t0_33: acc=0.557 L_A=0.00 L_B=0.00 793s
+bank_delay_T160_t0_44: acc=0.511 L_A=0.74 L_B=0.61 788s
+bank_delay_T160_t0_55: acc=0.655 L_A=0.01 L_B=0.01 785s
+bank_delay_T160_t1_11: acc=0.749 L_A=0.80 L_B=0.67 781s
+bank_delay_T160_t1_33: acc=0.739 L_A=0.01 L_B=0.01 847s
+bank_delay_T160_t1_22: acc=0.620 L_A=0.24 L_B=0.24 856s
+bank_delay_T160_t1_44: acc=0.672 L_A=0.68 L_B=0.62 821s

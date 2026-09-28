@@ -158,3 +158,90 @@ if sched:
     plt.close(fig)
     print('wrote scheduler.png')
 
+bank_chain = [r for r in load('results/bank_chain') if r.get('phase') == 'bank']
+bank_delay = [r for r in load('results/bank_delay') if r.get('phase') == 'bank_delay']
+if bank_chain or bank_delay:
+    fig, axes = plt.subplots(2, 2, figsize=(13, 8.5))
+    chain80 = [r for r in chain if r['T'] == 80]
+    # 1) chain adaptive vs best fixed
+    ax = axes[0][0]
+    if bank_chain:
+        labels, adaptive, bestf = [], [], []
+        for task in ('xor', 'xorsw'):
+            rs = [r for r in bank_chain if r['task'] == task]
+            fixed = {k: np.mean([r['final'] for r in chain80 if r['task'] == task and r['kernel'] == k])
+                     for k in CHAIN_KERNELS}
+            bk = max(fixed, key=lambda k: fixed[k])
+            labels.append(task + chr(10) + '(vs ' + bk + ')')
+            adaptive.append(np.mean([r['final'] for r in rs]))
+            bestf.append(fixed[bk])
+        xs = np.arange(len(labels))
+        ax.bar(xs - .2, adaptive, width=.4, label='adaptive', alpha=.85)
+        ax.bar(xs + .2, bestf, width=.4, label='best fixed', alpha=.55)
+        for i, (a, b) in enumerate(zip(adaptive, bestf)):
+            ax.text(i, max(a, b) + .01, f'{a:.3f}/{b:.3f}', ha='center', fontsize=8)
+        ax.set_xticks(xs, labels, fontsize=8)
+        ax.set_ylim(0, 1.05)
+        ax.set_title('V24C chain T=80: adaptive vs best fixed')
+        ax.legend(fontsize=8)
+    # 2) alpha composition per event
+    ax = axes[0][1]
+    events = ['A', 'c1', 'distractor', 'B', 'c2']
+    knames = ['single', 'burst3', 'burst5', 'dfast', 'dslow']
+    colors = ['#1f77b4', '#2ca02c', '#d62728', '#ff7f0e', '#9467bd']
+    width = .35
+    for j, task in enumerate(('xor', 'xorsw')):
+        rs = [r for r in bank_chain if r['task'] == task]
+        if not rs:
+            continue
+        for m, e in enumerate(events):
+            al = np.mean([r['profile'][e]['alpha'] for r in rs], axis=0)
+            bottom = 0
+            for k, c in zip(range(5), colors):
+                ax.bar(m + (j - .5) * width, al[k], width=width, bottom=bottom, color=c,
+                       alpha=.9 if j == 0 else .55)
+                bottom += al[k]
+    ax.set_xticks(range(len(events)), events)
+    ax.set_ylabel('mean alpha')
+    ax.set_title('kernel allocation (solid=xor, faded=xorsw)')
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for c in colors], labels=knames, fontsize=6)
+    # 3) L_eff per event
+    ax = axes[1][0]
+    for j, task in enumerate(('xor', 'xorsw')):
+        rs = [r for r in bank_chain if r['task'] == task]
+        if not rs:
+            continue
+        ys = [np.mean([r['profile'][e]['L_eff'] for r in rs]) for e in events]
+        ax.bar(np.arange(len(events)) + (j - .5) * .35, ys, width=.35, label=task, alpha=.85)
+    ax.set_xticks(range(len(events)), events)
+    ax.set_ylabel('L_eff = sum tau a_tau^2')
+    ax.set_title('effective temporal length per event (chain)')
+    ax.legend(fontsize=8)
+    # 4) delay adaptive vs fixed
+    ax = axes[1][1]
+    Ts_d = sorted({r['T'] for r in bank_delay})
+    if Ts_d:
+        for tag, getter, c in [('adaptive', lambda T: [r['final'] for r in bank_delay if r['T'] == T], '#d62728'),
+                               ('best fixed', lambda T: [np.mean([r['final'] for r in rows if r['T'] == T and r['kernel'] == k])
+                                                          for k in []], None),
+                               ('single', lambda T: [r['final'] for r in rows if r['T'] == T and r['kernel'] == 'single'], '#1f77b4')]:
+            if tag == 'best fixed':
+                ys = []
+                for T in Ts_d:
+                    vals = [np.mean([r['final'] for r in rows if r['T'] == T and r['kernel'] == k]) for k in ['single', 'burst3', 'burst5', 'decay-fast', 'decay-slow']]
+                    ys.append(max(vals))
+                ax.plot(Ts_d, ys, 's--', color='#2ca02c', label='best fixed')
+                continue
+            ys = [np.mean(getter(T)) for T in Ts_d]
+            ax.plot(Ts_d, ys, 'o-', color=c, label=tag)
+        ax.set_xscale('log', base=2)
+        ax.set_xticks(Ts_d, [str(t) for t in Ts_d])
+        ax.set_xlabel('T')
+        ax.set_ylabel('final accuracy')
+        ax.set_title('delay task: adaptive vs fixed')
+        ax.legend(fontsize=8)
+        ax.set_ylim(0, 1.05)
+    fig.tight_layout()
+    fig.savefig(ROOT / 'bank.png', dpi=150)
+    plt.close(fig)
+    print('wrote bank.png')

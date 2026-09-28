@@ -31,6 +31,22 @@
     "H7": {
       "text": "T=160 xor\uff1aburst5+sched=0.743 vs burst5 fixed=0.777\uff08\u9700\u2265\u22122pp\uff09\u3001vs single=0.770\uff08\u9700\u2265+5pp\uff09",
       "ok": false
+    },
+    "HC1": {
+      "text": "Chain T=80 \u6027\u80fd\uff1axor: adaptive=0.998 vs best fixed=0.971\uff08\u9700\u2265\u22122pp\uff09\uff1bxorsw: adaptive=1.000 vs best fixed=0.999\uff08\u9700\u2265\u22122pp\uff09",
+      "ok": true
+    },
+    "HC2": {
+      "text": "\u65f6\u95f4\u9009\u62e9\uff08\u22651 \u4efb\u52a1\uff1aL_imp\u22651.2L_d \u4e14 \u22654/5 seeds \u4e14 \u2016\u0394\u03b1\u2016\u2081>0.2\uff09\uff1axor: L_imp/L_d=0.78\uff080/5 seeds>1.2\uff09\u3001\u2016\u0394\u03b1\u2016\u2081=0.40\uff1bxorsw: L_imp/L_d=2.51\uff084/5 seeds>1.2\uff09\u3001\u2016\u0394\u03b1\u2016\u2081=0.31",
+      "ok": true
+    },
+    "HC3": {
+      "text": "\u5ef6\u8fdf\u4efb\u52a1 task0 \u957f T\uff08T=160 \u9700\u2265best fixed\u22122pp\uff1bT160 \u53ea\u8dd1 task0\uff09\uff1aT40/task0: adaptive=0.973 vs best fixed=0.987\uff085 seeds\uff09\uff1bT80/task0: adaptive=0.734 vs best fixed=0.898\uff085 seeds\uff09\uff1bT160/task0: adaptive=0.572 vs best fixed=0.606\uff085 seeds\uff09",
+      "ok": false
+    },
+    "HC-verdict": {
+      "text": "\u7ed3\u679c\u5206\u7c7b A\uff1a\u81ea\u9002\u5e94\u65f6\u95f4\u538b\u7f29\u6210\u7acb \u2192 V24D \u8fde\u7eed \u03bb\uff08HC1=True, HC2=True, HC3=False\uff09",
+      "ok": null
     }
   },
   "gaps": {

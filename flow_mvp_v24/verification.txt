@@ -6,3 +6,7 @@ H3: PASS — Chain-select T=80 最优 kernel ≥ single+5pp 且 ≥0.90：xor: b
 H5: FAIL — T=80 同一 scheduler（kernel=decay-slow）：xor=0.946（Δ+17.0pp）、xorsw=0.999（Δ+8.5pp），两任务 ≥0.95 且 Δ≥+5pp
 H6: FAIL — distractor 抑制（≥2 cells 满足 E[w|d]≤E[w|imp]−0.2）：xor/burst5: 0/5 seeds, w_all=1.45；xor/decay-slow: 0/5 seeds, w_all=1.56；xor/single: 0/5 seeds, w_all=1.03；xorsw/burst5: 0/5 seeds, w_all=0.97；xorsw/decay-slow: 0/5 seeds, w_all=0.69；xorsw/single: 0/5 seeds, w_all=0.52
 H7: FAIL — T=160 xor：burst5+sched=0.743 vs burst5 fixed=0.777（需≥−2pp）、vs single=0.770（需≥+5pp）
+HC1: PASS — Chain T=80 性能：xor: adaptive=0.998 vs best fixed=0.971（需≥−2pp）；xorsw: adaptive=1.000 vs best fixed=0.999（需≥−2pp）
+HC2: PASS — 时间选择（≥1 任务：L_imp≥1.2L_d 且 ≥4/5 seeds 且 ‖Δα‖₁>0.2）：xor: L_imp/L_d=0.78（0/5 seeds>1.2）、‖Δα‖₁=0.40；xorsw: L_imp/L_d=2.51（4/5 seeds>1.2）、‖Δα‖₁=0.31
+HC3: FAIL — 延迟任务 task0 长 T（T=160 需≥best fixed−2pp；T160 只跑 task0）：T40/task0: adaptive=0.973 vs best fixed=0.987（5 seeds）；T80/task0: adaptive=0.734 vs best fixed=0.898（5 seeds）；T160/task0: adaptive=0.572 vs best fixed=0.606（5 seeds）
+HC-verdict: info — 结果分类 A：自适应时间压缩成立 → V24D 连续 λ（HC1=True, HC2=True, HC3=False）

@@ -1,0 +1,12 @@
+bank chain jobs 10 out /mnt/d/betterNN/flow_mvp_v24/results/bank_chain
+bank_xor_T80_33: acc=1.000 best=1.000 L=[A1.44 c11.55 d1.68 B1.72 c21.47] 2074s
+bank_xor_T80_11: acc=0.999 best=1.000 L=[A0.80 c11.16 d1.28 B1.33 c21.17] 2085s
+bank_xor_T80_22: acc=0.996 best=1.000 L=[A0.00 c11.03 d1.50 B1.58 c20.00] 2091s
+bank_xor_T80_44: acc=0.999 best=1.000 L=[A0.00 c11.56 d2.00 B2.00 c22.00] 2901s
+bank_xorsw_T80_11: acc=1.000 best=1.000 L=[A0.00 c10.00 d0.00 B0.00 c21.47] 2903s
+bank_xor_T80_55: acc=0.998 best=1.000 L=[A1.78 c11.83 d1.87 B1.88 c21.78] 2936s
+bank_xorsw_T80_22: acc=1.000 best=1.000 L=[A0.00 c10.00 d0.00 B0.00 c21.04] 1817s
+bank_xorsw_T80_33: acc=1.000 best=1.000 L=[A0.13 c10.31 d0.82 B1.25 c21.57] 1818s
+bank_xorsw_T80_44: acc=1.000 best=1.000 L=[A0.00 c10.00 d0.00 B0.01 c21.31] 1801s
+bank_xorsw_T80_55: acc=1.000 best=1.000 L=[A0.01 c10.02 d0.07 B0.22 c21.66] 841s
+all 10 jobs in 7634.5 s

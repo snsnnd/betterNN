@@ -103,3 +103,43 @@ e_t=w_t\odot x_t,\qquad z_t=\sum_{k=0}^{L-1}a_k\,(e_{t-k}B),\qquad w_t=2\,\sigma
 - **H6（重要性）**：至少 2/6 个 (task, kernel) cell 满足 `E[w|distractor] ≤ E[w|important] − 0.20`（important 取 A/c1/B/c2 均值的最小值，按 seed 平均），且全步均值未坍缩到端点（∈(0.02,1.98)）。
 - **H7（长 T）**：T=160 xor：`burst5+sched` 不劣于 `burst5 fixed`，且相对 fixed `single` ≥ +5pp。
 - 若 H5 成立但 H6 不成立（accuracy 好但 `w≈1` 全开）→ scheduler 只是隐式正则，不算“学会重要性”；若 H5 不成立 → 单靠输入权重不足以复现最优固定 kernel，需要 V24C 的动态 `λ_t`。
+
+
+## 8. Phase D（V24C）：Adaptive Temporal Compression（kernel bank selector）
+
+V24B 证明“调幅度”是错误自由度；V24 证明最优时间形状依任务而变（xor→burst5、xorsw→decay-slow）。Phase D 只开放**时间形状**一个自由度。
+
+### 8.1 结构
+
+- Kernel bank（已由 V24 验证过）：`single`、`burst3`、`burst5`、`decay-fast`、`decay-slow`（全部 L2=1，pad 到长度 5）；
+- Scheduler：`α_t = softmax(MLP([x_t, meta_t]))`，`9→16→5`，末层 bias 初始化为 `[4,0,0,0,0]`（初始 ≈ single）；
+- 混合与等能量：`a_t = α_t K`，`ã_t = a_t/‖a_t‖₂`（**Σ_τ ã²=1**，每条信息总写入能量与 single 相同）；
+- 写入：`z_{t+τ} += ã_{t,τ}·B x_t`（外部输入仍只出现一次，后续是内部 trace）；
+- **无 `w_t`**（幅度恒 1）；Flow Core（W/Route/Hold）与 core K=5 不变；B 与 scheduler 同走 hybrid full 通道（早期事件在窗口外，∇α=0）。
+
+### 8.2 网格
+
+| 组 | 任务 | T | seeds | epochs | runs |
+|---|---|---|---|---|---|
+| 主 | Chain-select xor/xorsw | 80 | 11/22/33/44/55 | 500 | 10 |
+| 长 T | 延迟任务 tasks 0-3 | 40/80/160 | 11/22/33/44/55 | 65 | 60 |
+
+对照：Chain 用 V24 Phase B 的 fixed single/burst5/decay-slow；延迟用 V24 Phase A 的同协议 fixed 五 kernel。
+
+### 8.3 指标
+
+- final acc / best-val reach；
+- **α 画像**：每个事件（A/c1/distractor/B/c2）的平均 α 与混合 kernel；
+- **有效时间长度** `L_eff = Σ_τ τ ã_τ²`（用户定义），比较 `L_important`（A/c1/B/c2 均值）与 `L_distractor`；
+- **linear probe**（前 512 拟合/后 512 评估）在 `t=T/2` 与 `t=T−1` 的可解码性（不用 ||Δh||）。
+
+### 8.4 预注册假设（编号 HC 以免与 Phase A/B 混淆）
+
+- **HC1（性能）**：Chain T=80：adaptive ≥ 每任务最优 fixed − 2pp（xor ≥0.951、xorsw ≥0.979）。
+- **HC2（时间选择）**：至少一个任务的 `L_important ≥ 1.2·L_distractor` 在 ≥4/5 seeds 成立，且 α 不是所有事件相同（distractor 的 α 与重要事件的平均 L1 距离 >0.2）。
+- **HC3（长 T）**：延迟 T=160：adaptive ≥ best fixed（burst5/decay-slow）− 2pp；并报告 T=40/80 趋势。
+- **结果分类**：A（HC1+HC2 过）→ 自适应时间压缩成立，进入 V24D 连续 λ；B（HC1 过、HC2 不过）→ 只是学到更好的固定 kernel，停止加复杂 scheduler；C（HC2 过、HC1 不过）→ 时间选择学到但任务不依赖，转 write budget；D（都不过）→ 输入 scheduler 线暂停，转 Read Dynamics（V25）。
+
+### 8.5 实现说明（不影响协议/网格）
+
+基于 kernel bank 的时间移位写入用**函数式** `F.pad`+求和实现；初版的 in-place 切片赋值在 autograd 下会为每个移位做整张量 `fill_/copy_`（backward 慢 8–10×），已替换。两种写法数值一致，网格、对照与预注册判定均不变。

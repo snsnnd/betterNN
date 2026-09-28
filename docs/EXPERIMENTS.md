@@ -510,6 +510,15 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 - **Q3 未过**：T=160 xor 上 burst5+sched 0.743 ≈ fixed single 0.770，不能恢复长 T。
 - 结论：标量 input gate 是错误的第一自由度；下一步应做**动态 `λ_t`（trace shaping）或带写入预算约束的 scheduler**。
 
+### Phase D（V24C）：Adaptive Temporal Compression 在 Chain-select 上成立
+
+只开放“时间形状”：`α_t=softmax(MLP(x_t,meta_t))` 在 5 个已验证 kernel 上选择，`ã=αK/‖αK‖`（**逐事件等能量**）、无 `w_t`、core 仍 K=5；Phase 0 核验 base 参数逐位一致、初始 ≈single、等能量 rel diff=1.3e-7、∇α 非零。
+
+- **HC1 通过**：Chain T=80 上同一 scheduler 自适应：xor **0.998**（超过 best fixed burst5 0.971）、xorsw **1.000**（=best fixed decay-slow 0.999）。
+- **HC2 通过**：xorsw 学到“只给 c2 长 kernel、其余事件 single”的策略（`L_imp/L_d=2.51`，distractor L=0.18 最小）；xor 学到“全事件铺开”（burst5/decay-slow 型）。两种任务自动得到不同时间策略。
+- **HC3 未通过**：延迟任务上 selector 停在 single（α≈0.96 single），T80 task0 0.734 vs best fixed 0.898、T160 0.572 vs 0.606——同质事件 + 无干扰时初始化 single 是强局部最优，收益需要 core 协同适应，65 epochs 内没被发现。
+- 判定：**事件有角色区分时自适应时间压缩成立；同质延迟任务上不成立**（结果分类 A + 明确例外）。下一步 V24D：连续 `λ_t`/探索退火，重点解决“不移动”问题。
+
 数据位置：[REPORT.md](../flow_mvp_v24/REPORT.md)、[results/](../flow_mvp_v24/results/)、[write_dynamics.png](../flow_mvp_v24/write_dynamics.png)、[chain_kernels.png](../flow_mvp_v24/chain_kernels.png)、[scheduler.png](../flow_mvp_v24/scheduler.png)。
 
 ## 21. 已保存的内容
@@ -571,4 +580,4 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 
 **V24B（Phase C）随即做了标量 write gate，结果是明确的负结果**：同一 scheduler 没有超过每任务最优固定 kernel（xor：0.946 vs fixed burst5 0.971），30 条流里 0 条学会相对抑制 distractor（常见退化是“全开放大”或“只留末端事件”）。机制：符号分类对输入正标量缩放不变，加法写入没有“写重了挤占别人”的竞争，相对重要性没有梯度。
 
-当前路线：**Where（B 支撑/解耦，V20/V21 已答）→ When/How much（V24A/B：固定 kernel 有效；标量 gate 无效）→ How long（动态 `λ_t` / 带预算约束的 scheduler，V24C）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。
+当前路线：**Where（V20/V21 已答）→ When/How much（V24A 固定 kernel 有效；V24B 标量 gate 无效；V24C kernel bank 在 Chain-select 上成立）→ How long（V24D 连续 `λ_t` + 探索/退火）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。

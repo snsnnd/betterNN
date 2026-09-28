@@ -547,9 +547,15 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python scheduler.py --kernels single bu
     --tasks xor xorsw --Ts 80 --seeds 11 22 33 44 55 --epochs 500 --jobs 6 --out results/sched_chain
 FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python scheduler.py --kernels burst5 --tasks xor \
     --Ts 160 --seeds 11 22 33 --epochs 500 --jobs 1 --out results/sched_chain
-# 汇总 + scheduler 协议核验
+# Phase D（V24C）：kernel bank selector（自适应时间形状）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python bank.py --phase chain --tasks xor xorsw \
+    --Ts 80 --seeds 11 22 33 44 55 --epochs 500 --jobs 3 --out results/bank_chain
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python bank.py --phase delay \
+    --Ts 40 80 160 --tasks 0 1 2 3 --seeds 11 22 33 44 55 --epochs 65 --jobs 3 --out results/bank_delay
+# 汇总 + 协议核验
 /mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
-/mnt/d/betterNN/.venv/bin/python verify_sched.py   # 初始 w≡1、forward 逐值一致、hybrid 梯度非零
+/mnt/d/betterNN/.venv/bin/python verify_sched.py   # w_t 版：初始 w≡1、forward 逐值一致、hybrid 梯度非零
+/mnt/d/betterNN/.venv/bin/python verify_bank.py    # bank 版：base 等价、初始≈single、等能量、∇α
 ```
 
 注意：T=160 单流约 20–45 min、RSS≈1.1GB（并行度 ≤4）；主网格的 xor 任务有"软选择平台/周期振荡"，final accuracy 需配合 `best-val reach`（REPORT 已给）一起读。
@@ -571,7 +577,7 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase chain \
 /mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
 ```
 
-注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。V24B 的 scheduler 初始 w≡1（与固定 kernel 起点逐值一致），w 与 B 同走 full 通道、core 仍 K=5。
+注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。V24B 的 scheduler 初始 w≡1（与固定 kernel 起点逐值一致），w 与 B 同走 full 通道、core 仍 K=5。V24C 的 bank selector 初始 ≈single（bias [4,0,0,0,0]），逐事件 Σa²=1 等能量；注意 `writes` 必须用函数式 `F.pad` 实现，in-place 切片赋值会慢 8–10×。
 
 ## 22. 原归档校验与打包
 

@@ -31,6 +31,13 @@ def chain_rows():
 def sched_rows():
     return [r for r in load_dir('results/sched_chain') if r.get('phase') == 'sched']
 
+def bank_chain_rows():
+    return [r for r in load_dir('results/bank_chain') if r.get('phase') == 'bank']
+
+
+def bank_delay_rows():
+    return [r for r in load_dir('results/bank_delay') if r.get('phase') == 'bank_delay']
+
 
 def cell(rows, kernel, T):
     return [r for r in rows if r['kernel'] == kernel and r['T'] == T]
@@ -231,7 +238,142 @@ def hypotheses(rows, chain, sched=()):
     return H, gaps
 
 
-def report(rows, chain, sched, H, gaps):
+BANK_EVENTS = ('A', 'c1', 'B', 'c2')
+
+
+def bank_hypotheses(bank_chain, bank_delay, chain, rows):
+    HC = {}
+    chain80 = [r for r in chain if r['T'] == 80]
+    # HC1 性能
+    if bank_chain:
+        txt, ok = [], True
+        for task in ('xor', 'xorsw'):
+            ad = [r['final'] for r in bank_chain if r['task'] == task]
+            fixed = {k: np.mean([r['final'] for r in chain80 if r['task'] == task and r['kernel'] == k])
+                     for k in CHAIN_KERNELS}
+            best = max(v for v in fixed.values() if np.isfinite(v))
+            m = float(np.mean(ad))
+            ok &= (m >= best - .02)
+            txt.append(f'{task}: adaptive={m:.3f} vs best fixed={best:.3f}（需≥−2pp）')
+        HC['HC1'] = {'text': 'Chain T=80 性能：' + '；'.join(txt), 'ok': bool(ok)}
+    # HC2 时间选择
+    if bank_chain:
+        cells, npass = [], 0
+        for task in ('xor', 'xorsw'):
+            rs = [r for r in bank_chain if r['task'] == task]
+            dimp, dd, das = [], [], []
+            for r in rs:
+                p = r['profile']
+                li = float(np.mean([p[e]['L_eff'] for e in BANK_EVENTS]))
+                ld = p['distractor']['L_eff']
+                imp_alpha = np.mean([p[e]['alpha'] for e in BANK_EVENTS], axis=0)
+                das.append(float(np.abs(imp_alpha - np.array(p['distractor']['alpha'])).sum()))
+                dimp.append(li)
+                dd.append(ld)
+            ratio = float(np.mean(dimp) / (np.mean(dd) + 1e-12))
+            npos = int(sum(a > b * 1.2 for a, b in zip(dimp, dd)))
+            dalpha = float(np.mean(das))
+            cond = ratio >= 1.2 and npos >= max(1, int(round(.8 * len(rs)))) and dalpha > .2
+            npass += int(cond)
+            cells.append(f'{task}: L_imp/L_d={ratio:.2f}（{npos}/{len(rs)} seeds>1.2）、‖Δα‖₁={dalpha:.2f}')
+        HC['HC2'] = {'text': '时间选择（≥1 任务：L_imp≥1.2L_d 且 ≥4/5 seeds 且 ‖Δα‖₁>0.2）：' + '；'.join(cells),
+                     'ok': bool(npass >= 1)}
+    # HC3 长 T
+    if bank_delay:
+        cells, ok = [], True
+        for T in (40, 80, 160):
+            ad = [r['final'] for r in bank_delay if r['T'] == T and r['task'] == 0]
+            fixed = {k: np.mean([r['final'] for r in rows if r['T'] == T and r['task'] == 0
+                                 and r['kernel'] == k]) for k in KERNELS}
+            best = max(v for v in fixed.values() if np.isfinite(v))
+            m = float(np.mean(ad)) if ad else float('nan')
+            if T == 160:
+                ok = np.isfinite(m) and m >= best - .02
+            cells.append(f'T{T}/task0: adaptive={m:.3f} vs best fixed={best:.3f}（{len(ad)} seeds）')
+        HC['HC3'] = {'text': '延迟任务 task0 长 T（T=160 需≥best fixed−2pp；T160 只跑 task0）：' + '；'.join(cells),
+                     'ok': bool(ok)}
+    # 结果分类
+    a = HC.get('HC1', {}).get('ok'); b = HC.get('HC2', {}).get('ok')
+    if a is not None and b is not None:
+        verdict = ('A：自适应时间压缩成立 → V24D 连续 λ' if a and b else
+                   'B：只学到更好的固定 kernel → 停止加复杂 scheduler' if a and not b else
+                   'C：时间选择学到但任务不依赖 → 转 write budget' if b and not a else
+                   'D：都不过 → 输入 scheduler 线暂停，转 Read Dynamics（V25）')
+        HC['HC-verdict'] = {'text': f'结果分类 {verdict}（HC1={a}, HC2={b}, HC3={HC.get("HC3", {}).get("ok")}）',
+                            'ok': None}
+    return HC
+
+
+def bank_section(ap, bank_chain, bank_delay, chain80, rows):
+    if not bank_chain and not bank_delay:
+        return
+    ap('## 3.6 Phase D（V24C）：Adaptive Temporal Compression（kernel bank selector）')
+    ap('')
+    ap('结构：`α_t=softmax(MLP(x_t,meta_t))`（9→16→5，bias 初始 [4,0,0,0,0]）；`ã_t=α_tK/‖α_tK‖`（Σa²=1）；'
+       '`z_{t+τ} += ã_{t,τ}B x_t`；无 w_t；core 仍 K=5、B/scheduler 走 hybrid full。')
+    ap('')
+    if bank_chain:
+        ap('### Chain-select T=80：adaptive vs fixed')
+        ap('')
+        ap('| task | adaptive final | best | reach | fixed best（kernel） | probe T/2 | probe T−1 |')
+        ap('|---|---:|---:|---:|---|---:|---:|')
+        for task in ('xor', 'xorsw'):
+            rs = [r for r in bank_chain if r['task'] == task]
+            if not rs:
+                continue
+            fixed = {k: np.mean([r['final'] for r in chain80 if r['task'] == task and r['kernel'] == k])
+                     for k in CHAIN_KERNELS}
+            bk = max(fixed, key=lambda k: fixed[k])
+            pr = {t: np.mean([r.get('probe', {}).get(str(t), np.nan) for r in rs]) for t in (40, 79)}
+            ap(f"| {task} | {np.mean([r['final'] for r in rs]):.3f} | {fixed[bk]:.3f} | "
+               f"{sum(1 for r in rs if r['best_val']>=.9)}/{len(rs)} | {bk} | {pr[40]:.3f} | {pr[79]:.3f} |")
+        ap('')
+        ap('### 事件级 α 与有效时间长度 `L_eff=Σ τ ã_τ²`')
+        ap('')
+        ap('| task | 事件 | α(single,burst3,burst5,dfast,dslow) | L_eff |')
+        ap('|---|---|---|---:|')
+        for task in ('xor', 'xorsw'):
+            rs = [r for r in bank_chain if r['task'] == task]
+            if not rs:
+                continue
+            for e in ('A', 'c1', 'distractor', 'B', 'c2'):
+                al = np.mean([r['profile'][e]['alpha'] for r in rs], axis=0)
+                le = np.mean([r['profile'][e]['L_eff'] for r in rs])
+                ap(f"| {task} | {e} | " + ','.join(f'{v:.2f}' for v in al) + f" | {le:.2f} |")
+        ap('')
+    if bank_delay:
+        ap('### 延迟任务：adaptive vs fixed（含 probe t=T/2 / T−1）')
+        ap('')
+        ap('| T | adaptive final | best fixed（kernel） | single | adaptive probe T/2 | adaptive probe T−1 | single probe T−1 |（全部 task0）')
+        ap('|---|---:|---|---:|---:|---:|---:|')
+        for T in (40, 80, 160):
+            ad = [r for r in bank_delay if r['T'] == T and r['task'] == 0]
+            if not ad:
+                continue
+            fixed = {k: np.mean([r['final'] for r in rows if r['T'] == T and r['task'] == 0
+                                 and r['kernel'] == k]) for k in KERNELS}
+            bk = max(fixed, key=lambda k: fixed[k])
+            m = np.mean([r['final'] for r in ad])
+            p_half = np.nanmean([r.get('probe', {}).get(str(T // 2), np.nan) for r in ad])
+            p_end = np.nanmean([r.get('probe', {}).get(str(T - 1), np.nan) for r in ad])
+            s_end = np.nanmean([r.get('probe', {}).get(str(T - 1), np.nan)
+                                for r in rows if r['T'] == T and r['task'] == 0 and r['kernel'] == 'single'])
+            ap(f"| {T} | {m:.3f} | {fixed[bk]:.3f}（{bk}） | {fixed['single']:.3f} | {p_half:.3f} | {p_end:.3f} | {s_end:.3f} |")
+        ap('')
+        ap('| T | 事件 | α(single,burst3,burst5,dfast,dslow) | L_eff |')
+        ap('|---|---|---|---:|')
+        for T in (40, 80, 160):
+            ad = [r for r in bank_delay if r['T'] == T and r['task'] == 0]
+            if not ad:
+                continue
+            for e in ('A', 'B'):
+                al = np.mean([r['profile'][e]['alpha'] for r in ad], axis=0)
+                le = np.mean([r['profile'][e]['L_eff'] for r in ad])
+                ap(f"| {T} | {e} | " + ','.join(f'{v:.2f}' for v in al) + f" | {le:.2f} |")
+        ap('')
+
+
+def report(rows, chain, sched, bank_chain, bank_delay, H, gaps):
     A = []
     ap = A.append
     ap('# 第二十四轮：Input Write Dynamics（等能量写入时间结构）')
@@ -319,7 +461,7 @@ def report(rows, chain, sched, H, gaps):
                 rs = cell(rows, k, T)
                 if not rs:
                     continue
-                vals = [np.nanmean([r['probe'].get(str(t), np.nan) for r in rs]) for t in times]
+                vals = [np.nanmean([r.get('probe', {}).get(str(t), np.nan) for r in rs]) for t in times]
                 ap(f'| {T} | {k} | ' + ' | '.join(f'{v:.3f}' for v in vals) + ' |')
         ap('')
     if chain:
@@ -385,6 +527,7 @@ def report(rows, chain, sched, H, gaps):
                     ap(f"| {tag} | {np.mean([r['final'] for r in rs]):.3f} | {np.mean([r['best_val'] for r in rs]):.3f} | "
                        f"{sum(1 for r in rs if r['best_val']>=.9)}/{len(rs)} |")
             ap('')
+    bank_section(ap, bank_chain, bank_delay, [r for r in chain if r['T'] == 80], rows)
     ap('## 4. 预注册判定')
     ap('')
     for k, v in H.items():
@@ -424,11 +567,15 @@ def main():
     rows = delay_rows()
     chain = chain_rows()
     sched = sched_rows()
+    bank_chain = bank_chain_rows()
+    bank_delay = bank_delay_rows()
     H, gaps = hypotheses(rows, chain, sched)
-    report(rows, chain, sched, H, gaps)
+    H.update(bank_hypotheses(bank_chain, bank_delay, chain, rows))
+    report(rows, chain, sched, bank_chain, bank_delay, H, gaps)
     (ROOT / 'results/summary.json').write_text(json.dumps({'H': H, 'gaps': gaps}, indent=2, default=str))
     (ROOT / 'verification.txt').write_text('\n'.join(
-        f"{k}: {'PASS' if v['ok'] else 'FAIL'} — {v['text']}" for k, v in H.items()) + '\n')
+        f"{k}: {'PASS' if v['ok'] is True else ('FAIL' if v['ok'] is False else 'info')} — {v['text']}"
+        for k, v in H.items()) + '\n')
     print('analyze done in', round(time.perf_counter() - t0, 1), 's; delay', len(rows), 'chain', len(chain))
     print(json.dumps({k: v['ok'] for k, v in H.items()}, indent=1))
     for k, v in H.items():

@@ -3,7 +3,7 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 24 轮（含 V24B）**（commit `427d1d8`，Input Write Dynamics / Learnable Write Scheduler，见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)）
+- 最新轮次：**第 24 轮（含 V24B/V24C）**（Input Write Dynamics / Write Scheduler / Adaptive Temporal Compression，见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数；B 固定）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
 - **并行/solver 线已冻结在 V19**；V20 B 拓扑；V21 可训练 B 解耦；V22 长程信用归因；V23 压力任务；V24 写入时间结构
@@ -93,6 +93,7 @@
 | 标量 write gate 能匹配/超过最优固定 kernel | 否（xor 0.946 vs 0.971；无一致优势） | v24B |
 | write gate 学会相对抑制 distractor | 否（0/30；w 常>1 或只留 c2） | v24B |
 | write gate 能在长 T 恢复 single 的崩溃 | 否（T160 0.743 ≈ single 0.770） | v24B |
+| 自适应时间选择在同质延迟任务上也能发现固定 kernel 收益 | 否（α 停在 single：T80 0.734 vs fixed 0.898） | v24C |
 | 延迟任务 T=80 上时间结构有效（预注册门槛） | 未过（+3.5pp < 5pp；T=160 才 +5.3pp） | v24 |
 
 ---
@@ -168,7 +169,7 @@
 | v21 | Adaptive Input Decoupling | 5 步截断下 ∇B≡0；hybrid（core 截断/B 全 BPTT）core 梯度与 V20 逐位一致；H2a 否、overlap penalty 强解耦但 hybrid 下不降遗忘；Full-BPTT 敏感性中解耦消除 overlap 代价（4.66→1.83pp） | [flow_mvp_v21](flow_mvp_v21/) |
 | v22 | Long-range Credit Attribution | `{W,Route,Hold}` 的 2³ Full/T 信用因子：匹配口径下归因零结果（G=0.17pp、|ME|≤0.36pp）；V21 的 hybrid→Full gap 是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 无效应；credit audit 显示窗口损失真实但不预测遗忘 | [flow_mvp_v22](flow_mvp_v22/) |
 | v23 | Credit-Stress Benchmark | Chain-select 压力任务（瞬态脉冲 + T 到 160）主动找 core 窗口硬案例：未找到（T≥40 K5 可达性 ≥ Full）；唯一窗口效应是短 T 脉冲对齐；主失败是"软选择平台/振荡"且 Full 也中招、坏盆救不回（0.750→0.733） | [flow_mvp_v23](flow_mvp_v23/) |
-| v24 | Input Write Dynamics | 等能量 FIR write kernel：长 T 收益随 T 增长（T160 +5.3pp）；Chain-select K=5 上 single 0.777/0.913 → burst5 0.971 / decay-slow 0.999；single 双向逐位回归。V24B 标量 write gate 负结果（无超固定 kernel、0/30 学到重要性） | [flow_mvp_v24](flow_mvp_v24/) |
+| v24 | Input Write Dynamics | 等能量 FIR write kernel：长 T 收益随 T 增长（T160 +5.3pp）；Chain-select single 0.777/0.913 → burst5 0.971 / decay-slow 0.999。V24B 标量 write gate 负；V24C kernel bank selector 在 Chain-select 上成立（0.998/1.000，自动分任务策略），延迟任务上停在 single（HC3 未过） | [flow_mvp_v24](flow_mvp_v24/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -240,7 +241,10 @@ betterNN/
 21. **等能量控制（V24）**：write kernel 必须 `Σa²=1`，否则 burst 变好可能只是灌了更多能量；`single` 要跳过卷积以保持与旧轮的逐位回归（V20 fixed-disjoint、V23 K5 两个锚点都查）。
 22. **幅度指标会骗人（V24）**：`||Δh_t||` 的 retention 与 acc 不同向（系统会放大扰动，single 的振幅反而更大更高）；用**线性 probe 的可解码性**（前 512 拟合/后 512 评估）作为“信息还在不在”的指标。
 23. **符号任务里“写多强”有规范自由度（V24B）**：`y=sign(v)` 对输入做正标量缩放不改变可解性，内部增益可以补偿；因此标量 write gate 的 loss 平台很大、梯度不指向“相对重要性”，实测 0/30 学会抑制 distractor，反而常把 w 推到 >1 或整体压缩。设计 write scheduler 时要么给写入**预算/竞争约束**，要么改做 trace shaping（λ_t），否则不要期望它自动学到 importance。
-24. **scheduler 协议核验（V24B）**：`verify_sched.py` 检查 ① 仅加 controller 不改变已有参数（base param maxdiff=0）、② 初始 w≡1 且 forward 与固定 kernel 逐值一致、③ 截断下 ∇w=0、完整通道 ∇w≠0。任何新 scheduler 都应该先过这三个检查。
+24. **scheduler 协议核验（V24B/C）**：`verify_sched.py`（w_t 版）检查 ① 加 controller 不改变已有参数（maxdiff=0）、② 初始 w≡1 且 forward 逐值一致、③ 截断 ∇w=0/完整 ∇w≠0；`verify_bank.py`（bank 版）检查 base 等价、初始 α≈[0.93,0.017…]、forward≈fixed single、单脉冲总写入能量 rel diff≈1e-7、∇α 非零。任何新 scheduler 先过这三类检查。
+25. **不要在大张量上做 in-place 切片赋值（V24C 教训）**：`out[:, s+tau] += ...` 会让 autograd 为每个 op 做整张量 `fill_`/`copy_`，backward 慢 8–10×（实测 bank T=80：0.79s/step → 函数式 `F.pad`+sum 0.15s/step）。构造时间移位用 `F.pad`/函数式切片，热路径不要 indexed in-place。
+26. **自适应时间压缩在 Chain-select 上成立（v24C）**：kernel bank selector（α=softmax(MLP(x,meta))、逐事件 Σa²=1、无 w_t、core K=5）同一配置自动学到 xor“全事件铺开”（0.998，超 fixed burst5 0.971）与 xorsw“只给 c2 长 kernel”（1.000），HC1/HC2 通过。
+27. **同质延迟任务上 selector 不移动（v24C）**：delay T80/T160 上 α 停在 single（初始化 bias 强局部最优），T80 task0 0.734 vs best fixed 0.898、T160 0.572 vs 0.606（HC3 未过）——收益需要 core 协同适应，65 epochs 内没被发现；下一步 V24D 加探索/退火或连续 λ。
 
 ---
 
@@ -250,7 +254,8 @@ betterNN/
 
 1. **V24 已完成（Input Write Dynamics）**：等能量 FIR write kernel 在长 T 延迟任务上收益随 T 增长（T160 +5.3pp），在 V23 Chain-select（core 仍 K=5、B 仍 hybrid）上把 `single` 0.777/0.913 提到 `burst5` 0.971 / `decay-slow` 0.999，且偏好 kernel 依任务而变。**结论：单次瞬时写入是结构性缺陷；写入时间策略需要学习。** 下一步：
    - **V24B 已完成（标量 write gate，负结果）**：`w_t=2σ(MLP(x_t,meta_t))`（不看 h、初始 w≡1、hybrid 全信用）既没有超过每任务最优固定 kernel（xor 0.946 vs 0.971），也没有一条流学会相对抑制 distractor（0/30）。机制：符号任务对正标量缩放不敏感（内部增益可补偿），加法写入没有“写重了挤占别的信息”的竞争 → 相对重要性没有梯度。**结论：标量 input gate 是错误的自由度，不要再调它的容量/结构。**
-   - **V24C（下一步）：动态 `λ_t` / trace shaping 或带预算约束的 scheduler**：`z_{t+1}=λ_t z_t + w_t B u_t`（`z_t` 作为额外输入）；或让事件竞争写入预算（softmax/归一化），使“少写噪声”真正有梯度。先只回答“λ 这个自由度值不值钱”。
+   - **V24C 已完成（Adaptive Temporal Compression, kernel bank selector，结果 A + 例外）**：`α=softmax(MLP(x,meta))` 在 5 kernel 上选择、逐事件等能量、无 w_t；Chain T=80 上 xor 0.998（超 fixed burst5 0.971）、xorsw 1.000，自动学到“全铺开 vs 只给 c2 长 kernel”两种策略（HC1/HC2 通过）；但同质延迟任务上 α 停在 single（HC3 未过）。
+   - **V24D（下一步）：连续 `λ_t` + 探索/退火**：`a_{t,τ}=c(λ_t)λ_t^τ` 等能量归一化；重点解决“初始化 single 是强局部最优、selector 不移动”的问题（延迟任务 +16pp 留给固定 kernel）；先只回答“连续 λ 是否比离散 bank 更能发现收益”。
    - **三个自由度按序验证**：Where（已答）→ When/How much（V24A 固定 kernel 有效 / V24B 标量 gate 无效）→ How long（V24C）；最后才是 Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
    - 机制补充：末端可解码性（probe T−1）比扰动幅度更能解释收益；新方法都应用 probe 而非 ||Δh|| 做机制指标。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
@@ -274,7 +279,7 @@ betterNN/
    cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -3    # V22 缓存指标，约 5 秒
    cd flow_mvp_v22 && /mnt/d/betterNN/.venv/bin/python verify_protocol.py     # B 逐位回归 + 梯度等价 + clip 生效
    cd flow_mvp_v23 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -8    # V23 假设判定（读缓存 JSON）
-   cd flow_mvp_v24 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -6    # V24 假设判定（读缓存 JSON）
+   cd flow_mvp_v24 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -10   # V24 假设判定（H1–H7 + HC1–HC3，读缓存 JSON）
    ```
 4. 复核当前最佳配方（可选）：v15 smoke `--epochs 2 --seeds 11 --out smoke` 或 v11 `--ratios 0 .125` 小规模。
 5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v25/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
