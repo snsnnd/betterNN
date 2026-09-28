@@ -1,0 +1,5 @@
+sched jobs 3 out /mnt/d/betterNN/flow_mvp_v24/results/sched_chain
+sched_burst5_xor_T160_11: acc=0.774 best=0.793 w=A:0.00,c1:0.26,distractor:1.87,B:1.98,c2:1.03,all:1.39,active:1.03 792s
+sched_burst5_xor_T160_22: acc=0.731 best=0.812 w=A:1.66,c1:1.79,distractor:1.91,B:1.96,c2:0.06,all:1.44,active:1.47 778s
+sched_burst5_xor_T160_33: acc=0.723 best=0.777 w=A:1.43,c1:1.50,distractor:0.83,B:0.36,c2:0.01,all:0.52,active:0.83 781s
+all 3 jobs in 2351.5 s

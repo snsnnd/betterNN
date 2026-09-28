@@ -2,7 +2,7 @@
 
 这是一个基于 **Python / PyTorch 的神经网络研究实验集**，研究能否通过小型控制网络调节循环网络中的信息写入、内部传递和状态保持，以及这些机制对泛化、短窗口训练和持续学习的影响。
 
-项目包含第 1～24 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘。第 22 轮用 2³ 因子做**长程信用归因**：匹配口径下归因是零结果（G=0.17pp），并重审出第 21 轮的 hybrid→Full gap 主要是“3 顺序 vs 仅 o0”的聚合错配——**core 的 5 步窗口足够，真正的长程信用需求仍在 B**。第 23 轮按此建议造了 **Credit-Stress Benchmark**（Chain-select：瞬态脉冲 + 长间隔 + 干扰 + 条件选择，T 到 160）主动寻找 core 窗口的硬案例：**仍未找到**（T≥40 时 K=5 可达性 ≥ Full），失败由“软选择平台/振荡”主导且无法被 Full 微调救回。第 24 轮转向“**怎么随时间写入**”：等能量因果 FIR kernel（single/burst3-5/decay-fast/slow）在延迟任务上收益随 T 增长（T=160 +5.3pp），在 V23 Chain-select 上把 `single` 的 0.777/0.913 提到 `burst5` **0.971** / `decay-slow` **0.999**——**单次瞬时写入确实是结构性缺陷，写入时间结构是一个真实自由度**（见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)）。
+项目包含第 1～24 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘。第 22 轮用 2³ 因子做**长程信用归因**：匹配口径下归因是零结果（G=0.17pp），并重审出第 21 轮的 hybrid→Full gap 主要是“3 顺序 vs 仅 o0”的聚合错配——**core 的 5 步窗口足够，真正的长程信用需求仍在 B**。第 23 轮按此建议造了 **Credit-Stress Benchmark**（Chain-select：瞬态脉冲 + 长间隔 + 干扰 + 条件选择，T 到 160）主动寻找 core 窗口的硬案例：**仍未找到**（T≥40 时 K=5 可达性 ≥ Full），失败由“软选择平台/振荡”主导且无法被 Full 微调救回。第 24 轮转向“**怎么随时间写入**”：等能量因果 FIR kernel（single/burst3-5/decay-fast/slow）在延迟任务上收益随 T 增长（T=160 +5.3pp），在 V23 Chain-select 上把 `single` 的 0.777/0.913 提到 `burst5` **0.971** / `decay-slow` **0.999**——**单次瞬时写入确实是结构性缺陷，写入时间结构是一个真实自由度**。随后 Phase C（V24B）试了标量 write gate，是明确负结果：同配置没有超过最优固定 kernel（xor 0.946 vs 0.971），30 条流 0 条学会相对抑制 distractor；机制是符号任务对正标量缩放不敏感、加法写入缺乏竞争，下一步转向动态 `λ_t`/预算约束（见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)、[scheduler.png](flow_mvp_v24/scheduler.png)）。
 
 ## 项目在做什么
 
@@ -28,7 +28,7 @@
 | [二十四轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
 | [运行与复现指南](docs/REPRODUCING.md) | 环境依赖、各轮命令、输出文件、续跑及现有脚本注意事项 |
 | [原始归档说明](README_START_HERE.md) | 原交付包说明、历史文件和校验信息 |
-| [第二十四轮：Input Write Dynamics](flow_mvp_v24/REPORT.md) | 等能量 write kernel、长 T 延迟与 Chain-select、状态 probe |
+| [第二十四轮：Input Write Dynamics](flow_mvp_v24/REPORT.md) | 等能量 write kernel、长 T 延迟与 Chain-select、状态 probe、可学习 scheduler（负） |
 | [第二十三轮：Credit-Stress Benchmark](flow_mvp_v23/REPORT.md) | Chain-select 压力任务、T×K 扫描、救援诊断 |
 | [第二十二轮：长程信用归因报告](flow_mvp_v22/REPORT.md) | 2³ 信用窗口因子、V21 gap 重审、逐组 credit audit |
 | [第二十一轮：自适应输入解耦报告](flow_mvp_v21/REPORT.md) | hybrid 信用分配、B 解耦、Full-BPTT 敏感性 |
@@ -120,6 +120,7 @@ betterNN/
 - **等能量写入时间结构是真实自由度**：第 24 轮把 `z_t=Σa_k B x_{t-k}`（Σa²=1）与 single 对比：固定 B 的延迟任务上收益随 T 增长（T=20/40 无差异；T=80 +3.5pp；T=160 **+5.3pp**）；`single@T20` 与 V20 fixed-disjoint 逐位一致（20/20）。
 - **单次瞬时写入是 V23 soft-selection 崩溃的主因**：Chain-select T=80、core 仍 K=5、B 仍 hybrid 时，`single` 0.777（xor）/0.913（xorsw）→ `burst5` **0.971** / `decay-slow` **0.999**，崩溃 seed 全部救回；`single` 与 V23 逐位一致（10/10）。
 - **机制是末端可解码性，不是扰动幅度**：||Δh|| retention 与 acc 不同向（全网格 r=0.08）；线性 probe 在 T/2 负相关（r=−0.47）、T−1 弱正相关（r=+0.46）。偏好 kernel 依赖任务（xor→burst5、xorsw→decay-slow），下一步做可学习 write scheduler（V24B）。
+- **标量 write gate 是错误的第一自由度（V24B 负结果）**：`w_t=2σ(MLP(x_t,meta_t))` 初始 w≡1、hybrid 全信用，但同配置未超过最优固定 kernel；H6 重要性 0/30（没有相对抑制 distractor，常见“全开放大”或“只留末端事件”）；T=160 也不能恢复。下一步：动态 `λ_t` 或带预算约束的 scheduler。
 
 上述数字属于不同任务和训练协议，不能拼成跨轮性能提升曲线。所有数据均为合成数据；Top-K 当前仍执行稠密计算，尚无真实稀疏加速、真实数据泛化或通用智能的验证。
 

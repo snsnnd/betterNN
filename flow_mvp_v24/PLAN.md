@@ -63,3 +63,43 @@ z_t=\sum_{k=0}^{L-1} a_k\,B\,x_{t-k},\qquad \sum_k a_k^2=1 .
 - `ret_half/ret_end` 的“相对 single”用**几何均值比（mean log-ratio）**，避免小分母离群值把百分比拉爆；H1 的 retention 判据相应改为“几何均值比 ≥ +20%”。
 - 追加 **linear probe**（前 512 样本拟合、后 512 评估，两输出平均）测“早期信息到 t 还可解码吗”（只用测试种子数据，不参与训练）。该指标是分析阶段补充的诊断，写入 REPORT 的 §2.5；H4 仍按预注册用 `||Δh||` retention 判定，probe 相关作为 exploratory 附加报告。
 - 这两项都在看到 Phase A 的 mean 结果之后加入，不改变任何训练协议或网格。
+
+## 7. Phase C（V24B）：可学习 Write Scheduler（`w_t`）
+
+Phase A/B 证明了固定 kernel 有效、但**最优 kernel 依任务而变**（xor→burst5、xorsw→decay-slow）。Phase C 让网络自己决定“什么时候写、写多强”。
+
+### 7.1 结构（不改 W/Route/Hold/B 的结构）
+
+\[
+e_t=w_t\odot x_t,\qquad z_t=\sum_{k=0}^{L-1}a_k\,(e_{t-k}B),\qquad w_t=2\,\sigma\!\big(\mathrm{MLP}(x_t,\mathrm{meta}_t)\big)
+\]
+
+- controller：`Linear(9→16)+Tanh+Linear(16→1)`，末层零初始化 → 初始 `w≡1`，即**训练起点与对应固定 kernel 完全一致**（forward 逐值相等）；
+- **controller 只看 `(x_t, meta_t)`，不看 `h_t`**（保持并行友好，不引入新的强循环依赖）；
+- 第一版固定 `a_k`（沿用 Phase A/B 的 kernel），controller 只决定“什么信息值得写”；`λ_t`/`α_t` 留 V24C。
+
+### 7.2 信用
+
+`∇w` 在纯 5 步截断下同样为 0（事件都在窗口外），因此 **controller 与 B 走 full BPTT（hybrid 双通道），core 仍 K=5 截断**；controller 只有 177 个参数。
+
+### 7.3 网格
+
+| 组 | 任务 | 臂 | seeds | runs |
+|---|---|---|---|---|
+| Q1/Q2 | Chain-select T=80、xor/xorsw | kernels {single, burst5, decay-slow} + scheduler | 11/22/33/44/55 | 30 |
+| Q3 | Chain-select T=160、xor | fixed {single, burst5} + burst5+scheduler | 11/22/33 | 9 |
+| 回归 | 初始化一致性 | scheduler 开启/关闭 vs 固定 arm | — | Phase 0 |
+
+延迟任务不跑：那里所有输入都重要、没有 distractor，scheduler 没有决策空间。
+
+### 7.4 指标
+
+- final acc（1024 test）与 best-val reach；对照 V24 Phase B 的 fixed-kernel 结果；
+- **事件级 `w`**：τA / τc1 / τdistractor / τB / τc2 的均值，以及全步均值（检查是否“全开”退化）。
+
+### 7.5 预注册假设
+
+- **H5（能力）**：T=80 上存在**同一个** scheduler 配置同时满足 `xor ≥0.95`、`xorsw ≥0.95`，且两个任务都相对 fixed `single` ≥ +5pp。
+- **H6（重要性）**：至少 2/6 个 (task, kernel) cell 满足 `E[w|distractor] ≤ E[w|important] − 0.20`（important 取 A/c1/B/c2 均值的最小值，按 seed 平均），且全步均值未坍缩到端点（∈(0.02,1.98)）。
+- **H7（长 T）**：T=160 xor：`burst5+sched` 不劣于 `burst5 fixed`，且相对 fixed `single` ≥ +5pp。
+- 若 H5 成立但 H6 不成立（accuracy 好但 `w≈1` 全开）→ scheduler 只是隐式正则，不算“学会重要性”；若 H5 不成立 → 单靠输入权重不足以复现最优固定 kernel，需要 V24C 的动态 `λ_t`。

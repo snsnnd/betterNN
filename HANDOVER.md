@@ -8,7 +8,7 @@
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
 - **并行/solver 线已冻结在 V19**；V20 B 拓扑；V21 可训练 B 解耦；V22 长程信用归因；V23 压力任务；V24 写入时间结构
 - 信用分配结论（已定）：**core 用 5 步窗口足够**（V22；V23 无硬案例）；B 用 hybrid 双通道拿完整信用
-- 写入结论（V24）：**单次瞬时写入是结构性缺陷**；等能量 FIR kernel（burst5/decay-slow）在长 T 与 Chain-select 上有大收益，且偏好 kernel 依任务而变 → 下一步是**可学习 write scheduler（只看 `(x_t, meta_t)`）**
+- 写入结论（V24）：**单次瞬时写入是结构性缺陷**；等能量 FIR kernel（burst5/decay-slow）在长 T 与 Chain-select 上有大收益，且偏好 kernel 依任务而变。尝试的可学习标量 write gate（V24B）是**负结果**（未超最优固定 kernel、0/30 学到重要性）→ 下一步转向 **λ_t / 带预算约束的 scheduler**
 
 ---
 
@@ -58,6 +58,7 @@
 21. **等能量写入时间结构是真实自由度（v24）**：`z_t=Σa_k B x_{t-k}`（`Σa²=1`，外部输入只出现一次）在固定 B 的延迟任务上收益随 T 增长：T=20/40 无差异、T=80 +3.5pp、**T=160 +5.3pp**（burst5，16/20 同向）；`single@T20` 与 V20 fixed-disjoint 逐位一致。
 22. **单次瞬时写入是 Chain-select soft-selection 崩溃的主因（v24）**：V23 任务 T=80、core 仍 K=5、B 仍 hybrid 时，`single` 0.777（xor）/0.913（xorsw）→ `burst5` **0.971** / `decay-slow` **0.999**，single 的崩溃 seed 全部救回；`single` 与 V23 同 cell 逐位一致（10/10）。
 23. **机制是末端可解码性而非扰动幅度（v24）**：||Δh|| retention 与 acc 不同向（全网格 r=0.08、T≥80 子集 r=0.42）；线性 probe 在 T/2 负相关（r=−0.47）、T−1 弱正相关（r=+0.46）。偏好 kernel 依任务而变（xor→burst5、xorsw→decay-slow），证明"写入时间策略"需要学习而不是固定。
+24. **标量 write gate 是错误的第一自由度（v24B 负结果）**：`w_t=2σ(MLP(x_t,meta_t))`（初始 w≡1、不看 h、hybrid 全信用、core K=5）在 Chain-select T=80 上未能超过每任务最优固定 kernel（xor best sched 0.946 vs fixed burst5 0.971；xorsw 0.999=0.999）；H6 重要性 0/30（没有相对抑制 distractor；常见“全开放大”w_all≈1.45–1.56 或“只留末端事件”）；T=160 时 fixed burst5 自身也只有 0.777、scheduler 0.743，没有展示空间（V24A 的长 T 收益只在延迟任务上成立）。
 
 ### 已被否定/削弱
 
@@ -89,6 +90,9 @@
 | 单次瞬时写入不是结构问题 | 否（Chain-select K5：0.777→0.971 / 0.913→0.999） | v24 |
 | ||Δh|| 扰动幅度可预测长程 acc | 否（全网格 r=0.08；T≥80 才 r=0.42） | v24 |
 | 一种 kernel 通用最优 | 否（xor→burst5、xorsw→decay-slow） | v24 |
+| 标量 write gate 能匹配/超过最优固定 kernel | 否（xor 0.946 vs 0.971；无一致优势） | v24B |
+| write gate 学会相对抑制 distractor | 否（0/30；w 常>1 或只留 c2） | v24B |
+| write gate 能在长 T 恢复 single 的崩溃 | 否（T160 0.743 ≈ single 0.770） | v24B |
 | 延迟任务 T=80 上时间结构有效（预注册门槛） | 未过（+3.5pp < 5pp；T=160 才 +5.3pp） | v24 |
 
 ---
@@ -164,7 +168,7 @@
 | v21 | Adaptive Input Decoupling | 5 步截断下 ∇B≡0；hybrid（core 截断/B 全 BPTT）core 梯度与 V20 逐位一致；H2a 否、overlap penalty 强解耦但 hybrid 下不降遗忘；Full-BPTT 敏感性中解耦消除 overlap 代价（4.66→1.83pp） | [flow_mvp_v21](flow_mvp_v21/) |
 | v22 | Long-range Credit Attribution | `{W,Route,Hold}` 的 2³ Full/T 信用因子：匹配口径下归因零结果（G=0.17pp、|ME|≤0.36pp）；V21 的 hybrid→Full gap 是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 无效应；credit audit 显示窗口损失真实但不预测遗忘 | [flow_mvp_v22](flow_mvp_v22/) |
 | v23 | Credit-Stress Benchmark | Chain-select 压力任务（瞬态脉冲 + T 到 160）主动找 core 窗口硬案例：未找到（T≥40 K5 可达性 ≥ Full）；唯一窗口效应是短 T 脉冲对齐；主失败是"软选择平台/振荡"且 Full 也中招、坏盆救不回（0.750→0.733） | [flow_mvp_v23](flow_mvp_v23/) |
-| v24 | Input Write Dynamics | 等能量 FIR write kernel（single/burst3-5/decay-fast/slow）：长 T 延迟上收益随 T 增长（T160 +5.3pp）；Chain-select K=5 上 single 0.777/0.913 → burst5 0.971 / decay-slow 0.999；single 双向逐位回归；机制为末端可解码性 | [flow_mvp_v24](flow_mvp_v24/) |
+| v24 | Input Write Dynamics | 等能量 FIR write kernel：长 T 收益随 T 增长（T160 +5.3pp）；Chain-select K=5 上 single 0.777/0.913 → burst5 0.971 / decay-slow 0.999；single 双向逐位回归。V24B 标量 write gate 负结果（无超固定 kernel、0/30 学到重要性） | [flow_mvp_v24](flow_mvp_v24/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -235,6 +239,8 @@ betterNN/
 20. **T=160 资源与并发（V23）**：单流 500 epochs ≈20–45 min、RSS≈1.1GB；并发 ≤4，否则 9p 缓存 + 子进程会 swap。T≤80 单流 RSS≈0.3–0.6GB，可 6 进程。
 21. **等能量控制（V24）**：write kernel 必须 `Σa²=1`，否则 burst 变好可能只是灌了更多能量；`single` 要跳过卷积以保持与旧轮的逐位回归（V20 fixed-disjoint、V23 K5 两个锚点都查）。
 22. **幅度指标会骗人（V24）**：`||Δh_t||` 的 retention 与 acc 不同向（系统会放大扰动，single 的振幅反而更大更高）；用**线性 probe 的可解码性**（前 512 拟合/后 512 评估）作为“信息还在不在”的指标。
+23. **符号任务里“写多强”有规范自由度（V24B）**：`y=sign(v)` 对输入做正标量缩放不改变可解性，内部增益可以补偿；因此标量 write gate 的 loss 平台很大、梯度不指向“相对重要性”，实测 0/30 学会抑制 distractor，反而常把 w 推到 >1 或整体压缩。设计 write scheduler 时要么给写入**预算/竞争约束**，要么改做 trace shaping（λ_t），否则不要期望它自动学到 importance。
+24. **scheduler 协议核验（V24B）**：`verify_sched.py` 检查 ① 仅加 controller 不改变已有参数（base param maxdiff=0）、② 初始 w≡1 且 forward 与固定 kernel 逐值一致、③ 截断下 ∇w=0、完整通道 ∇w≠0。任何新 scheduler 都应该先过这三个检查。
 
 ---
 
@@ -243,9 +249,9 @@ betterNN/
 按优先级：
 
 1. **V24 已完成（Input Write Dynamics）**：等能量 FIR write kernel 在长 T 延迟任务上收益随 T 增长（T160 +5.3pp），在 V23 Chain-select（core 仍 K=5、B 仍 hybrid）上把 `single` 0.777/0.913 提到 `burst5` 0.971 / `decay-slow` 0.999，且偏好 kernel 依任务而变。**结论：单次瞬时写入是结构性缺陷；写入时间策略需要学习。** 下一步：
-   - **V24B：可学习 write gate `w_t`**（只看 `(x_t, meta_t)`，不看 `h_t`，保持并行空间）：`z_t = Σ_k λ_k w_{t-k} B x_{t-k}` 或 `w_t·(B x_t)`；验收 = 在 Chain-select T=80 与延迟任务上不差于最优固定 kernel，且 `E[w|important] > E[w|distractor]`。
-   - **V24C：动态 `λ_t`（记多久）**：`z_{t+1}=λ_t z_t + w_t B_t u_t`，把 `z_t` 作为额外输入交给主状态；先回答 "λ 这个自由度值不值钱"。
-   - **三个自由度按序验证**：Where（已答）→ When/How much（V24B）→ How long（V24C）；最后才是 Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
+   - **V24B 已完成（标量 write gate，负结果）**：`w_t=2σ(MLP(x_t,meta_t))`（不看 h、初始 w≡1、hybrid 全信用）既没有超过每任务最优固定 kernel（xor 0.946 vs 0.971），也没有一条流学会相对抑制 distractor（0/30）。机制：符号任务对正标量缩放不敏感（内部增益可补偿），加法写入没有“写重了挤占别的信息”的竞争 → 相对重要性没有梯度。**结论：标量 input gate 是错误的自由度，不要再调它的容量/结构。**
+   - **V24C（下一步）：动态 `λ_t` / trace shaping 或带预算约束的 scheduler**：`z_{t+1}=λ_t z_t + w_t B u_t`（`z_t` 作为额外输入）；或让事件竞争写入预算（softmax/归一化），使“少写噪声”真正有梯度。先只回答“λ 这个自由度值不值钱”。
+   - **三个自由度按序验证**：Where（已答）→ When/How much（V24A 固定 kernel 有效 / V24B 标量 gate 无效）→ How long（V24C）；最后才是 Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
    - 机制补充：末端可解码性（probe T−1）比扰动幅度更能解释收益；新方法都应用 probe 而非 ||Δh|| 做机制指标。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 3. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。

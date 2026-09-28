@@ -542,8 +542,14 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --variants transie
     --Ts 160 --Ks 5 20 full --seeds 11 22 33 --epochs 500 --jobs 3 --out results/scale
 # 救援诊断（K=5 失败流 → Full 微调 100 epochs）
 FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python probe_rescue.py 11 22 33 44 55
-# 汇总
+# Phase C（V24B）：可学习 write scheduler（w 与 B 走 hybrid full，core K=5）
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python scheduler.py --kernels single burst5 decay-slow \
+    --tasks xor xorsw --Ts 80 --seeds 11 22 33 44 55 --epochs 500 --jobs 6 --out results/sched_chain
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python scheduler.py --kernels burst5 --tasks xor \
+    --Ts 160 --seeds 11 22 33 --epochs 500 --jobs 1 --out results/sched_chain
+# 汇总 + scheduler 协议核验
 /mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
+/mnt/d/betterNN/.venv/bin/python verify_sched.py   # 初始 w≡1、forward 逐值一致、hybrid 梯度非零
 ```
 
 注意：T=160 单流约 20–45 min、RSS≈1.1GB（并行度 ≤4）；主网格的 xor 任务有"软选择平台/周期振荡"，final accuracy 需配合 `best-val reach`（REPORT 已给）一起读。
@@ -565,7 +571,7 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase chain \
 /mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
 ```
 
-注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。
+注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。V24B 的 scheduler 初始 w≡1（与固定 kernel 起点逐值一致），w 与 B 同走 full 通道、core 仍 K=5。
 
 ## 22. 原归档校验与打包
 

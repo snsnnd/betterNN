@@ -19,6 +19,18 @@
     "H3": {
       "text": "Chain-select T=80 \u6700\u4f18 kernel \u2265 single+5pp \u4e14 \u22650.90\uff1axor: best=burst5 \u0394=+19.4pp acc=0.971\uff1bxorsw: best=decay-slow \u0394=+8.6pp acc=0.999",
       "ok": true
+    },
+    "H5": {
+      "text": "T=80 \u540c\u4e00 scheduler\uff08kernel=decay-slow\uff09\uff1axor=0.946\uff08\u0394+17.0pp\uff09\u3001xorsw=0.999\uff08\u0394+8.5pp\uff09\uff0c\u4e24\u4efb\u52a1 \u22650.95 \u4e14 \u0394\u2265+5pp",
+      "ok": false
+    },
+    "H6": {
+      "text": "distractor \u6291\u5236\uff08\u22652 cells \u6ee1\u8db3 E[w|d]\u2264E[w|imp]\u22120.2\uff09\uff1axor/burst5: 0/5 seeds, w_all=1.45\uff1bxor/decay-slow: 0/5 seeds, w_all=1.56\uff1bxor/single: 0/5 seeds, w_all=1.03\uff1bxorsw/burst5: 0/5 seeds, w_all=0.97\uff1bxorsw/decay-slow: 0/5 seeds, w_all=0.69\uff1bxorsw/single: 0/5 seeds, w_all=0.52",
+      "ok": false
+    },
+    "H7": {
+      "text": "T=160 xor\uff1aburst5+sched=0.743 vs burst5 fixed=0.777\uff08\u9700\u2265\u22122pp\uff09\u3001vs single=0.770\uff08\u9700\u2265+5pp\uff09",
+      "ok": false
     }
   },
   "gaps": {

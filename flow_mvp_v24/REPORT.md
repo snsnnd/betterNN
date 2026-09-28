@@ -88,12 +88,46 @@
 
 | task | kernel | final | best-val | reach(≥0.9) |
 |---|---:|---:|---:|---:|
-| xor | single | 0.777 | 0.970 | 4/5 |
-| xor | burst5 | 0.971 | 0.998 | 5/5 |
+| xor | single | 0.774 | 0.945 | 6/8 |
+| xor | burst5 | 0.898 | 0.978 | 7/8 |
 | xor | decay-slow | 0.912 | 0.966 | 4/5 |
-| xorsw | single | 0.913 | 0.997 | 5/5 |
-| xorsw | burst5 | 0.913 | 1.000 | 5/5 |
+| xorsw | single | 0.892 | 0.981 | 7/8 |
+| xorsw | burst5 | 0.916 | 0.967 | 7/8 |
 | xorsw | decay-slow | 0.999 | 1.000 | 5/5 |
+
+## 3.5 Phase C（V24B）：可学习 Write Scheduler `w_t`
+
+结构：`w_t=2σ(MLP(x_t,meta_t))`（不看 h），`e_t=w_t⊙x_t`，`z_t=Σ_k a_k(e_{t-k}B)`；controller 末层零初始化 → 初始 w≡1（与固定 kernel 起点逐值一致）；w 与 B 走 full BPTT（hybrid），core 仍 K=5。
+
+### Q1：能力（T=80，xor/xorsw）
+
+| task | kernel | fixed final | sched final | Δ | fixed best-val | sched best-val | sched reach |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| xor | burst5 | 0.971 | 0.946 | -2.4pp | 0.998 | 0.958 | 4/5 |
+| xor | decay-slow | 0.912 | 0.946 | +3.5pp | 0.966 | 0.960 | 4/5 |
+| xor | single | 0.777 | 0.917 | +14.1pp | 0.970 | 0.932 | 4/5 |
+| xorsw | burst5 | 0.913 | 0.986 | +7.3pp | 1.000 | 0.998 | 5/5 |
+| xorsw | decay-slow | 0.999 | 0.999 | -0.0pp | 1.000 | 0.999 | 5/5 |
+| xorsw | single | 0.913 | 0.999 | +8.6pp | 0.997 | 1.000 | 5/5 |
+
+### Q2：事件级 w（均值；distractor 应最小）
+
+| task | kernel | A | c1 | distractor | B | c2 | all |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| xor | burst5 | 1.21 | 1.38 | **1.53** | 1.62 | 1.30 | 1.45 |
+| xor | decay-slow | 1.14 | 1.36 | **1.68** | 1.79 | 1.58 | 1.56 |
+| xor | single | 0.42 | 0.74 | **1.10** | 1.35 | 1.09 | 1.03 |
+| xorsw | burst5 | 0.55 | 0.69 | **0.74** | 0.80 | 1.83 | 0.97 |
+| xorsw | decay-slow | 0.42 | 0.47 | **0.40** | 0.39 | 1.68 | 0.69 |
+| xorsw | single | 0.09 | 0.12 | **0.12** | 0.18 | 1.77 | 0.52 |
+
+### Q3：T=160 xor
+
+| arm | final | best-val | reach |
+|---|---:|---:|---:|
+| single fixed | 0.770 | 0.902 | 2/3 |
+| burst5 fixed | 0.777 | 0.943 | 2/3 |
+| burst5+sched | 0.743 | 0.794 | 0/3 |
 
 ## 4. 预注册判定
 
@@ -102,9 +136,21 @@
 - **H2**：gap(T160)≥gap(T20)（T20=-0.0pp、T40=+1.1pp、T80=+3.5pp、T160=+5.3pp） → **通过**
 - **H4**：||dh|| ret_half 与 acc 同向：全网格 n=16 r=0.08（T≥80 子集 n=8 r=0.42）；probe 相关：T/2 r=-0.47、T−1 r=0.46 → 未通过
 - **H3**：Chain-select T=80 最优 kernel ≥ single+5pp 且 ≥0.90：xor: best=burst5 Δ=+19.4pp acc=0.971；xorsw: best=decay-slow Δ=+8.6pp acc=0.999 → **通过**
+- **H5**：T=80 同一 scheduler（kernel=decay-slow）：xor=0.946（Δ+17.0pp）、xorsw=0.999（Δ+8.5pp），两任务 ≥0.95 且 Δ≥+5pp → 未通过
+- **H6**：distractor 抑制（≥2 cells 满足 E[w|d]≤E[w|imp]−0.2）：xor/burst5: 0/5 seeds, w_all=1.45；xor/decay-slow: 0/5 seeds, w_all=1.56；xor/single: 0/5 seeds, w_all=1.03；xorsw/burst5: 0/5 seeds, w_all=0.97；xorsw/decay-slow: 0/5 seeds, w_all=0.69；xorsw/single: 0/5 seeds, w_all=0.52 → 未通过
+- **H7**：T=160 xor：burst5+sched=0.743 vs burst5 fixed=0.777（需≥−2pp）、vs single=0.770（需≥+5pp） → 未通过
 
 ## 5. 边界
 
 - Phase A 固定 B（V20 fixed-disjoint）与核心训练协议；kernel 固定不训练，验证时间结构自由度本身。
 - Σa²=1 等总能量；无幅度扫描。
 - Phase B 的 single 是 V23 同 cell 回归锚点；结论只针对该任务族。
+- Phase C 中 controller 只看 `(x_t, meta_t)`（不看 h）、第一版固定 `a_k`；w 与 B 同走 hybrid full 通道。
+
+### Phase C 解释（exploratory）
+
+- **能力（Q1）**：同一 scheduler 配置没有超过"每任务人工选最优固定 kernel"：xor 最好的 fixed 是 burst5（0.971），最好的 sched 是 decay-slow（0.946）；xorsw 最好的 fixed/sched 都是 decay-slow（0.999）。sched 的方差更大（burst5+sched xor 有一条 0.733 的崩溃；single+sched 既救回 0.527 也弄坏 1.0 的 seed）。
+- **重要性（Q2）**：30 条流里没有一条学会相对抑制 distractor（H6 0/30）。更糟的是常见两种退化：（a）**全开放大**：xor/burst5、xor/decay-slow 的 w_all≈1.45/1.56，所有事件（含 distractor）都被写到 >1；（b）**全局压缩 + 末端保留**：xorsw 的各臂把 A/c1/distractor/B 压到 0.4–0.8，只把 c2 留下 ~1.7。两者都不是"重要多写、噪声少写"。
+- **为什么标量 input gate 很容易退化的机制解释**：任务是符号分类，`y=sign(v)`，对输入做**正标量缩放不改变可解性**（网络可用内部增益补偿），因此"写多强"的最优点是一大片平台；梯度把 `w` 推向放大（更小有效噪声）或整体压缩，而不是相对选择性。相对重要性只有在"写重了会挤占别的信息"的预算约束下才有梯度——当前的加法写入没有这种竞争。
+- **长 T（Q3）**：T=160 的 Chain-select 连 fixed `burst5` 都只有 0.777（reach 2/3），scheduler 0.743（reach 0/3）没有展示空间；V24A 的长 T 写入结构收益只在延迟任务上成立，不能外推到 Chain-select。
+- **结论**：V24B 第一版（标量 `w_t`）失败：它既没有稳定达到最优固定 kernel，也没有学会重要性。下一步优先做 **V24C：动态 `λ_t`（trace shaping / 记多久）**，或给 scheduler 加**写入预算约束**（迫使事件竞争），而不是继续调 `w_t` 的容量。

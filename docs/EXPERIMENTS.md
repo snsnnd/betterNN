@@ -500,7 +500,17 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 - **H4 未通过，机制被 probe 改写**：||Δh|| retention 与 acc 不同向（全网格 r=0.08，T≥80 子集 r=0.42）；线性 probe（前 512 拟合/后 512 评估）在 T/2 与 acc 负相关（r=−0.47）、T−1 弱正相关（r=+0.46）——kernel 改善的是**末端状态几何/可读出性**，不是简单把扰动留得更久。
 - 偏好 kernel 依赖任务（xor→burst5、xorsw→decay-slow）→ 证明“写入时间策略”是一个真实自由度，下一步应做**可学习 scheduler（V24B）**而不是继续固定 kernel。
 
-数据位置：[REPORT.md](../flow_mvp_v24/REPORT.md)、[results/](../flow_mvp_v24/results/)、[write_dynamics.png](../flow_mvp_v24/write_dynamics.png)、[chain_kernels.png](../flow_mvp_v24/chain_kernels.png)。
+### Phase C（V24B）：可学习 Write Scheduler 是负结果
+
+结构：`w_t=2σ(MLP(x_t,meta_t))`（不看 h）、`e_t=w_t⊙x_t`、`z_t=Σa_k(e_{t-k}B)`，controller 末层零初始化（初始 w≡1）；w 与 B 走 full BPTT（hybrid），core 仍 K=5。
+
+- **Q1 未过**：同一 scheduler 配置没超过“每任务人工选最优固定 kernel”（xor：fixed burst5 0.971 vs best sched decay-slow 0.946；xorsw：都是 decay-slow 0.999），且方差更大（出现 0.733 崩溃）。
+- **Q2 未过（0/30）**：没有一条流相对抑制 distractor；常见退化是“全开放大”（xor 臂 w_all≈1.45–1.56）或“只留末端事件”（xorsw 臂把 A/c1/distractor/B 压到 0.4–0.8、只留 c2≈1.7）；T=160 时不同 seed 分别杀掉 A、c2、B。
+- **机制解释**：任务是符号分类，正标量缩放不改变可解性（内部增益可补偿），加法写入没有“写重了挤占别人”的竞争，因此相对重要性没有梯度。
+- **Q3 未过**：T=160 xor 上 burst5+sched 0.743 ≈ fixed single 0.770，不能恢复长 T。
+- 结论：标量 input gate 是错误的第一自由度；下一步应做**动态 `λ_t`（trace shaping）或带写入预算约束的 scheduler**。
+
+数据位置：[REPORT.md](../flow_mvp_v24/REPORT.md)、[results/](../flow_mvp_v24/results/)、[write_dynamics.png](../flow_mvp_v24/write_dynamics.png)、[chain_kernels.png](../flow_mvp_v24/chain_kernels.png)、[scheduler.png](../flow_mvp_v24/scheduler.png)。
 
 ## 21. 已保存的内容
 
@@ -559,4 +569,6 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 - 机制不是“扰动留得更久”（||Δh|| 振幅与 acc 不同向），更像**末端状态可解码性**（probe T−1 r=+0.46）；
 - 偏好 kernel 依赖任务（xor→burst5、xorsw→decay-slow），因此下一步不是继续固定 kernel，而是 **V24B：可学习 write gate `w_t` / scheduler（只看 `(x_t, meta_t)`，保持并行性）**，再验证 `λ_t`（记多久）与 `α_t`（写到哪）三个自由度里谁真正有用。
 
-当前路线：**Where（B 支撑/解耦，V20/V21 已答）→ When/How much（V24 正在做）→ How long（λ_t，V24C）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。
+**V24B（Phase C）随即做了标量 write gate，结果是明确的负结果**：同一 scheduler 没有超过每任务最优固定 kernel（xor：0.946 vs fixed burst5 0.971），30 条流里 0 条学会相对抑制 distractor（常见退化是“全开放大”或“只留末端事件”）。机制：符号分类对输入正标量缩放不变，加法写入没有“写重了挤占别人”的竞争，相对重要性没有梯度。
+
+当前路线：**Where（B 支撑/解耦，V20/V21 已答）→ When/How much（V24A/B：固定 kernel 有效；标量 gate 无效）→ How long（动态 `λ_t` / 带预算约束的 scheduler，V24C）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。

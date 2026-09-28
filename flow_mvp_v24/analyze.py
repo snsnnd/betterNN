@@ -28,6 +28,10 @@ def chain_rows():
     return [r for r in load_dir('results/chain') if r.get('phase') == 'chain']
 
 
+def sched_rows():
+    return [r for r in load_dir('results/sched_chain') if r.get('phase') == 'sched']
+
+
 def cell(rows, kernel, T):
     return [r for r in rows if r['kernel'] == kernel and r['T'] == T]
 
@@ -79,7 +83,7 @@ def regression(rows):
     return (max(diffs), len(diffs)) if diffs else (float('nan'), 0)
 
 
-def hypotheses(rows, chain):
+def hypotheses(rows, chain, sched=()):
     H = {}
     Ts = sorted({r['T'] for r in rows})
     ok1, txt1 = False, []
@@ -147,16 +151,17 @@ def hypotheses(rows, chain):
     H['H4'] = {'text': f'||dh|| ret_half 与 acc 同向：全网格 n={ncorr} r={corr:.2f}（T≥80 子集 n={nlong} r={corr_long:.2f}）；'
                         f'probe 相关：T/2 r={pc["T/2"]:.2f}、T−1 r={pc["T-1"]:.2f}',
                'ok': bool(corr > .3)}
-    # H3 chain
-    if chain:
+    # H3 chain（只取 T=80 主网格）
+    chain80 = [r for r in chain if r['T'] == 80]
+    if chain80:
         parts, ok3 = [], False
         for task in ('xor', 'xorsw'):
-            base = [r['final'] for r in chain if r['task'] == task and r['kernel'] == 'single']
+            base = [r['final'] for r in chain80 if r['task'] == task and r['kernel'] == 'single']
             best = None
             for k in CHAIN_KERNELS:
                 if k == 'single':
                     continue
-                v = [r['final'] for r in chain if r['task'] == task and r['kernel'] == k]
+                v = [r['final'] for r in chain80 if r['task'] == task and r['kernel'] == k]
                 if v and base:
                     d = np.mean(v) - np.mean(base)
                     if best is None or d > best[1]:
@@ -166,10 +171,67 @@ def hypotheses(rows, chain):
                 if best[1] >= .05 and best[2] >= .90:
                     ok3 = True
         H['H3'] = {'text': 'Chain-select T=80 最优 kernel ≥ single+5pp 且 ≥0.90：' + '；'.join(parts), 'ok': bool(ok3)}
+    # ---------- Phase C（V24B）：可学习 write scheduler ----------
+    if sched:
+        # H5：同一 scheduler 配置在 T=80 两任务都 ≥0.95 且相对 fixed single ≥+5pp
+        base_single = {t: [r['final'] for r in chain80 if r['task'] == t and r['kernel'] == 'single']
+                       for t in ('xor', 'xorsw')}
+        best5 = None
+        for k in sorted({r['kernel'] for r in sched}):
+            means = {t: float(np.mean([r['final'] for r in sched if r['kernel'] == k and r['task'] == t]))
+                     for t in ('xor', 'xorsw')}
+            if not all(means.values()):
+                continue
+            score = min(means.values())
+            if best5 is None or score > best5[1]:
+                best5 = (k, score, means)
+        if best5:
+            d_xor = best5[2]['xor'] - np.mean(base_single['xor'])
+            d_xsw = best5[2]['xorsw'] - np.mean(base_single['xorsw'])
+            H['H5'] = {'text': f"T=80 同一 scheduler（kernel={best5[0]}）：xor={best5[2]['xor']:.3f}"
+                                f"（Δ{d_xor*100:+.1f}pp）、xorsw={best5[2]['xorsw']:.3f}（Δ{d_xsw*100:+.1f}pp），"
+                                f"两任务 ≥0.95 且 Δ≥+5pp",
+                       'ok': bool(best5[1] >= .95 and d_xor >= .05 and d_xsw >= .05)}
+        else:
+            H['H5'] = {'text': 'scheduler 数据不足', 'ok': False}
+        # H6：distractor 抑制
+        cells, ok_cells = [], 0
+        for task in ('xor', 'xorsw'):
+            for k in sorted({r['kernel'] for r in sched}):
+                rs = [r for r in sched if r['kernel'] == k and r['task'] == task and r['T'] == 80]
+                if not rs:
+                    continue
+                good = 0
+                for r in rs:
+                    p = r['w_profile']
+                    imp = min(p['A'], p['c1'], p['B'], p['c2'])
+                    if p['distractor'] <= imp - .20:
+                        good += 1
+                mean_all = float(np.mean([r['w_profile']['all'] for r in rs]))
+                cells.append(f"{task}/{k}: {good}/{len(rs)} seeds, w_all={mean_all:.2f}")
+                if good >= max(1, int(round(.8 * len(rs)))) and .02 < mean_all < 1.98:
+                    ok_cells += 1
+        H['H6'] = {'text': 'distractor 抑制（≥2 cells 满足 E[w|d]≤E[w|imp]−0.2）：' + '；'.join(cells),
+                   'ok': bool(ok_cells >= 2)}
+        # H7：T=160
+        s160 = [r for r in sched if r['T'] == 160 and r['task'] == 'xor' and r['kernel'] == 'burst5']
+        f160 = [r for r in chain if r['T'] == 160 and r['task'] == 'xor' and r['kernel'] == 'burst5']
+        s160_single = [r for r in sched if r['T'] == 160 and r['task'] == 'xor' and r['kernel'] == 'single']
+        f160_single = [r for r in chain if r['T'] == 160 and r['task'] == 'xor' and r['kernel'] == 'single']
+        if s160 and f160:
+            ms = float(np.mean([r['final'] for r in s160]))
+            mf = float(np.mean([r['final'] for r in f160]))
+            base160 = f160_single or s160_single
+            mb = float(np.mean([r['final'] for r in base160])) if base160 else float('nan')
+            H['H7'] = {'text': f'T=160 xor：burst5+sched={ms:.3f} vs burst5 fixed={mf:.3f}'
+                                f"（需≥−2pp）、vs single={mb:.3f}（需≥+5pp）",
+                       'ok': bool(ms >= mf - .02 and np.isfinite(mb) and ms >= mb + .05)}
+        else:
+            H['H7'] = {'text': 'T=160 scheduler 数据不足', 'ok': False}
     return H, gaps
 
 
-def report(rows, chain, H, gaps):
+def report(rows, chain, sched, H, gaps):
     A = []
     ap = A.append
     ap('# 第二十四轮：Input Write Dynamics（等能量写入时间结构）')
@@ -273,6 +335,56 @@ def report(rows, chain, H, gaps):
                        f"{np.mean([r['best_val'] for r in rs]):.3f} | "
                        f"{sum(1 for r in rs if r['best_val']>=.9)}/{len(rs)} |")
         ap('')
+    if sched:
+        ap('## 3.5 Phase C（V24B）：可学习 Write Scheduler `w_t`')
+        ap('')
+        ap('结构：`w_t=2σ(MLP(x_t,meta_t))`（不看 h），`e_t=w_t⊙x_t`，`z_t=Σ_k a_k(e_{t-k}B)`；'
+           'controller 末层零初始化 → 初始 w≡1（与固定 kernel 起点逐值一致）；w 与 B 走 full BPTT（hybrid），core 仍 K=5。')
+        ap('')
+        ap('### Q1：能力（T=80，xor/xorsw）')
+        ap('')
+        ap('| task | kernel | fixed final | sched final | Δ | fixed best-val | sched best-val | sched reach |')
+        ap('|---|---:|---:|---:|---:|---:|---:|---:|')
+        for task in ('xor', 'xorsw'):
+            for k in sorted({r['kernel'] for r in sched}):
+                fr = [r for r in chain if r['task'] == task and r['kernel'] == k and r['T'] == 80]
+                sr = [r for r in sched if r['task'] == task and r['kernel'] == k and r['T'] == 80]
+                if not sr:
+                    continue
+                sm = np.mean([r['final'] for r in sr])
+                fm = np.mean([r['final'] for r in fr]) if fr else float('nan')
+                sb = np.mean([r['best_val'] for r in sr])
+                fb = np.mean([r['best_val'] for r in fr]) if fr else float('nan')
+                ap(f"| {task} | {k} | {fm:.3f} | {sm:.3f} | {(sm-fm)*100:+.1f}pp | {fb:.3f} | {sb:.3f} | "
+                   f"{sum(1 for r in sr if r['best_val']>=.9)}/{len(sr)} |")
+        ap('')
+        ap('### Q2：事件级 w（均值；distractor 应最小）')
+        ap('')
+        ap('| task | kernel | A | c1 | distractor | B | c2 | all |')
+        ap('|---|---:|---:|---:|---:|---:|---:|---:|')
+        for task in ('xor', 'xorsw'):
+            for k in sorted({r['kernel'] for r in sched}):
+                rs = [r for r in sched if r['task'] == task and r['kernel'] == k and r['T'] == 80]
+                if not rs:
+                    continue
+                prof = {key: np.mean([r['w_profile'][key] for r in rs])
+                        for key in ('A', 'c1', 'distractor', 'B', 'c2', 'all')}
+                ap(f"| {task} | {k} | {prof['A']:.2f} | {prof['c1']:.2f} | **{prof['distractor']:.2f}** | "
+                   f"{prof['B']:.2f} | {prof['c2']:.2f} | {prof['all']:.2f} |")
+        ap('')
+        s160 = [r for r in sched if r['T'] == 160]
+        if s160:
+            ap('### Q3：T=160 xor')
+            ap('')
+            ap('| arm | final | best-val | reach |')
+            ap('|---|---:|---:|---:|')
+            for tag, rs in [('single fixed', [r for r in chain if r['T'] == 160 and r['task'] == 'xor' and r['kernel'] == 'single']),
+                            ('burst5 fixed', [r for r in chain if r['T'] == 160 and r['task'] == 'xor' and r['kernel'] == 'burst5']),
+                            ('burst5+sched', [r for r in s160 if r['task'] == 'xor' and r['kernel'] == 'burst5'])]:
+                if rs:
+                    ap(f"| {tag} | {np.mean([r['final'] for r in rs]):.3f} | {np.mean([r['best_val'] for r in rs]):.3f} | "
+                       f"{sum(1 for r in rs if r['best_val']>=.9)}/{len(rs)} |")
+            ap('')
     ap('## 4. 预注册判定')
     ap('')
     for k, v in H.items():
@@ -284,6 +396,26 @@ def report(rows, chain, H, gaps):
     ap('- Phase A 固定 B（V20 fixed-disjoint）与核心训练协议；kernel 固定不训练，验证时间结构自由度本身。')
     ap('- Σa²=1 等总能量；无幅度扫描。')
     ap('- Phase B 的 single 是 V23 同 cell 回归锚点；结论只针对该任务族。')
+    ap('- Phase C 中 controller 只看 `(x_t, meta_t)`（不看 h）、第一版固定 `a_k`；w 与 B 同走 hybrid full 通道。')
+    if sched:
+        ap('')
+        ap('### Phase C 解释（exploratory）')
+        ap('')
+        ap('- **能力（Q1）**：同一 scheduler 配置没有超过"每任务人工选最优固定 kernel"：xor 最好的 fixed 是 burst5（0.971），'
+           '最好的 sched 是 decay-slow（0.946）；xorsw 最好的 fixed/sched 都是 decay-slow（0.999）。sched 的方差更大'
+           '（burst5+sched xor 有一条 0.733 的崩溃；single+sched 既救回 0.527 也弄坏 1.0 的 seed）。')
+        ap('- **重要性（Q2）**：30 条流里没有一条学会相对抑制 distractor（H6 0/30）。更糟的是常见两种退化：'
+           '（a）**全开放大**：xor/burst5、xor/decay-slow 的 w_all≈1.45/1.56，所有事件（含 distractor）都被写到 >1；'
+           '（b）**全局压缩 + 末端保留**：xorsw 的各臂把 A/c1/distractor/B 压到 0.4–0.8，只把 c2 留下 ~1.7。'
+           '两者都不是"重要多写、噪声少写"。')
+        ap('- **为什么标量 input gate 很容易退化的机制解释**：任务是符号分类，`y=sign(v)`，对输入做**正标量缩放不改变可解性**'
+           '（网络可用内部增益补偿），因此"写多强"的最优点是一大片平台；梯度把 `w` 推向放大（更小有效噪声）或整体压缩，'
+           '而不是相对选择性。相对重要性只有在"写重了会挤占别的信息"的预算约束下才有梯度——当前的加法写入没有这种竞争。')
+        ap('- **长 T（Q3）**：T=160 的 Chain-select 连 fixed `burst5` 都只有 0.777（reach 2/3），scheduler 0.743（reach 0/3）没有展示空间；'
+           'V24A 的长 T 写入结构收益只在延迟任务上成立，不能外推到 Chain-select。')
+        ap('- **结论**：V24B 第一版（标量 `w_t`）失败：它既没有稳定达到最优固定 kernel，也没有学会重要性。'
+           '下一步优先做 **V24C：动态 `λ_t`（trace shaping / 记多久）**，或给 scheduler 加**写入预算约束**（迫使事件竞争），'
+           '而不是继续调 `w_t` 的容量。')
     (ROOT / 'REPORT.md').write_text('\n'.join(A) + '\n')
 
 
@@ -291,8 +423,9 @@ def main():
     t0 = time.perf_counter()
     rows = delay_rows()
     chain = chain_rows()
-    H, gaps = hypotheses(rows, chain)
-    report(rows, chain, H, gaps)
+    sched = sched_rows()
+    H, gaps = hypotheses(rows, chain, sched)
+    report(rows, chain, sched, H, gaps)
     (ROOT / 'results/summary.json').write_text(json.dumps({'H': H, 'gaps': gaps}, indent=2, default=str))
     (ROOT / 'verification.txt').write_text('\n'.join(
         f"{k}: {'PASS' if v['ok'] else 'FAIL'} — {v['text']}" for k, v in H.items()) + '\n')

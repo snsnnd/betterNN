@@ -1,0 +1,14 @@
+phase chain jobs 12 out /mnt/d/betterNN/flow_mvp_v24/results/chain epochs 500
+chain_single_xor_T160_22: acc=0.376 best=0.793 758s
+chain_single_xor_T160_11: acc=0.935 best=0.914 759s
+chain_single_xorsw_T160_11: acc=1.000 best=1.000 722s
+chain_single_xor_T160_33: acc=1.000 best=1.000 730s
+chain_single_xorsw_T160_22: acc=0.944 best=0.996 758s
+chain_single_xorsw_T160_33: acc=0.625 best=0.867 761s
+chain_burst5_xor_T160_11: acc=0.379 best=0.832 787s
+chain_burst5_xor_T160_22: acc=1.000 best=1.000 800s
+chain_burst5_xor_T160_33: acc=0.953 best=0.996 793s
+chain_burst5_xorsw_T160_11: acc=0.775 best=0.742 792s
+chain_burst5_xorsw_T160_22: acc=0.994 best=0.992 699s
+chain_burst5_xorsw_T160_33: acc=0.998 best=1.000 698s
+all 12 jobs in 4540.6 s
