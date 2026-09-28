@@ -560,7 +560,7 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python bank.py --phase delay \
 
 注意：T=160 单流约 20–45 min、RSS≈1.1GB（并行度 ≤4）；主网格的 xor 任务有"软选择平台/周期振荡"，final accuracy 需配合 `best-val reach`（REPORT 已给）一起读。
 
-## 21. 第二十四轮：Input Write Dynamics（等能量写入时间结构，最新）
+## 21. 第二十四轮：Input Write Dynamics（等能量写入时间结构）
 
 工作目录：`flow_mvp_v24/`。Phase A 固定 B（V20 fixed-disjoint）扫 write kernel × T；Phase B 在 V23 Chain-select 上保持 K=5 hybrid、只换 kernel。
 
@@ -579,7 +579,21 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase chain \
 
 注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。V24B 的 scheduler 初始 w≡1（与固定 kernel 起点逐值一致），w 与 B 同走 full 通道、core 仍 K=5。V24C 的 bank selector 初始 ≈single（bias [4,0,0,0,0]），逐事件 Σa²=1 等能量；注意 `writes` 必须用函数式 `F.pad` 实现，in-place 切片赋值会慢 8–10×。
 
-## 22. 原归档校验与打包
+## 22. 第二十五轮：Temporal Strategy 可发现性审计（V24D-Phase 0，最新）
+
+工作目录：`flow_mvp_v25/`。审计矩阵：A1–A4（bank init single/burst5/decay-slow，65/500ep）、B1–B3（shared λ）、F1–F3（fixed kernel 500ep）；T=80、task0、3 seeds、B fixed、core K=5、scheduler hybrid full。
+
+```bash
+cd flow_mvp_v25
+/mnt/d/betterNN/.venv/bin/python verify_audit.py
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python audit.py --T 80 --tasks 0 --seeds 11 22 33 \
+    --jobs 3 --out results/audit
+/mnt/d/betterNN/.venv/bin/python analyze.py   # REPORT.md / results/audit/summary.json
+```
+
+注意：A1@65ep 必须与 V24 `results/bank_delay/bank_delay_T80_t0_*.json` 同 seed 逐位一致（analyze 打印回归差）；本轮只存 JSON、无检查点；500ep×3 jobs 本机约 73 min。条件 landscape 冻结当前 core，只作局部几何证据。smoke 用 `--arms A1 A2 B1 F1 --epochs 2 --seeds 11 --out smoke`。
+
+## 23. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -599,7 +613,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 23. 常见问题
+## 24. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

@@ -1,0 +1,31 @@
+audit jobs 30 out /mnt/d/betterNN/flow_mvp_v25/results/audit
+audit_A1_T80_t0_33: final=0.729 best=0.734 d={'d_alpha_L1_mean': 0.10675000000000001, 'd_alpha_L1': [0.10650000000000003, 0.10700000000000001]} 242s
+audit_A1_T80_t0_22: final=0.844 best=0.555 d={'d_alpha_L1_mean': 0.09305000000000005, 'd_alpha_L1': [0.09240000000000002, 0.09370000000000007]} 246s
+audit_A2_T80_t0_11: final=0.771 best=0.672 d={'d_alpha_L1_mean': 0.34459999999999996, 'd_alpha_L1': [0.24289999999999995, 0.4463]} 248s
+audit_A2_T80_t0_22: final=0.755 best=0.578 d={'d_alpha_L1_mean': 0.5891, 'd_alpha_L1': [0.5482, 0.6299999999999999]} 201s
+audit_A2_T80_t0_33: final=0.888 best=0.836 d={'d_alpha_L1_mean': 0.40234999999999993, 'd_alpha_L1': [0.3529, 0.45179999999999987]} 198s
+audit_A3_T80_t0_11: final=0.696 best=0.672 d={'d_alpha_L1_mean': 0.38849999999999996, 'd_alpha_L1': [0.28669999999999995, 0.4902999999999999]} 217s
+audit_A3_T80_t0_33: final=0.897 best=0.898 d={'d_alpha_L1_mean': 0.35914999999999997, 'd_alpha_L1': [0.2929999999999999, 0.42529999999999996]} 187s
+audit_A3_T80_t0_22: final=0.810 best=0.801 d={'d_alpha_L1_mean': 0.61705, 'd_alpha_L1': [0.5267999999999999, 0.7073]} 190s
+audit_A4_T80_t0_11: final=0.974 best=0.969 d={'d_alpha_L1_mean': 0.13660000000000005, 'd_alpha_L1': [0.13660000000000005, 0.13660000000000005]} 1563s
+audit_A4_T80_t0_33: final=0.935 best=0.926 d={'d_alpha_L1_mean': 0.13590000000000008, 'd_alpha_L1': [0.1358000000000001, 0.13600000000000007]} 1487s
+audit_A4_T80_t0_22: final=0.993 best=1.000 d={'d_alpha_L1_mean': 0.5647499999999999, 'd_alpha_L1': [0.5725999999999999, 0.5569]} 1506s
+audit_B1_T80_t0_11: final=0.751 best=0.910 d={'d_lambda': 0.015014} 227s
+audit_B1_T80_t0_22: final=0.811 best=0.832 d={'d_lambda': 0.011712} 211s
+audit_B1_T80_t0_33: final=0.730 best=0.730 d={'d_lambda': 0.013795000000000002} 220s
+audit_B2_T80_t0_11: final=0.707 best=0.578 d={'d_lambda': 0.04032199999999997} 224s
+audit_B2_T80_t0_22: final=0.768 best=0.699 d={'d_lambda': 0.03515199999999996} 230s
+audit_B2_T80_t0_33: final=0.875 best=0.652 d={'d_lambda': 0.028024999999999967} 226s
+audit_B3_T80_t0_11: final=0.963 best=0.977 d={'d_lambda': 0.039585} 1420s
+audit_B3_T80_t0_22: final=0.975 best=0.992 d={'d_lambda': 0.014671000000000003} 1389s
+audit_B3_T80_t0_33: final=0.941 best=0.984 d={'d_lambda': 0.040544000000000004} 1389s
+audit_F1_T80_t0_11: final=0.958 best=0.992 150s
+audit_F1_T80_t0_22: final=0.997 best=1.000 136s
+audit_F1_T80_t0_33: final=0.940 best=0.973 134s
+audit_F2_T80_t0_11: final=0.980 best=0.992 139s
+audit_F2_T80_t0_22: final=0.979 best=1.000 136s
+audit_F2_T80_t0_33: final=0.978 best=0.996 136s
+audit_F3_T80_t0_11: final=0.986 best=0.996 135s
+audit_F3_T80_t0_22: final=0.985 best=1.000 132s
+audit_F3_T80_t0_33: final=0.954 best=0.992 134s
+all 30 jobs in 4377.2 s

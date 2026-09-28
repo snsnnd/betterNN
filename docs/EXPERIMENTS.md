@@ -521,7 +521,20 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 
 数据位置：[REPORT.md](../flow_mvp_v24/REPORT.md)、[results/](../flow_mvp_v24/results/)、[write_dynamics.png](../flow_mvp_v24/write_dynamics.png)、[chain_kernels.png](../flow_mvp_v24/chain_kernels.png)、[scheduler.png](../flow_mvp_v24/scheduler.png)。
 
-## 21. 已保存的内容
+## 21. 第二十五轮：Temporal Strategy 可发现性审计（V24D-Phase 0）
+
+V24C 的遗留问题：delay T80/task0 上 fixed kernel 已知更优（65ep），但 adaptive selector 停在 single。V25 不改表示，只做审计：T=80 task0、B fixed-disjoint、core K=5、scheduler hybrid full；A1 bank/single/65ep（V24C 回归锚点）、A2/A3 bank init burst5/decay-slow、A4 bank/single/500ep、B1/B2 shared λ0=0.05/0.6 65ep、B3 shared λ0=0.05 500ep、F1–F3 fixed single/burst5/decay-slow 500ep；3 seeds × 10 arms。诊断：α/λ 位移、初始 full-BPTT 梯度、冻结 core 的条件 landscape。
+
+- **回归**：A1 与 V24 `bank_delay` 同 seed **3/3 逐位一致**（max|Δfinal|=0）。
+- **关键：预算是混淆**。65ep 固定 kernel 领先 single +5.8/+29.6/+16.2pp（seeds 11/22/33），500ep 收缩到 ±4pp（F1 0.965±0.017 / F2 0.979±0.001 / F3 0.975±0.011）；A4/B3 与 F1 齐平（A4−F1=+1.6/−0.4/−0.6pp）。→ V24 T80 的 kernel 收益在这个 cell 上主要是**收敛速度/early advantage**，不是最终可达质量。
+- **初始化是有效杠杆**：A2/A3 在 65ep 比 A1 高 +6.5/+6.1pp，终点仍在初始核族（burst5-占优 0.62–0.81；decay-slow-占优 0.58–0.79），未回到 single；预注册“停留”阈值（Δα<0.2）过严，实际是“软化但不离族”。
+- **shared 1-D λ 不动**：|Δλ|≤0.034（500ep 仍如此）；初始条件 landscape 平（gap≈0），full-BPTT 初始 ∂L/∂λ 量级 1e-8–1e-6、batch 内符号一致。由于 500ep 时 single 已收敛到 F1 水平，本轮不把“不移动”判为失败。
+- **协议核对**：截断通道对 scheduler 梯度恒为 0（detach 在每个 5 步边界，损失只连最后 5 步）；scheduler 必须 hybrid full。
+- 判定：预注册 Q1/Q2/Q3 与决策映射见 v25 REPORT §5；本轮证据更支持先做 **budget-matched re-baseline**（尤其 T≥80 的 fixed kernel 在 500ep 是否仍领先），再决定 continuous λ / exploration 主实验。
+
+数据位置：[PLAN.md](../flow_mvp_v25/PLAN.md)、[REPORT.md](../flow_mvp_v25/REPORT.md)、[results/audit/](../flow_mvp_v25/results/audit/)。
+
+## 22. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -549,11 +562,12 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 | 22 | 4 | 488 | 2³ 信用归因：80 条 o0/r=12.5% 流逐阶段检查点 + 160 单任务模型 + 8 条回归流；credit audit 只读 V21 检查点 |
 | 23 | 5 | 0 | 信用压力任务：149 条单任务流 + 救援诊断，无检查点（只存 JSON） |
 | 24 | 3 | 0 | 写入时间结构：430 条流（Phase A 400 + Phase B 30），无检查点（只存 JSON） |
+| 25 | 3 | 0 | Temporal strategy 审计：30 条流（10 arms × 3 seeds），只存 JSON |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 22. 当前研究状态
+## 23. 当前研究状态
 
 第二十一轮发现 `∇B≡0` 并用 hybrid 信用分配（core 截断 / B 全 BPTT）训练 B，当时的结论是“Full joint 长程信用几乎消除 overlap 代价（6.63→1.83pp）”。**第二十二轮用匹配协议（同 10 seeds × 3 顺序）重审并修正了这个结论**：
 
@@ -580,4 +594,11 @@ V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改�
 
 **V24B（Phase C）随即做了标量 write gate，结果是明确的负结果**：同一 scheduler 没有超过每任务最优固定 kernel（xor：0.946 vs fixed burst5 0.971），30 条流里 0 条学会相对抑制 distractor（常见退化是“全开放大”或“只留末端事件”）。机制：符号分类对输入正标量缩放不变，加法写入没有“写重了挤占别人”的竞争，相对重要性没有梯度。
 
-当前路线：**Where（V20/V21 已答）→ When/How much（V24A 固定 kernel 有效；V24B 标量 gate 无效；V24C kernel bank 在 Chain-select 上成立）→ How long（V24D 连续 `λ_t` + 探索/退火）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。
+**第二十五轮先审计“V24C 的 selector 为什么在延迟任务上不动”，结果是主要不是探索问题，而是预算混淆**：
+
+- delay T80/task0 上，65ep 的 fixed-kernel 领先（+5.8～+29.6pp，seeds 11/22/33）在 500ep 收缩到 ±4pp；fixed single 500ep 已有 0.965±0.017，bank/shared adaptive 500ep 与它齐平（A4−F1=+1.6/−0.4/−0.6pp）。
+- 好核初始化（burst5/decay-slow）在 65ep 给出 +6pp 且终点仍在初始核族（未回 single）——说明 selector 的移动性没问题，single 不是不可离开的强盆地；“塌回”标签来自与 65ep best fixed 的比较，受同一混淆影响。
+- shared 1-D λ 在整个 500ep 内不动（|Δλ|≤0.034），初始条件 landscape 平（gap≈0）；但在该 cell 上不移动并不构成失败，因为 single 收敛后已足够好。
+- 因此 V24D 的下一步顺序调整为：**先 budget-matched re-baseline**（V24 Phase A 的 kernel 网格在 500ep 复测，至少 T=80 四任务与 T=160 single/burst5），确认长 T 收益是否也是收敛速度；若 500ep 下 kernel 优势仍在，再进入 continuous per-event λ / exploration 2×2。Chain-select 的 500ep 结论（V24 H3）不受此影响。
+
+当前路线：**Where（V20/V21 已答）→ When/How much（V24A/B/C + v25 审计）→ budget-matched re-baseline → How long（continuous `λ_t`）/ exploration → Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。

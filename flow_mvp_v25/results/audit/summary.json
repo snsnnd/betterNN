@@ -1,0 +1,66 @@
+{
+  "Q1": {
+    "A2": {
+      "stay": 0,
+      "collapse": 1,
+      "n": 3
+    },
+    "A3": {
+      "stay": 0,
+      "collapse": 2,
+      "n": 3
+    }
+  },
+  "Q2": {
+    "B1": {
+      "moves": 0,
+      "stuck": 1,
+      "n": 3
+    },
+    "B2": {
+      "moves": 0,
+      "stuck": 0,
+      "n": 3
+    },
+    "B3": {
+      "moves": 0,
+      "stuck": 0,
+      "n": 3
+    }
+  },
+  "Q3": {
+    "A4": {
+      "gain_vs_base": [
+        0.3271484375,
+        0.1494140625,
+        0.205078125
+      ],
+      "gain_vs_fixed": [
+        0.015625,
+        -0.00390625,
+        -0.005859375
+      ],
+      "budget_seeds": 0,
+      "non_budget_seeds": 0,
+      "n": 3
+    },
+    "B3": {
+      "gain_vs_base": [
+        0.2119140625,
+        0.1640625,
+        0.2109375
+      ],
+      "gain_vs_fixed": [
+        0.0048828125,
+        -0.0224609375,
+        0.0009765625
+      ],
+      "budget_seeds": 0,
+      "non_budget_seeds": 0,
+      "n": 3
+    }
+  },
+  "routes": [
+    "A2/A3 \u4ece\u597d\u6838\u584c\u56de \u2192 \u8054\u5408\u8bad\u7ec3\u4f1a\u7834\u574f\u597d\u89e3\uff0c\u5148\u67e5 hybrid \u4e24\u904d\u534f\u8bae\u4e0e\u8026\u5408\uff0c\u6682\u505c Phase 1/2"
+  ]
+}
