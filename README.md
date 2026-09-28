@@ -2,7 +2,7 @@
 
 这是一个基于 **Python / PyTorch 的神经网络研究实验集**，研究能否通过小型控制网络调节循环网络中的信息写入、内部传递和状态保持，以及这些机制对泛化、短窗口训练和持续学习的影响。
 
-项目包含第 1～23 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘。第 22 轮用 2³ 因子做**长程信用归因**：匹配口径下归因是零结果（G=0.17pp），并重审出第 21 轮的 hybrid→Full gap 主要是“3 顺序 vs 仅 o0”的聚合错配——**core 的 5 步窗口足够，真正的长程信用需求仍在 B**。第 23 轮按此建议造了 **Credit-Stress Benchmark**（Chain-select：瞬态脉冲 + 长间隔 + 干扰 + 条件选择，T 到 160）主动寻找 core 窗口的硬案例：**仍未找到**（T≥40 时 K=5 可达性 ≥ Full），失败由“软选择平台/振荡”主导且无法被 Full 微调救回；Flow-v3 不需要 core 长程信用机制（见 [flow_mvp_v23/REPORT.md](flow_mvp_v23/REPORT.md)）。
+项目包含第 1～24 轮实验的代码、合成数据生成器、已保存的模型权重、指标、图表和报告。第 19 轮证明块 Jacobian 的 `S + 低秩修正` 结构成立但在 eager GPU 下无加速——**并行/solver 线冻结在 V19**。第 20 轮扫描 B 拓扑 × 动力学：**任务侧不敏感、动力学侧敏感**（ρ_eff 1.40→1.12、G_max 1.58→0.88），overlap 增 W/Hold 冲突并在 replay 下变差。第 21 轮把 B 变成可训练参数研究**自适应输入解耦**：发现 5 步截断下 `∇B≡0`（与 v13 Write 同源），用 hybrid 信用分配（core 截断 / B 全 BPTT）得到干净干预——H1 复现通过（r=12.5% −3.39pp）；自发解耦弱（O_B→0.83–0.91）、overlap penalty 可强解耦但不降遗忘。第 22 轮用 2³ 因子做**长程信用归因**：匹配口径下归因是零结果（G=0.17pp），并重审出第 21 轮的 hybrid→Full gap 主要是“3 顺序 vs 仅 o0”的聚合错配——**core 的 5 步窗口足够，真正的长程信用需求仍在 B**。第 23 轮按此建议造了 **Credit-Stress Benchmark**（Chain-select：瞬态脉冲 + 长间隔 + 干扰 + 条件选择，T 到 160）主动寻找 core 窗口的硬案例：**仍未找到**（T≥40 时 K=5 可达性 ≥ Full），失败由“软选择平台/振荡”主导且无法被 Full 微调救回。第 24 轮转向“**怎么随时间写入**”：等能量因果 FIR kernel（single/burst3-5/decay-fast/slow）在延迟任务上收益随 T 增长（T=160 +5.3pp），在 V23 Chain-select 上把 `single` 的 0.777/0.913 提到 `burst5` **0.971** / `decay-slow` **0.999**——**单次瞬时写入确实是结构性缺陷，写入时间结构是一个真实自由度**（见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)）。
 
 ## 项目在做什么
 
@@ -25,9 +25,10 @@
 | [项目交接文档](HANDOVER.md) | 给后续 agent：累计结论、架构规格、协议、坑与下一步候选 |
 | [框架设计原理与改进方案](docs/FRAMEWORK_DESIGN.md) | 调制器如何作用于底层、梯度与记忆机制、理论性质和待验证的新设计 |
 | [架构与代码说明](docs/ARCHITECTURE.md) | 模型组件、数据流、第七轮实现、指标含义和代码入口 |
-| [二十三轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
+| [二十四轮实验与结论](docs/EXPERIMENTS.md) | 研究演进、关键结果、最新结果表和证据边界 |
 | [运行与复现指南](docs/REPRODUCING.md) | 环境依赖、各轮命令、输出文件、续跑及现有脚本注意事项 |
 | [原始归档说明](README_START_HERE.md) | 原交付包说明、历史文件和校验信息 |
+| [第二十四轮：Input Write Dynamics](flow_mvp_v24/REPORT.md) | 等能量 write kernel、长 T 延迟与 Chain-select、状态 probe |
 | [第二十三轮：Credit-Stress Benchmark](flow_mvp_v23/REPORT.md) | Chain-select 压力任务、T×K 扫描、救援诊断 |
 | [第二十二轮：长程信用归因报告](flow_mvp_v22/REPORT.md) | 2³ 信用窗口因子、V21 gap 重审、逐组 credit audit |
 | [第二十一轮：自适应输入解耦报告](flow_mvp_v21/REPORT.md) | hybrid 信用分配、B 解耦、Full-BPTT 敏感性 |
@@ -74,6 +75,7 @@ betterNN/
 ├── flow_mvp_v21/         # 第21轮：自适应输入解耦（hybrid 信用分配，含检查点）
 ├── flow_mvp_v22/         # 第22轮：长程信用归因（2³ 因子 + credit audit，含检查点）
 ├── flow_mvp_v23/         # 第23轮：Credit-Stress Benchmark（Chain-select 压力任务）
+├── flow_mvp_v24/         # 第24轮：Input Write Dynamics（等能量写入时间结构）
 ├── historical_deliveries/# 第1～6轮历史ZIP交付件
 ├── docs/                # 本次整理的项目级文档
 ├── .venv/               # WSL/Linux GPU环境（uv创建，Python 3.11 + torch 2.14.0+cu130）
@@ -115,13 +117,16 @@ betterNN/
 - **主动构造长程信用压力任务仍未找到硬案例**：第 23 轮 Chain-select（瞬态脉冲 + 长间隔 + 干扰 + 条件选择，T 到 160）：T≥40 时 K=5 可达性 ≥ Full（T=40 5/5 vs 3/5；T=80 xor 4/5 vs 3/5；T=160 2/3 vs 2/3）；唯一窗口效应是短 T 脉冲-边界对齐（xor T20 K5 0/5、K10 5/5）。
 - **主失败模式是“软选择平台/振荡”，不是信用 horizon**：Full 同样不稳（T=40/80 可达仅 3/5；T=160 出现 val 1.0→final 0.38 崩溃）；K=5 坏盆续训 Full 100 epochs 无法救回（0.750→0.733）——是轨迹/盆地选择。
 - **Flow-v3 的方向确定**：core 用 5 步窗口即可，唯一需要跨窗口信用的是 B（写入），hybrid 双通道已解决；不要为 core 实现 eligibility trace/synthetic gradient。
+- **等能量写入时间结构是真实自由度**：第 24 轮把 `z_t=Σa_k B x_{t-k}`（Σa²=1）与 single 对比：固定 B 的延迟任务上收益随 T 增长（T=20/40 无差异；T=80 +3.5pp；T=160 **+5.3pp**）；`single@T20` 与 V20 fixed-disjoint 逐位一致（20/20）。
+- **单次瞬时写入是 V23 soft-selection 崩溃的主因**：Chain-select T=80、core 仍 K=5、B 仍 hybrid 时，`single` 0.777（xor）/0.913（xorsw）→ `burst5` **0.971** / `decay-slow` **0.999**，崩溃 seed 全部救回；`single` 与 V23 逐位一致（10/10）。
+- **机制是末端可解码性，不是扰动幅度**：||Δh|| retention 与 acc 不同向（全网格 r=0.08）；线性 probe 在 T/2 负相关（r=−0.47）、T−1 弱正相关（r=+0.46）。偏好 kernel 依赖任务（xor→burst5、xorsw→decay-slow），下一步做可学习 write scheduler（V24B）。
 
 上述数字属于不同任务和训练协议，不能拼成跨轮性能提升曲线。所有数据均为合成数据；Top-K 当前仍执行稠密计算，尚无真实稀疏加速、真实数据泛化或通用智能的验证。
 
 ## 从哪里开始
 
 - **理解项目**：先读本页，再读[设计原理](docs/FRAMEWORK_DESIGN.md)、[架构](docs/ARCHITECTURE.md)和[实验总结](docs/EXPERIMENTS.md)。
-- **看最新结果**：打开 [flow_mvp_v23/REPORT.md](flow_mvp_v23/REPORT.md)、[credit_stress.png](flow_mvp_v23/credit_stress.png) 与 [flow_mvp_v22/REPORT.md](flow_mvp_v22/REPORT.md)，无需训练。
+- **看最新结果**：打开 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)、[chain_kernels.png](flow_mvp_v24/chain_kernels.png) 与 [flow_mvp_v23/REPORT.md](flow_mvp_v23/REPORT.md)，无需训练。
 - **运行已有模型**：在 `flow_mvp/` 中安装该轮依赖，执行 `python predict.py`；完整步骤见[复现指南](docs/REPRODUCING.md)。
 
 本次整理基于现有源码与归档结果；原归档已通过 SHA-256 校验。第八、九轮使用项目根目录 `.venv`（uv 创建，Python 3.11 + torch 2.14.0+cu130）在 RTX 4060 上运行；第十、十一轮按轻量实验改用 CPU 并行。第一～七轮未在本环境重新训练，其核验记录属于原实验运行记录。

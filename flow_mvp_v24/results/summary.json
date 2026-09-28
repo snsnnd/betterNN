@@ -1,0 +1,30 @@
+{
+  "H": {
+    "H1": {
+      "text": "\u5199\u5165\u65f6\u95f4\u7ed3\u6784\u6709\u6548\uff08T=80\uff1a\u0394acc\u2265+5pp \u6216 retention\u2265+20%\uff09\uff1aT=80: best=burst5 \u0394acc=+3.5pp \u0394ret_half=-34.9%\uff1bT=160: best=burst5 \u0394acc=+5.3pp \u0394ret_half=-28.7%",
+      "ok": false
+    },
+    "H1null": {
+      "text": "H1-null\uff08\u6240\u6709\u975e single\uff1a|\u0394acc|\u22642pp \u4e14 |\u0394ret|\u226410%\uff09",
+      "ok": false
+    },
+    "H2": {
+      "text": "gap(T160)\u2265gap(T20)\uff08T20=-0.0pp\u3001T40=+1.1pp\u3001T80=+3.5pp\u3001T160=+5.3pp\uff09",
+      "ok": true
+    },
+    "H4": {
+      "text": "||dh|| ret_half \u4e0e acc \u540c\u5411\uff1a\u5168\u7f51\u683c n=16 r=0.08\uff08T\u226580 \u5b50\u96c6 n=8 r=0.42\uff09\uff1bprobe \u76f8\u5173\uff1aT/2 r=-0.47\u3001T\u22121 r=0.46",
+      "ok": false
+    },
+    "H3": {
+      "text": "Chain-select T=80 \u6700\u4f18 kernel \u2265 single+5pp \u4e14 \u22650.90\uff1axor: best=burst5 \u0394=+19.4pp acc=0.971\uff1bxorsw: best=decay-slow \u0394=+8.6pp acc=0.999",
+      "ok": true
+    }
+  },
+  "gaps": {
+    "20": -0.0001953125,
+    "40": 0.010546875,
+    "80": 0.03466796875,
+    "160": 0.05322265625
+  }
+}

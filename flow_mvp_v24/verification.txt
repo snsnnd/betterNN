@@ -1,0 +1,5 @@
+H1: FAIL — 写入时间结构有效（T=80：Δacc≥+5pp 或 retention≥+20%）：T=80: best=burst5 Δacc=+3.5pp Δret_half=-34.9%；T=160: best=burst5 Δacc=+5.3pp Δret_half=-28.7%
+H1null: FAIL — H1-null（所有非 single：|Δacc|≤2pp 且 |Δret|≤10%）
+H2: PASS — gap(T160)≥gap(T20)（T20=-0.0pp、T40=+1.1pp、T80=+3.5pp、T160=+5.3pp）
+H4: FAIL — ||dh|| ret_half 与 acc 同向：全网格 n=16 r=0.08（T≥80 子集 n=8 r=0.42）；probe 相关：T/2 r=-0.47、T−1 r=0.46
+H3: PASS — Chain-select T=80 最优 kernel ≥ single+5pp 且 ≥0.90：xor: best=burst5 Δ=+19.4pp acc=0.971；xorsw: best=decay-slow Δ=+8.6pp acc=0.999

@@ -1,4 +1,4 @@
-# 二十三轮实验与结论
+# 二十四轮实验与结论
 
 [返回项目首页](../README.md)
 
@@ -30,6 +30,7 @@
 | [第20轮](../flow_mvp_v20/REPORT.md) | 水从哪里进入、入口如何与动力学交互？ | 等输入能量下的 B 拓扑主族 / shared-pool overlap / `s_W` 扫描（5 seeds × 3 orders × r∈{0,12.5%}） | 任务侧无差异（H1 否、s_W 零结果）；动力学强效应（ρ_eff/G_max/lifetime）；overlap 增 W/Hold 冲突且 replay 下变差 |
 | [第21轮](../flow_mvp_v21/REPORT.md) | B 能否学会把不同信息写进不同状态子空间？ | hybrid 信用分配（core 截断 / B 全 BPTT）+ 可训练 B + orth/overlap penalty + H3 机制链 + Full-BPTT 敏感性 | 5 步截断下 ∇B≡0；自发解耦弱、overlap penalty 强解耦但 hybrid 下不降遗忘；Full BPTT 下解耦消除 overlap 代价 |
 | [第22轮](../flow_mvp_v22/REPORT.md) | 长程信用到底应该给谁：W、Route 还是 Hold？ | 8 arms 的 2³ 因子（`{W,Route,Hold}` 哪些拿 20 步 Full 信用，B 恒 Full）；逐组双通道梯度 + 10 seeds × 3 顺序 + 逐组 credit audit | **匹配口径下归因是零结果**（G=0.17pp，ME≤0.36pp，H1/H3/H4/H5 未通过）；V21 的 hybrid→Full gap 主要是 3 顺序 vs o0-only 的聚合错配（匹配后 1.11pp/5 seeds、0.17pp/10 seeds）；r=0 负控无效应；审计显示 W 的 5 步梯度与 20 步严重失配（cos≈0.33）但不转化功能差异 |
+| [第24轮](../flow_mvp_v24/REPORT.md) | 单次瞬时写入是不是结构性缺陷？ | 等能量 write kernel（single/burst3/5/decay-fast/slow）× 延迟任务 T{20,40,80,160} + V23 Chain-select T=80 + 线性状态 probe | **时间结构在长 T 有作用且随 T 增强**（T160 +5.3pp）；**Chain-select K5 上 burst5/decay-slow 把 0.777→0.971 / 0.913→0.999**，single 已逐位回归；机制是末端可解码性而非扰动幅度 |
 | [第23轮](../flow_mvp_v23/REPORT.md) | 造一个真正需要 core 长程信用的任务，还是证明不存在？ | Chain-select 压力任务（瞬态脉冲 + 长间隔 + 干扰 + 条件选择）× T{20,40,80,160} × core 窗口 K{5,10,20,Full} + sustained 对照 + 救援诊断（不改模型） | **没有找到长程硬案例**：T≥40 时 K=5 可达性 ≥ Full（T=80 xor 4/5 vs 3/5；T=160 2/3 vs 2/3）；唯一窗口效应是短 T 时序对齐（xor T20 K5 0/5）；主失败是"软选择平台/振荡"（Full 也不稳），K5 坏盆无法被 Full 微调救回（0.750→0.733） |
 
 ## 2. 关键证据
@@ -486,7 +487,22 @@ V22 在 A'B'C'D' 上没找到 core 长程信用需求，但旧任务允许最后
 
 数据位置：[REPORT.md](../flow_mvp_v23/REPORT.md)、[results/](../flow_mvp_v23/results/)、[credit_stress.png](../flow_mvp_v23/credit_stress.png)。
 
-## 20. 已保存的内容
+## 20. 第二十四轮：Input Write Dynamics
+
+V23 留下的最大疑点：单次瞬时写入是否本身脆弱？V24 **不改模型结构**，只把写入改成等能量的因果 FIR trace：`z_t = Σ_k a_k B x_{t-k}`，`Σa_k²=1`（外部输入仍只出现一次）。kernels：`single=[1]`、`burst3/5` 均匀、`decay-fast/slow ∝ 0.5^k/0.85^k`。Phase A：固定 B（V20 fixed-disjoint）、延迟任务 A'B'C'D'、T{20,40,80,160}、65 epochs、5 kernels × 4 tasks × 5 seeds；Phase B：V23 Chain-select T=80、保持 learnable B hybrid / core K=5、500 epochs，只换 kernel。
+
+### 判定结果
+
+- **回归**：`single@T20` 与 V20 fixed-disjoint singles **逐位一致**（20/20，max|Δfinal|=0）；Phase B 的 `single` 与 V23 同 cell **逐位一致**（10/10）。
+- **H1 未通过（延迟任务 T=80 严格门槛）**：T=80 最优 `burst5` +3.5pp（17/20 同向），未到 +5pp；T≤40 无差异。
+- **H2 通过**：gap 随 T 单调增长：−0.0 / +1.1 / +3.5 / **+5.3pp**（T=20/40/80/160）。
+- **H3 通过（关键）**：Chain-select T=80、core 仍 K=5、B 仍 hybrid 时：`single` 0.777（xor）/0.913（xorsw）→ `burst5` **0.971** / `decay-slow` **0.999**，且 single 的崩溃 seed 全部救回（5/5 可达）。**V23 的 soft-selection 失败很大程度源于单次瞬时写入。**
+- **H4 未通过，机制被 probe 改写**：||Δh|| retention 与 acc 不同向（全网格 r=0.08，T≥80 子集 r=0.42）；线性 probe（前 512 拟合/后 512 评估）在 T/2 与 acc 负相关（r=−0.47）、T−1 弱正相关（r=+0.46）——kernel 改善的是**末端状态几何/可读出性**，不是简单把扰动留得更久。
+- 偏好 kernel 依赖任务（xor→burst5、xorsw→decay-slow）→ 证明“写入时间策略”是一个真实自由度，下一步应做**可学习 scheduler（V24B）**而不是继续固定 kernel。
+
+数据位置：[REPORT.md](../flow_mvp_v24/REPORT.md)、[results/](../flow_mvp_v24/results/)、[write_dynamics.png](../flow_mvp_v24/write_dynamics.png)、[chain_kernels.png](../flow_mvp_v24/chain_kernels.png)。
+
+## 21. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -513,11 +529,12 @@ V22 在 A'B'C'D' 上没找到 core 长程信用需求，但旧任务允许最后
 | 21 | 4 | 1144 | V21A/B/C/D + fixed 回归：CL 逐阶段检查点 + 单任务模型 |
 | 22 | 4 | 488 | 2³ 信用归因：80 条 o0/r=12.5% 流逐阶段检查点 + 160 单任务模型 + 8 条回归流；credit audit 只读 V21 检查点 |
 | 23 | 5 | 0 | 信用压力任务：149 条单任务流 + 救援诊断，无检查点（只存 JSON） |
+| 24 | 3 | 0 | 写入时间结构：430 条流（Phase A 400 + Phase B 30），无检查点（只存 JSON） |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 21. 当前研究状态
+## 22. 当前研究状态
 
 第二十一轮发现 `∇B≡0` 并用 hybrid 信用分配（core 截断 / B 全 BPTT）训练 B，当时的结论是“Full joint 长程信用几乎消除 overlap 代价（6.63→1.83pp）”。**第二十二轮用匹配协议（同 10 seeds × 3 顺序）重审并修正了这个结论**：
 
@@ -534,3 +551,12 @@ V22 在 A'B'C'D' 上没找到 core 长程信用需求，但旧任务允许最后
 - sustained 对照（指令持续可见）方向不一致，说明瓶颈不是命令可见性。
 
 因此 Flow-v3 的方向维持 V22 的判断并加强：**不要为 core 设计 eligibility trace / synthetic gradient 等长程信用机制**；core 用 5 步窗口即可，唯一需要跨窗口信用的是 B（输入写入），hybrid 双通道已解决。并行/solver 线继续冻结（见 [HANDOVER §9](../HANDOVER.md)）。
+
+**第二十四轮换了一个自由度：不改模型、只改“怎么随时间写入”（等能量 FIR kernel），发现这是真实且长期被忽略的变量**：
+
+- 固定 B 的延迟任务上，写入时间结构的收益随 T 增长（T=20/40 无差异；T=80 +3.5pp；**T=160 +5.3pp**，16/20 同向）；
+- 在 V23 的 Chain-select（T=80、core 仍 K=5、B 仍 hybrid）上效果很大：`single` 0.777/0.913 → `burst5` **0.971** / `decay-slow` **0.999**，并把 single 的崩溃 seed 全部救回；
+- 机制不是“扰动留得更久”（||Δh|| 振幅与 acc 不同向），更像**末端状态可解码性**（probe T−1 r=+0.46）；
+- 偏好 kernel 依赖任务（xor→burst5、xorsw→decay-slow），因此下一步不是继续固定 kernel，而是 **V24B：可学习 write gate `w_t` / scheduler（只看 `(x_t, meta_t)`，保持并行性）**，再验证 `λ_t`（记多久）与 `α_t`（写到哪）三个自由度里谁真正有用。
+
+当前路线：**Where（B 支撑/解耦，V20/V21 已答）→ When/How much（V24 正在做）→ How long（λ_t，V24C）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。

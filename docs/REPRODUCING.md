@@ -525,7 +525,7 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --seeds 11 22 33 4
 
 臂名即 Full 信用集合：`B`、`B+W`、`B+R`、`B+H`、`B+W+R`、`B+W+H`、`B+R+H`、`All`。注意 `B` 臂应与 V21A `learnable` 逐位一致（`verify_protocol.py` 会检查）。约 5GB 内存的机器建议 `--jobs ≤ 10`，28 进程会触发 swap 抖动。
 
-## 20. 第二十三轮：Credit-Stress Benchmark（Chain-select，最新）
+## 20. 第二十三轮：Credit-Stress Benchmark（Chain-select）
 
 工作目录：`flow_mvp_v23/`。不改模型、只换任务生成器：瞬态脉冲事件 + T 到 160，比较 B Full + core 窗口 K。先跑主网格，再跑 sustained 对照、T=160 缩放与救援诊断。
 
@@ -548,7 +548,26 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python probe_rescue.py 11 22 33 44 55
 
 注意：T=160 单流约 20–45 min、RSS≈1.1GB（并行度 ≤4）；主网格的 xor 任务有"软选择平台/周期振荡"，final accuracy 需配合 `best-val reach`（REPORT 已给）一起读。
 
-## 21. 原归档校验与打包
+## 21. 第二十四轮：Input Write Dynamics（等能量写入时间结构，最新）
+
+工作目录：`flow_mvp_v24/`。Phase A 固定 B（V20 fixed-disjoint）扫 write kernel × T；Phase B 在 V23 Chain-select 上保持 K=5 hybrid、只换 kernel。
+
+```bash
+cd flow_mvp_v24
+# Phase A：延迟任务 × 固定 B × 5 kernels × T{20,40,80,160} × 4 tasks × 5 seeds
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase delay \
+    --kernels single burst3 burst5 decay-fast decay-slow --Ts 20 40 80 160 \
+    --tasks 0 1 2 3 --seeds 11 22 33 44 55 --epochs 65 --jobs 8 --out results/delay
+# Phase B：Chain-select T=80 × K=5 hybrid × 3 kernels
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase chain \
+    --kernels single burst5 decay-slow --Ts 80 --seeds 11 22 33 44 55 --epochs 500 --jobs 6 --out results/chain
+# 汇总
+/mnt/d/betterNN/.venv/bin/python analyze.py && /mnt/d/betterNN/.venv/bin/python plot.py
+```
+
+注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。
+
+## 22. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -568,7 +587,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 22. 常见问题
+## 23. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

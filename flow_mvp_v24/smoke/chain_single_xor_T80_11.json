@@ -1,0 +1,23 @@
+{
+  "name": "chain_single_xor_T80_11",
+  "phase": "chain",
+  "kernel": "single",
+  "task": "xor",
+  "T": 80,
+  "seed": 11,
+  "final": 0.349609375,
+  "y0": 0.5947265625,
+  "y1": 0.4873046875,
+  "best_val": 0.25,
+  "curve": [
+    {
+      "epoch": 1,
+      "acc": 0.25,
+      "y0": 0.51953125,
+      "y1": 0.49609375
+    }
+  ],
+  "epochs": 3,
+  "seconds": 2.433439995002118,
+  "lr": 0.003
+}
