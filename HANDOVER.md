@@ -3,7 +3,7 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 24 轮（含 V24B/V24C）**（Input Write Dynamics / Write Scheduler / Adaptive Temporal Compression，见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)）
+- 最新轮次：**第 24 轮（含 V24B/V24C）**（commit `2306bae`，Input Write Dynamics / Write Scheduler / Adaptive Temporal Compression，见 [flow_mvp_v24/REPORT.md](flow_mvp_v24/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数；B 固定）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
 - **并行/solver 线已冻结在 V19**；V20 B 拓扑；V21 可训练 B 解耦；V22 长程信用归因；V23 压力任务；V24 写入时间结构
