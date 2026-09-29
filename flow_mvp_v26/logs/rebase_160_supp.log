@@ -1,0 +1,22 @@
+rebase T=160 jobs=20 epochs=500 out=/mnt/d/betterNN/flow_mvp_v26/results/rebase_160
+rebase_decay-slow_T160_t0_22: test@500=0.990234375 438s
+rebase_decay-slow_T160_t0_11: test@500=0.98046875 439s
+rebase_decay-slow_T160_t0_33: test@500=0.984375 441s
+rebase_decay-slow_T160_t0_44: test@500=0.9873046875 405s
+rebase_decay-slow_T160_t0_55: test@500=0.9833984375 405s
+rebase_decay-slow_T160_t1_11: test@500=0.982421875 410s
+rebase_decay-slow_T160_t1_33: test@500=0.99609375 420s
+rebase_decay-slow_T160_t1_22: test@500=0.9951171875 423s
+rebase_decay-slow_T160_t1_44: test@500=0.984375 421s
+rebase_decay-slow_T160_t2_11: test@500=0.9970703125 409s
+rebase_decay-slow_T160_t1_55: test@500=0.99609375 413s
+rebase_decay-slow_T160_t2_22: test@500=0.990234375 414s
+rebase_decay-slow_T160_t2_44: test@500=0.9833984375 408s
+rebase_decay-slow_T160_t2_33: test@500=0.9931640625 416s
+rebase_decay-slow_T160_t2_55: test@500=0.9921875 415s
+rebase_decay-slow_T160_t3_11: test@500=0.9931640625 536s
+rebase_decay-slow_T160_t3_22: test@500=0.998046875 530s
+rebase_decay-slow_T160_t3_33: test@500=0.966796875 538s
+rebase_decay-slow_T160_t3_44: test@500=0.9921875 403s
+rebase_decay-slow_T160_t3_55: test@500=0.97265625 407s
+all 20 jobs in 3030 s

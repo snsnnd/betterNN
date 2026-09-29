@@ -3,12 +3,12 @@
 给后续 agent / 研究者的交接说明。目标：一小时内理解项目是什么、做到哪一步、哪些结论可信、下一步从哪里接。
 
 - 仓库：`git@github.com:snsnnd/betterNN.git`（main 分支，WSL 下 SSH 已配置）
-- 最新轮次：**第 25 轮（V24D-Phase 0）**（commit `d509356`，Temporal Strategy 可发现性审计，见 [flow_mvp_v25/REPORT.md](flow_mvp_v25/REPORT.md)）
+- 最新轮次：**第 26 轮**（commit `PENDING`，Budget-Matched Temporal Write Re-baseline，见 [flow_mvp_v26/REPORT.md](flow_mvp_v26/REPORT.md)）
 - 当前正式架构：**Flow-v2 = W + Route + Hold + Readout**（66,162 可训练参数；B 固定）
 - 当前最佳持续学习配方：**Flow-v2 + 每步 12.5% 样本 replay**（65 轮/阶段、A'B'C'D'）
-- **并行/solver 线已冻结在 V19**；V20 B 拓扑；V21 可训练 B 解耦；V22 长程信用归因；V23 压力任务；V24 写入时间结构；V25（V24D-Phase 0）temporal strategy 可发现性审计
+- **并行/solver 线已冻结在 V19**；V20 B 拓扑；V21 可训练 B 解耦；V22 长程信用归因；V23 压力任务；V24 写入时间结构；V25（V24D-Phase 0）temporal strategy 可发现性审计；V26 预算匹配 re-baseline
 - 信用分配结论（已定）：**core 用 5 步窗口足够**（V22；V23 无硬案例）；B 用 hybrid 双通道拿完整信用
-- 写入结论（V24/V25）：**单次瞬时写入是结构性缺陷**；Chain-select 500ep 上 burst5/decay-slow 把 `single` 0.777/0.913 提到 0.971/0.999，bank selector 0.998/1.000。但 delay T80/task0 的“selector 不发现固定 kernel 收益”经 V25 审计主要是**训练预算混淆**（65ep 领先 +5.8～+29.6pp → 500ep ±4pp；adaptive≈fixed single）；标量 write gate（V24B）是负结果。下一步：**500ep budget-matched re-baseline**（T=80 四任务 + T=160 single/burst5），再决定 continuous λ/exploration
+- 写入结论（V24–V26）：**单次瞬时写入是结构性缺陷**；Chain-select 500ep 上 burst5/decay-slow 把 `single` 0.777/0.913 提到 0.971/0.999（bank selector 0.998/1.000）。预算匹配 re-baseline（v26，4 tasks × 5 seeds × 500ep）按 T 分层：**T=80 主要是优化效应**（+2.4/+1.9pp，AUC 0.927→0.941、E95 105→~60），**T=160 是能力效应（H-cap）**（+14.6/+14.7pp、5/5、single 0.843 vs burst5/dslow 0.989/0.990）。标量 write gate（V24B）是负结果。下一步：**T=160 上的 adaptive bank（C/D）**，验证可学习调度能否拿到 fixed 的 ~15pp，再谈 continuous λ/exploration
 
 ---
 
@@ -63,6 +63,8 @@
 26. **初始化是 temporal strategy 的有效杠杆（v25）**：bank init-burst5/decay-slow 在 65ep 比 single-init 高 +6.5/+6.1pp，且终点仍在初始核族（burst5-占优 0.62–0.81；decay-slow-占优 0.58–0.79），未回到 single。
 27. **shared 1-D λ 在 500ep 内不移动（v25）**：|Δλ|≤0.034；初始条件 landscape 平（gap≈0），full-BPTT 初始 ∂L/∂λ 量级 1e-8–1e-6、batch 内符号一致；但 500ep 时 single 已收敛到 F1 水平，故“不移动”不构成失败。
 28. **v25 harness 回归与协议**：A1 与 V24 `bank_delay` 同 seed **3/3 逐位一致**（max|Δ|=0）；截断通道对 scheduler 梯度恒为 0（detach 在每个 5 步边界，损失只连最后 5 步），scheduler 必须走 hybrid full。
+29. **预算匹配的 temporal kernel 结论按 T 分层（v26）**：T=80 500ep 主要是**优化效应**（final 仅 +2.4/+1.9pp；AUC 0.927→0.941、E95 中位 105→~60），T=160 500ep 是**能力效应（H-cap）**（+14.6/+14.7pp、5/5、4/4 tasks +8.4～+19.7pp；single 0.843 vs burst5/dslow 0.989/0.990）。
+30. **v26 回归**：120/120 cells 的 `test@65` 与 V24 `delay_*` 同 seed 逐位一致（max|Δ|=0）。
 
 ### 已被否定/削弱
 
@@ -103,6 +105,9 @@
 | single init 是强优化盆地（selector 不能动） | 部分否（init-burst5/dslow 保持核族且 65ep +6pp） | v25 |
 | shared 1-D λ 会被梯度推离 single | 否（\|Δλ\|≤0.034@500ep；初始 landscape gap≈0） | v25 |
 | A2/A3 从好核“塌回” single | 否（终点仍在初始核族；性能标签受预算混淆） | v25 |
+| delay T=80 的 temporal kernel 优势是最终能力差异 | 否（500ep：+2.4/+1.9pp；弱/优化效应） | v26 |
+| delay T=160 的 kernel 优势只是 65ep 慢收敛假象 | 否（500ep 仍 +14.6/+14.7pp，5/5，H-cap） | v26 |
+| 延迟任务上“Temporal Write 只提高收敛速度”可一概而论 | 否（按 T 分层：T80 是优化、T160 是能力） | v26 |
 
 ---
 
@@ -179,6 +184,7 @@
 | v23 | Credit-Stress Benchmark | Chain-select 压力任务（瞬态脉冲 + T 到 160）主动找 core 窗口硬案例：未找到（T≥40 K5 可达性 ≥ Full）；唯一窗口效应是短 T 脉冲对齐；主失败是"软选择平台/振荡"且 Full 也中招、坏盆救不回（0.750→0.733） | [flow_mvp_v23](flow_mvp_v23/) |
 | v24 | Input Write Dynamics | 等能量 FIR write kernel：长 T 收益随 T 增长（T160 +5.3pp）；Chain-select single 0.777/0.913 → burst5 0.971 / decay-slow 0.999。V24B 标量 write gate 负；V24C kernel bank selector 在 Chain-select 上成立（0.998/1.000，自动分任务策略），延迟任务上停在 single（HC3 未过） | [flow_mvp_v24](flow_mvp_v24/) |
 | v25 | Temporal Strategy 可发现性审计（V24D-Phase 0） | A1 与 V24C 逐位回归 3/3（max\|Δ\|=0）；delay T80/task0 的 fixed-kernel 65ep 领先（+5.8～+29.6pp）到 500ep 收缩到 ±4pp（预算混淆）；init-burst5/dslow 65ep +6pp 且保持核族；shared 1-D λ 500ep 内不动（\|Δλ\|≤0.034）；条件 landscape 平 | [flow_mvp_v25](flow_mvp_v25/) |
+| v26 | Budget-Matched Temporal Write Re-baseline | 120/120 cells 与 V24@65 逐位回归；T80 500ep 只剩 +2.4/+1.9pp（AUC/E95 优势，优化效应，burst5 weak / decay-slow H-opt）；T160 500ep +14.6/+14.7pp、5/5、H-cap（single 0.843±.025 vs burst5 0.989±.002 / dslow 0.990±.001） | [flow_mvp_v26](flow_mvp_v26/) |
 
 大部分轮次的详细数字、图表和边界在各自的 `REPORT.md` 与根 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
 
@@ -195,7 +201,7 @@ betterNN/
 │   ├── ARCHITECTURE.md       # 模型/代码结构/指标定义
 │   ├── FRAMEWORK_DESIGN.md   # 设计原理、梯度路径、改进方向
 │   └── REPRODUCING.md        # 环境与逐轮命令
-├── flow_mvp/ … flow_mvp_v25/ # 每轮独立目录（代码+结果+报告）
+├── flow_mvp/ … flow_mvp_v26/ # 每轮独立目录（代码+结果+报告）
 ├── historical_deliveries/    # 第1～6轮历史 ZIP
 ├── .venv/                    # 运行环境（未入库；见 §7）
 └── SHA256SUMS.txt / MANIFEST.json / COUNTS.json  # 原归档校验（只覆盖第1～7轮）
@@ -221,7 +227,7 @@ betterNN/
 - 单轮完整复现：见 [docs/REPRODUCING.md](docs/REPRODUCING.md)。
 - 部分运行用 `--out smoke`（会写自己的 summary/report，不覆盖主结果）。
 - 大批量扫描按方法/种子拆成多个后台进程：用 `setsid ... > logs/X.log 2>&1 < /dev/null &` 启动（避免用 `pkill -f` 清进程——模式会匹配到当前 shell 自身）；完成后跑 `analyze.py`。
-- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟；v22 = 320 条 r=12.5% 流 + 80 条 r=0 + 160 单任务，28 进程约 33 分钟（内存吃紧，`--jobs 10` 更稳）；v23 = 149 条单任务流（T 到 160），T=160 单流 20–45 min、RSS≈1.1GB（并发 ≤4，其余 T 用 6 进程）；v24 = 430 条流（Phase A 400 条约 20 min/8 进程；Phase B 30 条 K=5×500ep 约 33 min/6 进程）；v25 = 30 条审计流（10 arms × 3 seeds，含 15 条 500ep），`--jobs 3` 约 73 min。
+- 重负载参考：v11 150 流/6 进程约 1 小时；v20 = 700 流、26 进程约 1 小时；v21 = 90 learnable hybrid 流（每步 2 次前向/反向）、30 进程约 50 分钟；v22 = 320 条 r=12.5% 流 + 80 条 r=0 + 160 单任务，28 进程约 33 分钟（内存吃紧，`--jobs 10` 更稳）；v23 = 149 条单任务流（T 到 160），T=160 单流 20–45 min、RSS≈1.1GB（并发 ≤4，其余 T 用 6 进程）；v24 = 430 条流（Phase A 400 条约 20 min/8 进程；Phase B 30 条 K=5×500ep 约 33 min/6 进程）；v25 = 30 条审计流（10 arms × 3 seeds，含 15 条 500ep），`--jobs 3` 约 73 min；v26 = 120 条 re-baseline 流（T80 60 + T160 60；T160 单流 300–400s，`--jobs 3–4`；两相并发 + decay-slow 补充进程约 1.5–2h）。
 
 ---
 
@@ -257,6 +263,10 @@ betterNN/
 28. **短预算的 kernel 对比是收敛速度，不是最终质量（v25 教训）**：delay T80/task0 上 fixed kernel 的 65ep 领先最多 +29.6pp，500ep 只剩 ±4pp（F1 0.965±0.017 / F2 0.979±0.001 / F3 0.975±0.011），且 adaptive 与 fixed single 齐平。比较 temporal 策略必须预算匹配；V24 Phase A 的 T=80 结论（以及 T=160 +5.3pp）需要用 500ep 复测后才能作为机制证据。
 29. **条件 landscape 的解释边界（v25）**：v25 的扫描冻结已训练 core，argmin 位置反映 co-adaptation，不是联合可达性；联合景观用 fixed-kernel 重训（F arms / V24 Phase A）。初始点条件扫描几乎全平（gap≈0）。
 30. **v25 运行与回归**：`audit.py --T 80 --tasks 0 --seeds 11 22 33 --jobs 3 --out results/audit`；A1@65ep 与 V24 `bank_delay` 必须逐位一致（analyze 打印，3/3 max|Δ|=0）；只存 JSON、无检查点；`analyze.py` 支持 `--out`；500ep×3 jobs 本机约 73 min。
+31. **T=80 预算匹配后主要是收敛速度效应（v26）**：delay T=80、4 tasks × 5 seeds × 500ep：single 0.954±0.016 / burst5 0.978±0.012（+2.4pp，4/5）/ decay-slow 0.973±0.013（+1.9pp，4/5）；AUC 0.927→0.941、E95 中位 105→57.5/60。burst5 落 2–3pp weak 带（不判 H-cap），decay-slow 判 H-opt。
+32. **T=160 预算匹配后是能力效应（v26，H-cap）**：同网格 500ep：single 0.843±0.025（E95 中位 453，7/20 达到 95）vs burst5 0.989±0.002（+14.6pp，5/5，4/4 tasks +8.4～+19.7pp）、decay-slow 0.990±0.001（+14.7pp，5/5），ΔAUC +19.3pp。single 在 500ep 仍缓慢上升（0.829→0.843），burst5/dslow 已饱和——500ep 不是“充分收敛”证明，但同预算差距 15pp。
+33. **v26 回归**：120/120 cells 的 `test@65` 与 V24 `delay_*` 同 seed 逐位一致（max|Δ|=0）；`train_rebase` 与 `E.train_fixed` 前 65 epoch 同路径，新增中间 eval 不消费 RNG。
+34. **按 T 分层汇报（v26 教训）**：不要用一句话概括“延迟任务上 temporal write 有没有用”；必须报 T、预算、Acc451-500 与 E95。T=80 的证据支持优化加速，T=160 才支持能力差异；single 在 T=160/500ep 仍未饱和，结论措辞限于“同预算”。
 
 ---
 
@@ -268,22 +278,23 @@ betterNN/
    - **V24B 已完成（标量 write gate，负结果）**：`w_t=2σ(MLP(x_t,meta_t))`（不看 h、初始 w≡1、hybrid 全信用）既没有超过每任务最优固定 kernel（xor 0.946 vs 0.971），也没有一条流学会相对抑制 distractor（0/30）。机制：符号任务对正标量缩放不敏感（内部增益可补偿），加法写入没有“写重了挤占别的信息”的竞争 → 相对重要性没有梯度。**结论：标量 input gate 是错误的自由度，不要再调它的容量/结构。**
    - **V24C 已完成（Adaptive Temporal Compression, kernel bank selector，结果 A + 例外）**：`α=softmax(MLP(x,meta))` 在 5 kernel 上选择、逐事件等能量、无 w_t；Chain T=80 上 xor 0.998（超 fixed burst5 0.971）、xorsw 1.000，自动学到“全铺开 vs 只给 c2 长 kernel”两种策略（HC1/HC2 通过）；但同质延迟任务上 α 停在 single（HC3 未过）。
    - **V24D-Phase 0 已完成（v25 审计）**：delay T80/task0 上 fixed kernel 的 65ep 领先到 500ep 收缩到 ±4pp，bank/shared adaptive 与 fixed single 500ep 齐平（A4−F1=+1.6/−0.4/−0.6pp）；init-burst5/dslow 65ep +6pp 且终点仍在核族；shared 1-D λ 500ep 内不动（|Δλ|≤0.034）。**结论：该 cell 的“selector 找不到收益”主要是训练预算/收敛速度混淆，短预算 kernel 对比不能当作最终质量差异。**
-   - **v25 下一步（budget-matched re-baseline，先于 continuous λ/exploration）**：把 V24 Phase A 的 fixed kernel 网格在 500ep 复测——至少 T=80 四个任务（single / burst5 / decay-slow）与 T=160 的 single/burst5，确认长 T +5.3pp 是否仍是收敛速度；若 500ep 下仍有稳定 kernel 优势，再进入 Phase 1（continuous per-event λ，问题=优化几何）与 Phase 2（2×2 参数化×匹配探索，匹配按诱导 kernel 扰动 RMS）；若优势消失，temporal write 的价值集中在 Chain-select（500ep 已验证），Phase 1/2 降优先级。
-   - **三个自由度按序验证**：Where（V20/V21 已答）→ When/How much（V24A 固定 kernel 有效但 v25 显示 T80 延迟收益是预算混淆 / V24B 标量 gate 无效 / V24C kernel bank 在事件结构化任务上有效）→ budget-matched re-baseline → How long（continuous `λ_t`）/ exploration；最后才是 Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
+   - **v26 已完成（budget-matched re-baseline）**：T=80 500ep 只剩 +2.4/+1.9pp（AUC/E95 优势，优化效应；burst5 weak / decay-slow H-opt）；T=160 500ep +14.6/+14.7pp、5/5、4/4 tasks +8.4～+19.7pp、H-cap（single 0.843±.025 vs burst5 0.989±.002 / dslow 0.990±.001）。**结论：短序列是优化加速，长记忆距离是能力差异；delayed 线保留但只认 T≥160。**
+   - **下一步（C/D，条件已满足）**：在 T=160、500ep、tasks 0–3、seeds 11–55 上跑 **adaptive bank**（V24C bank selector + hybrid），问题=**可学习调度能否拿到 fixed 的 ~15pp**；若 bank 达标，再比较 continuous per-event λ 的优化几何（Phase 1/2）。T=80 delayed 不再单独立项。
+   - **三个自由度按序验证**：Where（V20/V21 已答）→ When/How much（V24A/B/C + v25 + v26）→ **T=160 adaptive bank（C/D）** → How long（continuous `λ_t`）/ exploration → Flow-v3（动态写哪里 `α_t` + 可并行 substrate）。
    - 机制补充：末端可解码性（probe T−1）比扰动幅度更能解释收益；新方法都应用 probe 而非 ||Δh|| 做机制指标。
 2. **并行/solver 线**：冻结在 V19。若要重开，应改走 coarse+fine（parareal/多重网格）而不是 exact affine scan；先补 optimized serial 基线（torch.compile/CUDA Graph）再谈对比。
 3. **Storage efficiency（Flow vs GRU）**：v12 只测了 replay band 效率，缓冲大小/存储效率尚未与 GRU 对比。
 4. **State replay**：v16 测了样本与策略锚点，状态 h 的蒸馏未测。
 5. 更远期：结构生长/修剪、频率/脉冲/相位调制（都要求先固定平均参数或信息预算）。
 
-当前不建议：继续加新门、扩大规模（N≥512）、为 core 加长程信用机制；也不要在不匹配预算的情况下继续扫固定 kernel（v25 显示 65ep 的延迟任务优势是收敛速度；下一步是 500ep 的 budget-matched 复测，不是简单回退）。把 B 的可训练版直接塞回纯 5 步截断协议仍不可行（∇B≡0，必须走 hybrid 或等价双通道）。
+当前不建议：继续加新门、扩大规模（N≥512）、为 core 加长程信用机制；也不要在 T=80 delayed 上继续投入（v26 已把它定性为优化加速）；不要在未报预算/Acc451-500/E95 的情况下比较 temporal 策略。把 B 的可训练版直接塞回纯 5 步截断协议仍不可行（∇B≡0，必须走 hybrid 或等价双通道）。
 
 ---
 
 ## 10. 新 agent 第一小时清单
 
 1. 读本文件 + [README.md](README.md) + [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)。
-2. 读八份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）、[v22](flow_mvp_v22/REPORT.md)（长程信用归因）、[v23](flow_mvp_v23/REPORT.md)（Credit-Stress Benchmark）、[v24](flow_mvp_v24/REPORT.md)（Input Write Dynamics 与 write kernel）、[v25](flow_mvp_v25/REPORT.md)（V24D-Phase 0 可发现性审计与预算混淆）。
+2. 读九份最关键的实测报告：[v15](flow_mvp_v15/REPORT.md)（架构基线）、[v16](flow_mvp_v16/REPORT.md)（策略记忆负结果）、[v20](flow_mvp_v20/REPORT.md)（B 拓扑 × 动力学）、[v21](flow_mvp_v21/REPORT.md)（可训练 B 与 hybrid 信用分配）、[v22](flow_mvp_v22/REPORT.md)（长程信用归因）、[v23](flow_mvp_v23/REPORT.md)（Credit-Stress Benchmark）、[v24](flow_mvp_v24/REPORT.md)（Input Write Dynamics 与 write kernel）、[v25](flow_mvp_v25/REPORT.md)（V24D-Phase 0 可发现性审计与预算混淆）、[v26](flow_mvp_v26/REPORT.md)（预算匹配 re-baseline：T80 优化 vs T160 能力）。
 3. 检查环境与一致性：
    ```bash
    git status -sb && git ls-remote origin | head -2
@@ -295,9 +306,11 @@ betterNN/
    cd flow_mvp_v24 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -10   # V24 假设判定（H1–H7 + HC1–HC3，读缓存 JSON）
    cd flow_mvp_v25 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -20   # V25 Phase 0 判定 + 预算混淆检查（读缓存 JSON）
    cd flow_mvp_v25 && /mnt/d/betterNN/.venv/bin/python verify_audit.py         # base 等价/初始核/等能量/hybrid 梯度
+   cd flow_mvp_v26 && /mnt/d/betterNN/.venv/bin/python analyze.py | tail -25   # V26 预算匹配判定 + V24@65 回归（读缓存 JSON）
+   cd flow_mvp_v26 && /mnt/d/betterNN/.venv/bin/python verify_rebase.py        # 前 65 epoch 与 V24 delay_* 逐位回归（约 1 min）
    ```
 4. 复核当前最佳配方（可选）：v15 smoke `--epochs 2 --seeds 11 --out smoke` 或 v11 `--ratios 0 .125` 小规模。
-5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v26/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
+5. 从 §9 选一个方向，按每轮约定新建 `flow_mvp_v27/`，先写 `PLAN.md`（含预注册判定规则），再写代码；完成后更新 `docs/EXPERIMENTS.md`/`README.md`/`REPRODUCING.md` 并 push。
 
 ---
 

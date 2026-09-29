@@ -1,0 +1,46 @@
+{
+  "80_burst5": {
+    "d_acc": 0.0236328125,
+    "n_pos": 4,
+    "n": 5,
+    "d_auc": 0.014298437499999993,
+    "auc_pos": 3,
+    "e95_fav": 4,
+    "cap": false,
+    "opt": false,
+    "weak": true
+  },
+  "80_decay-slow": {
+    "d_acc": 0.0189453125,
+    "n_pos": 4,
+    "n": 5,
+    "d_auc": 0.013680273437499996,
+    "auc_pos": 3,
+    "e95_fav": 4,
+    "cap": false,
+    "opt": true,
+    "weak": false
+  },
+  "160_burst5": {
+    "d_acc": 0.14609375,
+    "n_pos": 5,
+    "n": 5,
+    "d_auc": 0.1925171875,
+    "auc_pos": 5,
+    "e95_fav": 5,
+    "cap": true,
+    "opt": false,
+    "weak": false
+  },
+  "160_decay-slow": {
+    "d_acc": 0.147265625,
+    "n_pos": 5,
+    "n": 5,
+    "d_auc": 0.19235156250000002,
+    "auc_pos": 5,
+    "e95_fav": 5,
+    "cap": true,
+    "opt": false,
+    "weak": false
+  }
+}

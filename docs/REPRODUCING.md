@@ -579,7 +579,7 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --phase chain \
 
 注意：kernel 为固定因果 FIR，`Σa²=1`；`single` 应分别与 V20 fixed-disjoint singles、V23 `transient_*_T80_K5_*` 逐位一致（analyze 会打印回归差）。Phase A 的 probe 指标在训练后在线计算，无检查点。V24B 的 scheduler 初始 w≡1（与固定 kernel 起点逐值一致），w 与 B 同走 full 通道、core 仍 K=5。V24C 的 bank selector 初始 ≈single（bias [4,0,0,0,0]），逐事件 Σa²=1 等能量；注意 `writes` 必须用函数式 `F.pad` 实现，in-place 切片赋值会慢 8–10×。
 
-## 22. 第二十五轮：Temporal Strategy 可发现性审计（V24D-Phase 0，最新）
+## 22. 第二十五轮：Temporal Strategy 可发现性审计（V24D-Phase 0）
 
 工作目录：`flow_mvp_v25/`。审计矩阵：A1–A4（bank init single/burst5/decay-slow，65/500ep）、B1–B3（shared λ）、F1–F3（fixed kernel 500ep）；T=80、task0、3 seeds、B fixed、core K=5、scheduler hybrid full。
 
@@ -593,7 +593,25 @@ FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python audit.py --T 80 --tasks 0 --seed
 
 注意：A1@65ep 必须与 V24 `results/bank_delay/bank_delay_T80_t0_*.json` 同 seed 逐位一致（analyze 打印回归差）；本轮只存 JSON、无检查点；500ep×3 jobs 本机约 73 min。条件 landscape 冻结当前 core，只作局部几何证据。smoke 用 `--arms A1 A2 B1 F1 --epochs 2 --seeds 11 --out smoke`。
 
-## 23. 原归档校验与打包
+## 23. 第二十六轮：Budget-Matched Temporal Write Re-baseline（最新）
+
+工作目录：`flow_mvp_v26/`。只换 write kernel（single/burst5/decay-slow），其余与 V24 Phase A 一致；500 epochs、tasks 0–3、seeds 11/22/33/44/55；指标 Acc500 / Acc451-500 / E90-98 / AUC。
+
+```bash
+cd flow_mvp_v26
+/mnt/d/betterNN/.venv/bin/python verify_rebase.py   # 前 65 epoch 与 V24 delay_* 逐位回归
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --T 80 \
+    --kernels single burst5 decay-slow --tasks 0 1 2 3 --seeds 11 22 33 44 55 \
+    --epochs 500 --jobs 6 --out results/rebase_80
+FLOW_THREADS=1 /mnt/d/betterNN/.venv/bin/python experiment.py --T 160 \
+    --kernels single burst5 decay-slow --tasks 0 1 2 3 --seeds 11 22 33 44 55 \
+    --epochs 500 --jobs 3 --out results/rebase_160
+/mnt/d/betterNN/.venv/bin/python analyze.py   # REPORT.md / results/summary.json
+```
+
+注意：本机内存紧，T=160 建议 `jobs 3–4`；本轮只存 JSON、无检查点。`analyze.py` 会打印全部 120 个 cell 的 V24@65 回归差（应全为 0）与预算曲线。
+
+## 24. 原归档校验与打包
 
 在项目根目录执行：
 
@@ -613,7 +631,7 @@ python build_all_experiments.py
 
 当前脚本不收集新增的根 `README.md` 或 `docs/`，也不会更新根目录已有索引文件。若要交付本次整理后的文档，需要同时包含这些新增文件。
 
-## 24. 常见问题
+## 25. 常见问题
 
 | 现象 | 核查方向 |
 |---|---|

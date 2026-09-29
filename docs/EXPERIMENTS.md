@@ -534,7 +534,18 @@ V24C 的遗留问题：delay T80/task0 上 fixed kernel 已知更优（65ep）�
 
 数据位置：[PLAN.md](../flow_mvp_v25/PLAN.md)、[REPORT.md](../flow_mvp_v25/REPORT.md)、[results/audit/](../flow_mvp_v25/results/audit/)。
 
-## 22. 已保存的内容
+## 22. 第二十六轮：Budget-Matched Temporal Write Re-baseline
+
+V25 只审计了 delay T80/task0（3 seeds），T=80 四任务与 T=160 仍是 65ep 口径。V26 在**相同 500ep 预算**下重跑：只换 write kernel（single/burst5/decay-slow），B fixed-disjoint、core K=5、数据/种子/优化器全部与 V24 Phase A 一致；tasks 0–3、seeds 11/22/33/44/55；指标 Acc500 / Acc451-500 / E90-98 / AUC。
+
+- **回归**：120/120 cells 的 `test@65` 与 V24 `delay_*` 同 seed 逐位一致（max|Δ|=0）。
+- **T=80：收敛速度效应（不是能力效应）**：single 0.954±0.016 / burst5 0.978±0.012（+2.4pp，4/5 同向）/ decay-slow 0.973±0.013（+1.9pp，4/5）；AUC 0.927→0.941，E95 中位 105→57.5/60。burst5 落入 weak 带（2–3pp，不判 H-cap），decay-slow 判 H-opt。
+- **T=160：能力效应（H-cap）**：single 0.843±0.025（E95 中位 453，7/20 达到 95）vs burst5 **0.989±0.002**（+14.6pp，5/5 同向，4/4 tasks +8.4～+19.7pp）/ decay-slow 0.990±0.001（+14.7pp，5/5）；ΔAUC +19.3pp。single 在 500ep 仍缓慢上升（0.829→0.843），burst5/decay-slow 已饱和。
+- 结论：**短序列 temporal kernel 主要改善优化效率；记忆距离足够长（T=160）时开始改变最终能力**，支持多时间尺度状态方向。按 PLAN §4，adaptive bank（C/D）与 continuous λ 现在有条件展开。
+
+数据位置：[PLAN.md](../flow_mvp_v26/PLAN.md)、[REPORT.md](../flow_mvp_v26/REPORT.md)、[results/rebase_80/](../flow_mvp_v26/results/rebase_80/)、[results/rebase_160/](../flow_mvp_v26/results/rebase_160/)。
+
+## 23. 已保存的内容
 
 | 轮次 | Python文件 | `.pt`文件 | 保存内容说明 |
 |---|---:|---:|---|
@@ -563,11 +574,12 @@ V24C 的遗留问题：delay T80/task0 上 fixed kernel 已知更优（65ep）�
 | 23 | 5 | 0 | 信用压力任务：149 条单任务流 + 救援诊断，无检查点（只存 JSON） |
 | 24 | 3 | 0 | 写入时间结构：430 条流（Phase A 400 + Phase B 30），无检查点（只存 JSON） |
 | 25 | 3 | 0 | Temporal strategy 审计：30 条流（10 arms × 3 seeds），只存 JSON |
+| 26 | 2 | 0 | 预算匹配 re-baseline：120 条流（2 T × 3 kernels × 4 tasks × 5 seeds），只存 JSON |
 | 原归档合计 | 44 | 405 | 第1～7轮文件数，不是独立实验次数；第八～十八轮另计 |
 
 训练、验证和测试输入大部分未单独保存为张量文件，而是由代码和种子生成。第七轮共有 200 个任务阶段，但仅有 50 个顺序学习最终检查点；第八轮只保存最终模型；第九轮保存每个阶段的模型，可重载复核。
 
-## 23. 当前研究状态
+## 24. 当前研究状态
 
 第二十一轮发现 `∇B≡0` 并用 hybrid 信用分配（core 截断 / B 全 BPTT）训练 B，当时的结论是“Full joint 长程信用几乎消除 overlap 代价（6.63→1.83pp）”。**第二十二轮用匹配协议（同 10 seeds × 3 顺序）重审并修正了这个结论**：
 
@@ -601,4 +613,10 @@ V24C 的遗留问题：delay T80/task0 上 fixed kernel 已知更优（65ep）�
 - shared 1-D λ 在整个 500ep 内不动（|Δλ|≤0.034），初始条件 landscape 平（gap≈0）；但在该 cell 上不移动并不构成失败，因为 single 收敛后已足够好。
 - 因此 V24D 的下一步顺序调整为：**先 budget-matched re-baseline**（V24 Phase A 的 kernel 网格在 500ep 复测，至少 T=80 四任务与 T=160 single/burst5），确认长 T 收益是否也是收敛速度；若 500ep 下 kernel 优势仍在，再进入 continuous per-event λ / exploration 2×2。Chain-select 的 500ep 结论（V24 H3）不受此影响。
 
-当前路线：**Where（V20/V21 已答）→ When/How much（V24A/B/C + v25 审计）→ budget-matched re-baseline → How long（continuous `λ_t`）/ exploration → Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结。
+**第二十六轮把“预算混淆”这个疑点彻底测清，结论按 T 分层**：
+
+- T=80（4 tasks × 5 seeds × 500ep）：single 0.954 / burst5 0.978（+2.4pp，4/5）/ decay-slow 0.973（+1.9pp，4/5）；AUC 0.927→0.941、E95 中位 105→57.5/60。**主要是收敛速度效应**（burst5 落在 2–3pp weak 带，decay-slow 判 H-opt）。
+- T=160（同网格 500ep）：single 0.843±0.025（E95 中位 453，7/20 达到 95）vs burst5 0.989±0.002（+14.6pp，5/5，4/4 tasks +8.4～+19.7pp）、decay-slow 0.990±0.001（+14.7pp，5/5），ΔAUC +19.3pp。**H-cap 成立**：在相同 500ep 预算下长 kernel 改变最终能力；single 在 500ep 仍在上升，burst5/decay-slow 已饱和（该 caveat 限制“充分收敛”的措辞，但不改变同预算下的 15pp 差距）。
+- **综合判断：短序列 temporal kernel 主要改善优化效率；记忆距离足够长时开始出现能力差异。**
+
+当前路线：**Where（V20/V21 已答）→ When/How much（V24A/B/C + v25 审计 + v26 预算匹配）→ T=160 上的 adaptive bank（C/D：kernel bank selector @500ep，验证可学习调度能否拿到 fixed 的 15pp）→ How long（continuous `λ_t` / 探索匹配）→ Flow-v3**。core 长程信用与 eligibility trace 方向保持冻结；T=80 delayed 线的“能力效应”已收缩为优化加速，不再单独投入。
